@@ -1,0 +1,257 @@
+:root {
+    --green-1: #10b981;
+    --green-2: #059669;
+}
+
+/* ...existing code... */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.site-header {
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+/* Key change: fixed header height 75px and vertical centering */
+.site-header__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 75px;
+    /* <-- exact header height requested */
+    padding: 0 20px;
+    /* no vertical padding so height is stable */
+    display: flex;
+    align-items: center;
+    /* vertically center all items */
+    gap: 24px;
+    justify-content: space-between;
+}
+
+/* Logo */
+.site-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--green-1);
+    font-size: 18px;
+    /* tuned for 75px header */
+    font-weight: 700;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.site-logo i {
+    font-size: 28px;
+    /* icon size fits 75px header */
+}
+
+/* Navigation */
+.site-nav {
+    display: flex;
+    gap: 24px;
+    flex: 1;
+    margin: 0 20px;
+    align-items: center;
+}
+
+.nav-link {
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: 0.3s;
+    line-height: 1;
+}
+
+.nav-link:hover {
+    color: var(--green-1);
+}
+
+/* Search Box - adjusted to fit header height */
+.search-box {
+    display: flex;
+    align-items: center;
+    background: #f5f5f5;
+    border-radius: 6px;
+    padding: 6px 10px;
+    gap: 10px;
+    width: 280px;
+    height: 44px;
+    
+    /* comfortable control height within 75px header */
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    outline: none;
+    color: #333;
+    height: 100%;
+    line-height: 1;
+}
+
+.search-input::placeholder {
+    color: #999;
+}
+
+.search-btn {
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 6px;
+    transition: 0.3s;
+}
+
+.search-btn:hover {
+    color: var(--green-1);
+}
+
+/* Right Section */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+/* Icons scaled to match header */
+.header-icon {
+    color: #333;
+    text-decoration: none;
+    font-size: 20px;
+    transition: 0.3s;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    width: 36px;
+}
+
+.header-icon:hover {
+    color: var(--green-1);
+}
+
+.user-icon {
+    color: #333;
+    text-decoration: none;
+    font-size: 20px;
+    transition: 0.3s;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: auto;
+    width: auto;
+}
+
+.user-icon:hover {
+    color: var(--green-1);
+}
+
+.username {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    white-space: nowrap;
+}
+
+.user-icon:hover .username {
+    color: var(--green-1);
+}
+/* Cart Badge - positioned for the new sizes */
+.cart-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: var(--green-1);
+    color: #fff;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* Responsive tweaks */
+@media (max-width: 1024px) {
+    .site-nav {
+        gap: 16px;
+        margin: 0 12px;
+    }
+
+    .search-box {
+        width: 220px;
+    }
+
+    .nav-link {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 768px) {
+    .site-nav {
+        display: none;
+    }
+
+    .search-box {
+        width: 160px;
+        height: 38px;
+    }
+
+    .site-header__inner {
+        padding: 0 12px;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .site-header__inner {
+        padding: 0 10px;
+        gap: 8px;
+        height: 75px;
+    }
+
+    .site-logo {
+        font-size: 16px;
+    }
+
+    .site-logo i {
+        font-size: 22px;
+    }
+
+    .search-box {
+        display: none;
+    }
+
+    .header-right {
+        gap: 10px;
+    }
+
+    .header-icon {
+        font-size: 16px;
+        height: 32px;
+        width: 32px;
+    }
+}
+
+/* ...existing code... */

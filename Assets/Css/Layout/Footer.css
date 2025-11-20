@@ -1,0 +1,156 @@
+.site-footer {
+    background: #fafafa;
+    color: #444;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    border-top: 1px solid #eee;
+    padding: 36px 0 18px;
+}
+
+.site-footer__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.footer-cols {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+}
+
+.footer-col h4 {
+    font-size: 13px;
+    color: #222;
+    margin-bottom: 12px;
+    font-weight: 700;
+}
+
+.footer-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-col ul li {
+    padding: 6px 0;
+    color: #666;
+}
+
+/* logos grid */
+.footer-logos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.footer-logos img {
+    background: #fff;
+    border-radius: 6px;
+    padding: 6px;
+    height: 34px;
+    width: auto;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* social & app */
+.social-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    color: #666
+}
+
+.social-list li {
+    padding: 6px 0
+}
+
+.app-qr {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 6px
+}
+
+.app-qr .qr {
+    width: 78px;
+    height: 78px;
+    object-fit: cover;
+    border-radius: 6px;
+    background: #fff;
+    padding: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04)
+}
+
+.app-badges {
+    display: flex;
+    flex-direction: column;
+    gap: 8px
+}
+
+.app-badges img {
+    width: 120px;
+    height: auto;
+    object-fit: contain
+}
+
+/* divider & bottom */
+.footer-divider {
+    height: 1px;
+    background: #eee;
+    margin: 20px 0;
+}
+
+.site-footer__bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 6px;
+}
+
+.site-footer__bottom .copyright {
+    color: #888;
+    font-size: 13px
+}
+
+.footer-links a {
+    color: #888;
+    text-decoration: none;
+    margin-left: 18px;
+    font-size: 13px;
+}
+
+.footer-links a:hover {
+    color: #444;
+}
+
+/* Responsive */
+@media (max-width: 1000px) {
+    .footer-cols {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .app-badges img {
+        width: 100px;
+    }
+}
+
+@media (max-width: 600px) {
+    .footer-cols {
+        grid-template-columns: 1fr;
+    }
+
+    .site-footer__bottom {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .footer-links a {
+        margin-left: 0;
+        display: inline-block;
+        margin-right: 12px;
+    }
+}
