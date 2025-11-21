@@ -2,6 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+include_once("Model/User/UserModel.php");
 
 // $product, $related, $comments, $seller expected from controller
 function productImageSrc($img) {
@@ -178,7 +179,9 @@ function productImageSrc($img) {
                                 <?php foreach ($comments as $comment): ?>
                                     <article class="comment-item">
                                         <div class="comment-header">
-                                            <strong>User #<?= intval($comment->user_id ?? 0) ?></strong>
+                                            <?php $userModel = new UserModel();
+                                                  $user = $userModel->getUserById(intval($comment->user_id ?? 0)); ?> 
+                                            <strong><?= htmlspecialchars($user->username)  ?></strong>
                                             <span class="comment-rating">
                                                 <?php for ($i = 1; $i <= 5; $i++): ?>
                                                     <i class="fas fa-star <?= $i <= intval($comment->rating ?? 5) ? 'filled' : '' ?>"></i>

@@ -28,7 +28,7 @@ if ($sort == 'new') {
 
 if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
     $keyword = $_GET['keyword'];
-    $safe_keyword = mysqli_real_escape_string($conn, $keyword);
+    $safe_keyword = mysqli_real_escape_string($conn,     $keyword);
 
     $sql_count = "SELECT COUNT(*) as total FROM products WHERE name LIKE '%$safe_keyword%'";
     $sql = "SELECT * FROM products WHERE name LIKE '%$safe_keyword%' $order_sql LIMIT $limit OFFSET $offset";
