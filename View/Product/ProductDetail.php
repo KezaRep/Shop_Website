@@ -86,7 +86,7 @@ function productImageSrc($img) {
                             </div>
                         </div>
 
-                        <form action="index.php?controller=cart&action=add" method="post" style="display:flex;gap:10px;flex:1">
+                        <form action="index.php?controller=product&action=checkout&product_id=<?= $product->id ?>" method="post" style="display:flex;gap:10px;flex:1">
                             <input type="hidden" name="product_id" value="<?= intval($product->id ?? 0) ?>">
                             <input type="hidden" name="quantity" id="qtyInput" value="1">
                             <button type="button" class="btn-cart" onclick="addQtyToForm();"><i class="fas fa-shopping-cart"></i> Thêm Vào Giỏ Hàng</button>

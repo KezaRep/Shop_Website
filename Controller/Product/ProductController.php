@@ -159,7 +159,6 @@ class ProductController
             include("View/Product/ProductEdit.php");
             include("View/Layout/Footer.php");
         }
-    }
-}
+    }}
 
 ?>

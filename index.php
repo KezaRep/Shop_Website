@@ -4,6 +4,7 @@ ini_set('display_errors', 1);
 include_once("Controller/Product/ProductController.php");
 include_once("Controller/User/UserController.php");
 include_once("Controller/Comment/CommentController.php");
+include_once("Controller/Checkout/CheckoutController.php");
 $controllerName = isset($_GET['controller']) ? $_GET['controller'] : 'Product';
 $actionName = isset($_GET['action']) ? $_GET['action'] : 'List';
 $controllerClass = ucfirst($controllerName) . "Controller";
