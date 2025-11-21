@@ -96,5 +96,46 @@ class ProductController
         include("View/Layout/Footer.php");
 
     }
+    public function editAction()
+    {
+        $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+        $product = $this->productModel->getProductById($id);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!$product) {
+                header("HTTP/1.0 404 Not Found");
+                echo "Sản phẩm không tồn tại.";
+                exit;
+            }
+            $name = isset($_POST['name']) ? trim($_POST['name']) : '';
+            $price = isset($_POST['price']) ? (float) $_POST['price'] : 0;
+            $description = isset($_POST['description']) ? trim($_POST['description']) : '';
+            $quantity = isset($_POST['quantity']) ? (int) $_POST['quantity'] : 0;
+            $category_id = isset($_POST['category_id']) ? (int) $_POST['category_id'] : 0;
+
+            $imageData = '';
+            if (!empty($_FILES['image']['tmp_name']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
+                $imageData = file_get_contents($_FILES['image']['tmp_name']);
+            }
+
+            // Thêm product
+            $ok = $this->productModel->updateProductDetails($id, $name, $price, $imageData, $description, $quantity, $category_id);
+            // Redirect về danh sách hoặc hiển thị thông báo
+            if ($ok) {
+                header("Location: index.php?controller=product&action=list");
+                exit;
+            } else {
+                $error = "Không thể lưu thông tin sản phẩm. Vui lòng thử lại.";
+                include("View/Layout/Header.php");
+                include("View/Product/ProductEdit.php");
+                include("View/Layout/Footer.php");
+            }
+
+        } else {
+            include("View/Layout/Header.php");
+            include("View/Product/ProductEdit.php");
+            include("View/Layout/Footer.php");
+        }
+    }
 }
+
 ?>
