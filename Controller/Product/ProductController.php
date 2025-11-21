@@ -95,7 +95,6 @@ class ProductController
         include("View/Product/ProductDetail.php");
         include("View/Layout/Footer.php");
 
-<<<<<<< HEAD
     }
     public function editAction()
     {
@@ -140,8 +139,3 @@ class ProductController
 }
 
 ?>
-=======
-    }
-}
-?>
->>>>>>> c131218b86a9d3bc743fdb65d020bcb81192171e
