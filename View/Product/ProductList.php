@@ -2,7 +2,11 @@
 $headerTitle = "Kết quả tìm kiếm";
 ?>
 <?php
-$conn = mysqli_connect('localhost', 'root', '', 'shop_website');
+include_once("Core/Database.php"); 
+
+$db = new Database();           
+$conn = $db->getConnection();
+
 if (!$conn) {
     die("Kết nối thất bại: " . mysqli_connect_error());
 }
