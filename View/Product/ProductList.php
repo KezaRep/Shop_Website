@@ -1,6 +1,47 @@
 <?php
-// Page header title (used by Header.php)
 $headerTitle = "Kết quả tìm kiếm";
+?>
+<?php
+$conn = mysqli_connect('localhost', 'root', '', 'shop_website');
+if (!$conn) {
+    die("Kết nối thất bại: " . mysqli_connect_error());
+}
+mysqli_set_charset($conn, "utf8");
+
+$limit = 8; 
+$page = isset($_GET['page']) ? (int)$_GET["page"] : 1;
+if ($page < 1) $page = 1; 
+$offset = ($page - 1) * $limit;
+
+$productList = [];
+$keyword = '';
+$param = ''; 
+
+if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
+    $keyword = $_GET['keyword'];
+    $safe_keyword = mysqli_real_escape_string($conn, $keyword);
+
+    $sql_count = "SELECT COUNT(*) as total FROM products WHERE name LIKE '%$safe_keyword%'";
+    $sql = "SELECT * FROM products WHERE name LIKE '%$safe_keyword%' LIMIT $limit OFFSET $offset";
+
+    $param = "&keyword=" . urlencode($keyword);
+} else {
+    $sql_count = "SELECT COUNT(*) as total FROM products";
+    $sql = "SELECT * FROM products LIMIT $limit OFFSET $offset";
+}
+
+$result_count = mysqli_query($conn, $sql_count);
+$row_count = mysqli_fetch_assoc($result_count);
+$total_records = $row_count['total'];
+
+$total_page = ceil($total_records / $limit);
+
+$result = mysqli_query($conn, $sql);
+if ($result) {
+    while ($row = mysqli_fetch_object($result)) {
+        $productList[] = $row;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -10,17 +51,14 @@ $headerTitle = "Kết quả tìm kiếm";
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Danh sách sản phẩm</title>
 
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- This page style -->
     <link rel="stylesheet" href="Assets/Css/Product/List.css">
 </head>
 
 <body>
     <main class="page-container">
         <div class="page-inner">
-            <!-- Sidebar filters -->
             <aside class="sidebar">
                 <h3 class="sidebar-title"><i class="fas fa-filter"></i> Bộ lọc tìm kiếm</h3>
 
@@ -58,9 +96,7 @@ $headerTitle = "Kết quả tìm kiếm";
 
             </aside>
 
-            <!-- Main content -->
             <section class="content">
-                <!-- Shop header card -->
                 <div class="shop-card">
                     <div class="shop-card__left">
                         <img src="Assets/Images/placeholder-avatar.png" alt="shop" class="shop-avatar">
@@ -100,37 +136,56 @@ $headerTitle = "Kết quả tìm kiếm";
 
                 <!-- Product grid -->
                 <div class="products-grid">
-                    <!-- Repeat card: sample items -->
                     <?php if (!empty($productList)) {
-                        foreach ($productList as $product) { ?>
+                        foreach ($productList as $product) { 
+                             // Xử lý ID (đôi khi DB trả về p_id hoặc id)
+                             $p_id = $product->id ?? $product->p_id ?? 0;
+                        ?>
                             <article class="product-card">
-                                <a
-                                    href="index.php?controller=product&action=detail&id=<?= intval($product->id ?? $product->p_id ?? 0) ?>">
+                                <a href="index.php?controller=product&action=detail&id=<?= $p_id ?>">
                                     <div class="product-media">
                                         <?php if (!empty($product->image)) { ?>
-                                            <img src="data:image/jpeg;base64,<?= base64_encode($product->image) ?>"
-                                                alt="<?= htmlspecialchars($product->name) ?>">
-
+                                            <img src="data:image/jpeg;base64,<?= base64_encode($product->image) ?>" alt="<?= htmlspecialchars($product->name) ?>">
                                         <?php } else { ?>
-                                            <div class="no-image">Không hiển thị ảnh</div>
+                                            <div class="no-image">No Image</div>
                                         <?php } ?>
                                     </div>
                                     <div class="product-body">
                                         <h4 class="product-title"><?= htmlspecialchars($product->name) ?></h4>
-                                        <div class="product-price"><?= number_format((float) $product->price, 0, ',', '.') ?>
-                                            VNĐ
-                                        </div>
-                                        <div class="product-meta">
-                                            <span class="rating"><i class="fas fa-star"></i></span>
-                                            <span class="sold">• Đã bán <?= number_format($product->sold, 0, ',', '.') ?></span>
-                                        </div>
+                                        <div class="product-price"><?= number_format((float)$product->price, 0, ',', '.') ?> VNĐ</div>
                                     </div>
                                 </a>
                             </article>
                         <?php }
-                    } ?>
+                    } else { ?>
+                        <p style="text-align:center; width:100%">Không tìm thấy sản phẩm nào.</p>
+                    <?php } ?>
                 </div>
+            <?php if ($total_page > 1): ?>
+                <div class="pagination">
+                    
+                    <?php if ($page > 1): ?>
+                        <a href="index.php?controller=product&action=list&page=<?= $page - 1 ?><?= $param ?>" class="arrow">&lt;</a>
+                    <?php else: ?>
+                        <span class="disabled">&lt;</span>
+                    <?php endif; ?>
 
+                    <?php for ($i = 1; $i <= $total_page; $i++): ?>
+                        <?php if ($i == $page): ?>
+                            <span class="active"><?= $i ?></span>
+                        <?php else: ?>
+                            <a href="index.php?controller=product&action=list&page=<?= $i ?><?= $param ?>"><?= $i ?></a>
+                        <?php endif; ?>
+                    <?php endfor; ?>
+
+                    <?php if ($page < $total_page): ?>
+                        <a href="index.php?controller=product&action=list&page=<?= $page + 1 ?><?= $param ?>" class="arrow">&gt;</a>
+                    <?php else: ?>
+                        <span class="disabled">&gt;</span>
+                    <?php endif; ?>
+
+                </div>
+                <?php endif; ?>
             </section>
         </div>
     </main>
@@ -145,7 +200,7 @@ $headerTitle = "Kết quả tìm kiếm";
         });
 
         // clear filters button
-        document.querySelector('.clear-filters')?.addEventListener('click', function () {
+        document.querySelector('.clear-filters')?.addEventListener('click', function() {
             document.querySelectorAll('.sidebar input[type="checkbox"]').forEach(cb => cb.checked = false);
         });
     </script>
