@@ -128,7 +128,7 @@ if ($result) {
 
                 <!-- Info line -->
                 <div class="results-info">
-                    Kết quả tìm kiếm cho từ khoá <strong>'sản phẩm'</strong>
+                    Kết quả tìm kiếm cho từ khoá <strong><?php echo $keyword ?></strong>
                 </div>
 
                 <!-- Sort bar -->
