@@ -18,4 +18,5 @@ class User
         $this->balance = $balance;
         $this->created_at = $created_at;
     }
+    // 
 }
