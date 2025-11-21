@@ -91,7 +91,10 @@ class ProductController
         $related = $this->productModel->getProductsBySeller($product->seller_id);
 
         // truyền $product, $related, $comments, $seller vào view
+        include("View/Layout/Header.php");
         include("View/Product/ProductDetail.php");
+        include("View/Layout/Footer.php");
+
     }
 }
 ?>

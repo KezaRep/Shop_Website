@@ -227,7 +227,6 @@ function productImageSrc($img) {
         </div>
     </main>
 
-    <?php include_once __DIR__ . '/../Layout/Footer.php'; ?>
 
     <script>
         // quantity control
