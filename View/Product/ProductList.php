@@ -8,7 +8,7 @@ if (!$conn) {
 }
 mysqli_set_charset($conn, "utf8");
 
-$limit = 8; 
+$limit = 40; 
 $page = isset($_GET['page']) ? (int)$_GET["page"] : 1;
 if ($page < 1) $page = 1; 
 $offset = ($page - 1) * $limit;
@@ -19,7 +19,7 @@ $param = '';
 
 if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
     $keyword = $_GET['keyword'];
-    $safe_keyword = mysqli_real_escape_string($conn, $keyword);
+    $safe_keyword = mysqli_real_escape_string($conn,     $keyword);
 
     $sql_count = "SELECT COUNT(*) as total FROM products WHERE name LIKE '%$safe_keyword%'";
     $sql = "SELECT * FROM products WHERE name LIKE '%$safe_keyword%' LIMIT $limit OFFSET $offset";
@@ -129,8 +129,6 @@ if ($result) {
                         <select>
                             <option>Giá</option>
                         </select>
-                        <div class="pagination">1 / 17 <button class="arrow">&lt;</button><button
-                                class="arrow">&gt;</button></div>
                     </div>
                 </div>
 

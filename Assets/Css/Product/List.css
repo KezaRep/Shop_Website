@@ -296,8 +296,36 @@ body {
 a {
     text-decoration: none;
 }
-.pagination { display: flex; justify-content: center; gap: 5px; margin-top: 20px; align-items: center; }
-        .pagination a, .pagination span { padding: 8px 12px; border: 1px solid #ddd; text-decoration: none; color: #333; border-radius: 4px; }
-        .pagination a:hover { background-color: #f0f0f0; }
-        .pagination .active { background-color: #007bff; color: white; border-color: #007bff; }
-        .pagination .disabled { color: #ccc; pointer-events: none; border-color: #eee; }
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 20px;
+    align-items: center;
+}
+
+.pagination a,
+.pagination span {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    text-decoration: none;
+    color: #333;
+    border-radius: 4px;
+}
+
+.pagination a:hover {
+    background-color: #f0f0f0;
+}
+
+.pagination .active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.pagination .disabled {
+    color: #ccc;
+    pointer-events: none;
+    border-color: #eee;
+}
