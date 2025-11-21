@@ -100,31 +100,55 @@ class ProductController
     {
         $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
         $product = $this->productModel->getProductById($id);
+        if (!$product) {
+            header("HTTP/1.0 404 Not Found");
+            echo "Sản phẩm không tồn tại.";
+            exit;
+        }
+
+        // quyền: chỉ owner hoặc admin
+        $currentUserId = $_SESSION['user']['id'] ?? 0;
+        $isAdmin = ($_SESSION['user']['role'] ?? '') === 'admin';
+        if ($currentUserId !== intval($product->seller_id) && !$isAdmin) {
+            header('HTTP/1.0 403 Forbidden');
+            echo "Bạn không có quyền chỉnh sửa sản phẩm này.";
+            exit;
+        }
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!$product) {
-                header("HTTP/1.0 404 Not Found");
-                echo "Sản phẩm không tồn tại.";
-                exit;
-            }
+
             $name = isset($_POST['name']) ? trim($_POST['name']) : '';
             $price = isset($_POST['price']) ? (float) $_POST['price'] : 0;
             $description = isset($_POST['description']) ? trim($_POST['description']) : '';
             $quantity = isset($_POST['quantity']) ? (int) $_POST['quantity'] : 0;
             $category_id = isset($_POST['category_id']) ? (int) $_POST['category_id'] : 0;
 
-            $imageData = '';
+            // Nếu có file mới thì đọc, ngược lại để null (model sẽ bỏ qua update ảnh)
+            $imageData = null;
             if (!empty($_FILES['image']['tmp_name']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
+                // kiểm tra type/size nếu cần
+                $maxBytes = 2 * 1024 * 1024; // 2MB
+                if ($_FILES['image']['size'] > $maxBytes) {
+                    $error = "Ảnh quá lớn (tối đa 2MB).";
+                    // reload product để view có dữ liệu
+                    include("View/Layout/Header.php");
+                    include("View/Product/ProductEdit.php");
+                    include("View/Layout/Footer.php");
+                    return;
+                }
                 $imageData = file_get_contents($_FILES['image']['tmp_name']);
             }
 
-            // Thêm product
+            // Gọi model: nếu imageData === null thì model KHÔNG cập nhật cột ảnh
             $ok = $this->productModel->updateProductDetails($id, $name, $price, $imageData, $description, $quantity, $category_id);
-            // Redirect về danh sách hoặc hiển thị thông báo
+
             if ($ok) {
                 header("Location: index.php?controller=product&action=list");
                 exit;
             } else {
                 $error = "Không thể lưu thông tin sản phẩm. Vui lòng thử lại.";
+                // reload product (lấy lại dữ liệu mới nhất)
+                $product = $this->productModel->getProductById($id);
                 include("View/Layout/Header.php");
                 include("View/Product/ProductEdit.php");
                 include("View/Layout/Footer.php");

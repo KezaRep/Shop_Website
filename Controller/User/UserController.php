@@ -60,6 +60,10 @@ class UserController
                 $error = "Vui lòng điền đầy đủ thông tin!";
             } elseif ($password !== $confirmPassword) {
                 $error = "Mật khẩu không khớp!";
+            } elseif ($this->userModel->isUsernameExists($username)) {
+                $error = "Tên người dùng đã tồn tại!";
+            } elseif ($this->userModel->isEmailExists($email)) {
+                $error = "Email đã tồn tại!";
             } else {
                 $result = $this->userModel->createUser($username, $password, $email, 0, 0);
 
@@ -67,7 +71,7 @@ class UserController
                     header("Location: index.php?controller=user&action=login");
                     exit;
                 } else {
-                    $error = "Email đã tồn tại hoặc lỗi hệ thống!";
+                    $error = "Lỗi hệ thống!";
                 }
             }
         }
@@ -96,6 +100,6 @@ class UserController
         header('Location: index.php');
         exit;
     }
-    
+
 }
 ?>

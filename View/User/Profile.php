@@ -95,4 +95,3 @@ function productImageSrc($img)
   </section>
 </main>
 
-<?php include_once __DIR__ . '/../Layout/Footer.php'; ?>

@@ -235,4 +235,27 @@ class UserModel
         return $stmt->execute();
 
     }
+    public function isUsernameExists($username)
+    {
+        $sql = "SELECT COUNT(*) FROM users WHERE username = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $stmt->bind_result($count);
+        $stmt->fetch();
+        $stmt->close();
+        return $count > 0;
+    }
+
+    public function isEmailExists($email)
+    {
+        $sql = "SELECT COUNT(*) FROM users WHERE email = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt->bind_result($count);
+        $stmt->fetch();
+        $stmt->close();
+        return $count > 0;
+    }
 }
