@@ -2,32 +2,49 @@
 $headerTitle = "Kết quả tìm kiếm";
 ?>
 <?php
-$conn = mysqli_connect('localhost', 'root', '', 'shop_website');
+include_once("Core/Database.php"); 
+
+$db = new Database();           
+$conn = $db->getConnection();
+
 if (!$conn) {
     die("Kết nối thất bại: " . mysqli_connect_error());
 }
 mysqli_set_charset($conn, "utf8");
 
-$limit = 40; 
+$limit = 40;
 $page = isset($_GET['page']) ? (int)$_GET["page"] : 1;
-if ($page < 1) $page = 1; 
+if ($page < 1) $page = 1;
 $offset = ($page - 1) * $limit;
 
 $productList = [];
 $keyword = '';
-$param = ''; 
+$param = '';
+
+$sort = isset($_GET['sort']) ? $_GET['sort'] : '';
+$order_sql = "";
+
+if ($sort == 'new') {
+    $order_sql = " ORDER BY id DESC";
+} else {
+    $order_sql = " ORDER BY id ASC";
+}
 
 if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
     $keyword = $_GET['keyword'];
     $safe_keyword = mysqli_real_escape_string($conn,     $keyword);
 
     $sql_count = "SELECT COUNT(*) as total FROM products WHERE name LIKE '%$safe_keyword%'";
-    $sql = "SELECT * FROM products WHERE name LIKE '%$safe_keyword%' LIMIT $limit OFFSET $offset";
+    $sql = "SELECT * FROM products WHERE name LIKE '%$safe_keyword%' $order_sql LIMIT $limit OFFSET $offset";
 
     $param = "&keyword=" . urlencode($keyword);
 } else {
     $sql_count = "SELECT COUNT(*) as total FROM products";
-    $sql = "SELECT * FROM products LIMIT $limit OFFSET $offset";
+    $sql = "SELECT * FROM products $order_sql LIMIT $limit OFFSET $offset";
+}
+
+if ($sort) {
+    $param .= "&sort=$sort";
 }
 
 $result_count = mysqli_query($conn, $sql_count);
@@ -115,15 +132,21 @@ if ($result) {
 
                 <!-- Info line -->
                 <div class="results-info">
-                    Kết quả tìm kiếm cho từ khoá <strong>'sản phẩm'</strong>
+                    Kết quả tìm kiếm cho từ khoá <strong><?php echo $keyword ?></strong>
                 </div>
 
                 <!-- Sort bar -->
                 <div class="sort-bar">
                     <div class="sort-left">
-                        <button class="btn active">Liên Quan</button>
-                        <button class="btn">Mới Nhất</button>
-                        <button class="btn">Bán Chạy</button>
+                        <a href="index.php?controller=product&action=list<?= isset($_GET['keyword']) ? '&keyword=' . $_GET['keyword'] : '' ?>"
+                            class="btn <?= ($sort == '') ? 'active' : '' ?>">
+                            Liên Quan
+                        </a>
+
+                        <a href="index.php?controller=product&action=list&sort=new<?= isset($_GET['keyword']) ? '&keyword=' . $_GET['keyword'] : '' ?>"
+                            class="btn <?= ($sort == 'new') ? 'active' : '' ?>">
+                            Mới Nhất
+                        </a>
                     </div>
                     <div class="sort-right">
                         <select>
@@ -135,10 +158,10 @@ if ($result) {
                 <!-- Product grid -->
                 <div class="products-grid">
                     <?php if (!empty($productList)) {
-                        foreach ($productList as $product) { 
-                             // Xử lý ID (đôi khi DB trả về p_id hoặc id)
-                             $p_id = $product->id ?? $product->p_id ?? 0;
-                        ?>
+                        foreach ($productList as $product) {
+                            // Xử lý ID (đôi khi DB trả về p_id hoặc id)
+                            $p_id = $product->id ?? $product->p_id ?? 0;
+                    ?>
                             <article class="product-card">
                                 <a href="index.php?controller=product&action=detail&id=<?= $p_id ?>">
                                     <div class="product-media">
@@ -159,30 +182,30 @@ if ($result) {
                         <p style="text-align:center; width:100%">Không tìm thấy sản phẩm nào.</p>
                     <?php } ?>
                 </div>
-            <?php if ($total_page > 1): ?>
-                <div class="pagination">
-                    
-                    <?php if ($page > 1): ?>
-                        <a href="index.php?controller=product&action=list&page=<?= $page - 1 ?><?= $param ?>" class="arrow">&lt;</a>
-                    <?php else: ?>
-                        <span class="disabled">&lt;</span>
-                    <?php endif; ?>
+                <?php if ($total_page > 1): ?>
+                    <div class="pagination">
 
-                    <?php for ($i = 1; $i <= $total_page; $i++): ?>
-                        <?php if ($i == $page): ?>
-                            <span class="active"><?= $i ?></span>
+                        <?php if ($page > 1): ?>
+                            <a href="index.php?controller=product&action=list&page=<?= $page - 1 ?><?= $param ?>" class="arrow">&lt;</a>
                         <?php else: ?>
-                            <a href="index.php?controller=product&action=list&page=<?= $i ?><?= $param ?>"><?= $i ?></a>
+                            <span class="disabled">&lt;</span>
                         <?php endif; ?>
-                    <?php endfor; ?>
 
-                    <?php if ($page < $total_page): ?>
-                        <a href="index.php?controller=product&action=list&page=<?= $page + 1 ?><?= $param ?>" class="arrow">&gt;</a>
-                    <?php else: ?>
-                        <span class="disabled">&gt;</span>
-                    <?php endif; ?>
+                        <?php for ($i = 1; $i <= $total_page; $i++): ?>
+                            <?php if ($i == $page): ?>
+                                <span class="active"><?= $i ?></span>
+                            <?php else: ?>
+                                <a href="index.php?controller=product&action=list&page=<?= $i ?><?= $param ?>"><?= $i ?></a>
+                            <?php endif; ?>
+                        <?php endfor; ?>
 
-                </div>
+                        <?php if ($page < $total_page): ?>
+                            <a href="index.php?controller=product&action=list&page=<?= $page + 1 ?><?= $param ?>" class="arrow">&gt;</a>
+                        <?php else: ?>
+                            <span class="disabled">&gt;</span>
+                        <?php endif; ?>
+
+                    </div>
                 <?php endif; ?>
             </section>
         </div>
@@ -197,10 +220,6 @@ if ($result) {
             });
         });
 
-        // clear filters button
-        document.querySelector('.clear-filters')?.addEventListener('click', function() {
-            document.querySelectorAll('.sidebar input[type="checkbox"]').forEach(cb => cb.checked = false);
-        });
     </script>
 </body>
 

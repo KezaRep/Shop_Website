@@ -14,7 +14,6 @@ class CommentModel
         $this->conn = $Database->getConnection();
     }
 
-    // Lấy tất cả comment của sản phẩm (kèm images)
     public function getCommentsByProductId($productId)
     {
         $sql = "SELECT * FROM comments WHERE product_id = ? ORDER BY created_at DESC";
