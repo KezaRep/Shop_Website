@@ -31,11 +31,9 @@
                     <input type="hidden" name="controller" value="product">
                     <input type="hidden" name="action" value="list">
 
-                    <input type="text"
-                        name="keyword"
+                    <input type="text" name="keyword"
                         value="<?= isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword']) : '' ?>"
-                        placeholder="Tìm kiếm sản phẩm..."
-                        class="search-input">
+                        placeholder="Tìm kiếm sản phẩm..." class="search-input">
 
                     <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
                 </form>
@@ -53,13 +51,39 @@
                 </a>
             <?php endif; ?>
 
-            <a href="#" class="header-icon cart-icon" title="Giỏ hàng">
+            <a href="#" class="header-icon cart-icon" title="Giỏ hàng" id="cartBtn">
                 <i class="fas fa-shopping-cart"></i>
-                <span class="cart-badge">0</span>
+                <span class="cart-badge" id="cartCount">0</span>
             </a>
+            <!-- Mini Cart Label -->
+            <div class="mini-cart" id="miniCart">
+                <div id="miniCartContent">
+                    <em>Chưa có sản phẩm nào trong giỏ!</em>
+                </div>
+            </div>
         </div>
         </div>
     </header>
 </body>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const cartBtn = document.getElementById('cartBtn');
+        const miniCart = document.getElementById('miniCart');
+
+        cartBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            miniCart.classList.toggle('active');
+        });
+
+        // Click ra ngoài thì ẩn label
+        document.addEventListener('mousedown', function (event) {
+            if (!miniCart.contains(event.target) && !cartBtn.contains(event.target)) {
+                miniCart.classList.remove('active');
+            }
+        });
+    });
+</script>
 
 </html>

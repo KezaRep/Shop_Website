@@ -1,0 +1,144 @@
+:root {
+    --max-width: 1200px;
+    --primary: #10b981;
+    --muted: #fafafa;
+    --text: #222;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--muted);
+    color: var(--text)
+}
+
+.container {
+    max-width: var(--max-width);
+    margin: 26px auto;
+    padding: 0 20px
+}
+
+.edit-product-page h2 {
+    margin-bottom: 16px;
+    font-size: 20px
+}
+
+.error {
+    background: #ffe6e6;
+    color: #b00020;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 12px
+}
+
+.edit-product-form {
+    background: #fff;
+    padding: 18px;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04)
+}
+
+.row {
+    margin-bottom: 12px
+}
+
+.row.inline {
+    display: flex;
+    gap: 12px
+}
+
+.col {
+    flex: 1
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    font-size: 14px
+}
+
+input[type="text"],
+input[type="number"],
+textarea,
+select,
+input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #e6e6e6;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical
+}
+
+.hint {
+    display: block;
+    margin-top: 6px;
+    color: #666;
+    font-size: 12px
+}
+
+.current-image {
+    margin-bottom: 8px
+}
+
+.current-image img {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #f0f0f0
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 8px
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #333;
+    background: #fff;
+    border: 1px solid #eee
+}
+
+.btn.btn-primary {
+    background: var(--primary);
+    color: #fff;
+    border-color: transparent;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn.btn-cancel {
+    background: #fff;
+    color: #666
+}
+
+@media(max-width:700px) {
+    .row.inline {
+        flex-direction: column
+    }
+
+    .current-image img {
+        width: 120px;
+        height: 120px
+    }
+}
+
+
+

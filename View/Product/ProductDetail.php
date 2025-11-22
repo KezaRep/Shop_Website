@@ -5,8 +5,10 @@ if (session_status() === PHP_SESSION_NONE) {
 include_once("Model/User/UserModel.php");
 
 // $product, $related, $comments, $seller expected from controller
-function productImageSrc($img) {
-    if (empty($img)) return '/Shop_Website/Assets/Images/placeholder-product-1.jpg';
+function productImageSrc($img)
+{
+    if (empty($img))
+        return '/Shop_Website/Assets/Images/placeholder-product-1.jpg';
     if (@getimagesizefromstring($img)) {
         return 'data:image/jpeg;base64,' . base64_encode($img);
     }
@@ -15,6 +17,7 @@ function productImageSrc($img) {
 ?>
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -23,6 +26,7 @@ function productImageSrc($img) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="Assets/Css/Product/Detail.css">
 </head>
+
 <body>
     <main class="product-detail-page">
         <div class="container">
@@ -32,13 +36,15 @@ function productImageSrc($img) {
                 <div class="product-gallery">
                     <div class="main-img">
                         <img id="mainImage" src="<?= productImageSrc($product->image ?? '') ?>"
-                             alt="<?= htmlspecialchars($product->name ?? '') ?>">
+                            alt="<?= htmlspecialchars($product->name ?? '') ?>">
                     </div>
                     <div class="thumbnails">
-                        <img src="<?= productImageSrc($product->image ?? '') ?>" alt="thumb" class="thumb active" onclick="changeImage(this.src)">
+                        <img src="<?= productImageSrc($product->image ?? '') ?>" alt="thumb" class="thumb active"
+                            onclick="changeImage(this.src)">
                         <?php if (!empty($product->extra_images) && is_array($product->extra_images)): ?>
                             <?php foreach ($product->extra_images as $ei): ?>
-                                <img src="<?= productImageSrc($ei) ?>" alt="thumb" class="thumb" onclick="changeImage(this.src)">
+                                <img src="<?= productImageSrc($ei) ?>" alt="thumb" class="thumb"
+                                    onclick="changeImage(this.src)">
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
@@ -52,9 +58,11 @@ function productImageSrc($img) {
 
                     <div class="rating-section">
                         <div class="rating-stars">
-                            <span class="stars"><?= htmlspecialchars(number_format($product->rating ?? 4.8, 1)) ?></span>
+                            <span
+                                class="stars"><?= htmlspecialchars(number_format($product->rating ?? 4.8, 1)) ?></span>
                             <i class="fas fa-star"></i>
-                            <span class="rating-count"><?= htmlspecialchars($product->rating_count ?? '0') ?> Đánh Giá</span>
+                            <span class="rating-count"><?= htmlspecialchars($product->rating_count ?? '0') ?> Đánh
+                                Giá</span>
                         </div>
                         <span class="divider">|</span>
                         <span class="sold">Đã bán <?= intval($product->sold ?? 0) ?></span>
@@ -63,7 +71,8 @@ function productImageSrc($img) {
                     <div class="price-section">
                         <div class="price-group">
                             <span class="price-current">₫<?= number_format($product->price ?? 0, 0, ',', '.') ?></span>
-                            <span class="price-old">₫<?= number_format(($product->price ?? 0) * 1.2, 0, ',', '.') ?></span>
+                            <span
+                                class="price-old">₫<?= number_format(($product->price ?? 0) * 1.2, 0, ',', '.') ?></span>
                             <span class="discount">-12%</span>
                         </div>
                     </div>
@@ -81,18 +90,18 @@ function productImageSrc($img) {
                             <label>Số Lượng</label>
                             <div class="qty-control">
                                 <button class="qty-btn" type="button">−</button>
-                                <input type="number" id="qty" name="quantity" value="1" min="1" max="<?= intval($product->quantity ?? 100) ?>">
+                                <input type="number" id="qty" name="quantity" value="1" min="1"
+                                    max="<?= intval($product->quantity ?? 100) ?>">
                                 <button class="qty-btn" type="button">+</button>
                             </div>
                         </div>
 
-                        <form action="index.php?controller=product&action=checkout&product_id=<?= $product->id ?>" method="post" style="display:flex;gap:10px;flex:1">
-                            <input type="hidden" name="product_id" value="<?= intval($product->id ?? 0) ?>">
-                            <input type="hidden" name="quantity" id="qtyInput" value="1">
-                            <button type="button" class="btn-cart" onclick="addQtyToForm();"><i class="fas fa-shopping-cart"></i> Thêm Vào Giỏ Hàng</button>
-                            <button type="submit" class="btn-buy"onclick="document.getElementById('qtyInput').value = document.getElementById('qty').value">
-                                Mua Ngay
-                            </button>
+                        <form action="index.php?controller=cart&action=add" method="post" id="addCartForm">
+                            <input type="hidden" name="product_id" value="<?= $product->id ?>">
+                            <input type="hidden" name="quantity" id="qtyField" value="1" min="1"
+                                max="<?= intval($product->quantity ?? 100) ?>">
+                            <button type="submit" class="btn-cart"><i class="fas fa-shopping-cart"></i> Thêm Vào Giỏ
+                                Hàng</button>
                         </form>
                     </div>
 
@@ -101,7 +110,8 @@ function productImageSrc($img) {
                         <a href="#" class="social-btn"><i class="fab fa-facebook"></i></a>
                         <a href="#" class="social-btn"><i class="fab fa-twitter"></i></a>
                         <a href="#" class="social-btn"><i class="fab fa-pinterest"></i></a>
-                        <a href="#" class="wishlist"><i class="far fa-heart"></i> Đã thích (<?= intval($product->likes ?? 0) ?>)</a>
+                        <a href="#" class="wishlist"><i class="far fa-heart"></i> Đã thích
+                            (<?= intval($product->likes ?? 0) ?>)</a>
                     </div>
                 </div>
             </div>
@@ -145,7 +155,8 @@ function productImageSrc($img) {
                         <h3>Bình luận sản phẩm</h3>
 
                         <?php if (!empty($_SESSION['user'])): ?>
-                            <form action="index.php?controller=comment&action=add" method="post" enctype="multipart/form-data" class="comment-form">
+                            <form action="index.php?controller=comment&action=add" method="post"
+                                enctype="multipart/form-data" class="comment-form">
                                 <input type="hidden" name="product_id" value="<?= intval($product->id ?? 0) ?>">
 
                                 <div class="form-group rating-input">
@@ -162,7 +173,8 @@ function productImageSrc($img) {
 
                                 <div class="form-group">
                                     <label>Nội dung</label>
-                                    <textarea name="content" rows="4" placeholder="Chia sẻ cảm nhận của bạn..." required></textarea>
+                                    <textarea name="content" rows="4" placeholder="Chia sẻ cảm nhận của bạn..."
+                                        required></textarea>
                                 </div>
 
                                 <div class="form-group">
@@ -173,7 +185,8 @@ function productImageSrc($img) {
                                 <button type="submit" class="btn-submit">Gửi bình luận</button>
                             </form>
                         <?php else: ?>
-                            <p class="login-prompt"><a href="index.php?controller=user&action=login">Đăng nhập</a> để bình luận</p>
+                            <p class="login-prompt"><a href="index.php?controller=user&action=login">Đăng nhập</a> để bình
+                                luận</p>
                         <?php endif; ?>
 
                         <div class="comments-list">
@@ -182,23 +195,27 @@ function productImageSrc($img) {
                                     <article class="comment-item">
                                         <div class="comment-header">
                                             <?php $userModel = new UserModel();
-                                                  $user = $userModel->getUserById(intval($comment->user_id ?? 0)); ?> 
-                                            <strong><?= htmlspecialchars($user->username)  ?></strong>
+                                            $user = $userModel->getUserById(intval($comment->user_id ?? 0)); ?>
+                                            <strong><?= htmlspecialchars($user->username) ?></strong>
                                             <span class="comment-rating">
                                                 <?php for ($i = 1; $i <= 5; $i++): ?>
-                                                    <i class="fas fa-star <?= $i <= intval($comment->rating ?? 5) ? 'filled' : '' ?>"></i>
+                                                    <i
+                                                        class="fas fa-star <?= $i <= intval($comment->rating ?? 5) ? 'filled' : '' ?>"></i>
                                                 <?php endfor; ?>
                                             </span>
                                         </div>
-                                        <div class="comment-content"><?= nl2br(htmlspecialchars($comment->content ?? '')) ?></div>
+                                        <div class="comment-content"><?= nl2br(htmlspecialchars($comment->content ?? '')) ?>
+                                        </div>
                                         <?php if (!empty($comment->images)): ?>
                                             <div class="comment-images">
                                                 <?php foreach ($comment->images as $img): ?>
-                                                    <img src="data:image/jpeg;base64,<?= base64_encode($img->image_data ?? '') ?>" alt="comment-img" class="comment-img">
+                                                    <img src="data:image/jpeg;base64,<?= base64_encode($img->image_data ?? '') ?>"
+                                                        alt="comment-img" class="comment-img">
                                                 <?php endforeach; ?>
                                             </div>
                                         <?php endif; ?>
-                                        <small class="comment-date"><?= date('d/m/Y H:i', strtotime($comment->created_at ?? date('Y-m-d H:i'))) ?></small>
+                                        <small
+                                            class="comment-date"><?= date('d/m/Y H:i', strtotime($comment->created_at ?? date('Y-m-d H:i'))) ?></small>
                                     </article>
                                 <?php endforeach; ?>
                             <?php else: ?>
@@ -215,10 +232,12 @@ function productImageSrc($img) {
                 <div class="related-grid">
                     <?php if (!empty($related)): ?>
                         <?php foreach (array_slice($related, 0, 4) as $rp): ?>
-                            <?php if (intval($rp->id ?? 0) == intval($product->id ?? 0)) continue; ?>
+                            <?php if (intval($rp->id ?? 0) == intval($product->id ?? 0))
+                                continue; ?>
                             <article class="related-card">
                                 <a href="index.php?controller=product&action=detail&id=<?= intval($rp->id ?? 0) ?>">
-                                    <img src="<?= productImageSrc($rp->image ?? '') ?>" alt="<?= htmlspecialchars($rp->name ?? '') ?>">
+                                    <img src="<?= productImageSrc($rp->image ?? '') ?>"
+                                        alt="<?= htmlspecialchars($rp->name ?? '') ?>">
                                     <div class="r-title"><?= htmlspecialchars($rp->name ?? '') ?></div>
                                     <div class="r-price">₫<?= number_format($rp->price ?? 0, 0, ',', '.') ?></div>
                                 </a>
@@ -268,7 +287,7 @@ function productImageSrc($img) {
         });
 
         // star input: hover & click
-        (function(){
+        (function () {
             const starsContainer = document.getElementById('starsInput');
             const ratingInput = document.getElementById('ratingValue');
             if (starsContainer && ratingInput) {
@@ -276,23 +295,23 @@ function productImageSrc($img) {
 
                 function setVisual(r) {
                     stars.forEach(s => {
-                        const v = parseInt(s.dataset.value,10);
+                        const v = parseInt(s.dataset.value, 10);
                         s.classList.toggle('filled', v <= r);
                     });
                 }
 
-                setVisual(parseInt(ratingInput.value,10) || 5);
+                setVisual(parseInt(ratingInput.value, 10) || 5);
 
                 stars.forEach(s => {
                     s.addEventListener('mouseenter', () => {
-                        const v = parseInt(s.dataset.value,10);
+                        const v = parseInt(s.dataset.value, 10);
                         setVisual(v);
                     });
                     s.addEventListener('mouseleave', () => {
-                        setVisual(parseInt(ratingInput.value,10) || 5);
+                        setVisual(parseInt(ratingInput.value, 10) || 5);
                     });
                     s.addEventListener('click', () => {
-                        const v = parseInt(s.dataset.value,10);
+                        const v = parseInt(s.dataset.value, 10);
                         ratingInput.value = v;
                         setVisual(v);
                     });
@@ -301,4 +320,5 @@ function productImageSrc($img) {
         })();
     </script>
 </body>
+
 </html>

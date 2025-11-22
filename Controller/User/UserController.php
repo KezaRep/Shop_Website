@@ -80,7 +80,18 @@ class UserController
         include("View/User/Register.php");
         include("View/Layout/Footer.php");
     }
+    public function editAction()
+    {
+        // Redirect nếu chưa đăng nhập
+        if (empty($_SESSION['user'])) {
+            header('Location: index.php?controller=user&action=login');
+            exit;
+        }
 
+        include("View/Layout/Header.php");
+        include("View/User/Edit.php");
+        include("View/Layout/Footer.php");
+    }
     public function profileAction()
     {
         // Redirect nếu chưa đăng nhập

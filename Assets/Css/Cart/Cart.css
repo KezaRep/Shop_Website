@@ -1,0 +1,141 @@
+/* Container */
+.cart-page .container {
+    width: 90%;
+    max-width: 1000px;
+    margin: auto;
+    padding-bottom: 50px;
+}
+
+.cart-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 25px 0;
+}
+
+/* Empty cart */
+.empty-cart {
+    text-align: center;
+    padding: 40px 0;
+    font-size: 18px;
+    color: #666;
+}
+
+/* Table */
+.cart-table {
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.cart-header {
+    background: #eee;
+    font-weight: bold;
+    padding: 12px 0;
+}
+
+.cart-row {
+    display: grid;
+    grid-template-columns: 4fr 1fr 1.5fr 1.5fr 0.5fr;
+    padding: 15px 0;
+    border-bottom: 1px solid #ddd;
+    align-items: center;
+}
+
+.c-product {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cart-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.c-price,
+.c-total {
+    font-size: 16px;
+    color: #d0011b;
+    font-weight: bold;
+}
+
+/* Qty control */
+.c-qty form {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.qty-btn {
+    width: 28px;
+    height: 28px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.qty-btn:hover {
+    background: #f0f0f0;
+}
+
+.qty-input {
+    width: 40px;
+    text-align: center;
+    border: 1px solid #ccc;
+    height: 28px;
+    border-radius: 4px;
+}
+
+/* Delete */
+.delete-btn {
+    font-size: 18px;
+    color: #d0011b;
+}
+
+.delete-btn:hover {
+    color: #a30014;
+}
+
+/* Summary */
+.cart-summary {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 25px;
+    gap: 15px;
+    font-size: 18px;
+}
+
+.grand-total {
+    font-size: 22px;
+    color: #d0011b;
+}
+
+.checkout-btn {
+    background: #ee4d2d;
+    padding: 10px 20px;
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.checkout-btn:hover {
+    background: #d7381d;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .cart-row {
+        grid-template-columns: 3fr 1fr 1fr 1fr 0.5fr;
+    }
+
+    .cart-img {
+        width: 50px;
+        height: 50px;
+    }
+}
