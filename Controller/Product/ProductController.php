@@ -159,36 +159,50 @@ class ProductController
     }
     public function checkoutAction()
     {
+        // Khởi động session nếu chưa có
+        if (session_status() === PHP_SESSION_NONE) session_start();
+
         $cart = [];
+
+        // TRƯỜNG HỢP 1: Bấm nút "MUA NGAY" (POST từ trang chi tiết)
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id'])) {
             $productId = (int)$_POST['product_id'];
-            $qty = (int)$_POST['quantity'];
+            $qty = (int)($_POST['quantity'] ?? 1);
             
-            // Lấy thông tin sản phẩm từ DB
+            // Gọi Model lấy thông tin sản phẩm
             $product = $this->productModel->getProductById($productId);
             
             if ($product) {
-                // Tạo một giỏ hàng "ảo" chỉ chứa 1 món này
-                $cart[] = [
+                // Tạo mảng sản phẩm
+                $item = [
                     'product_id' => $product->id,
                     'name' => $product->name,
                     'price' => $product->price,
                     'quantity' => $qty,
                     'image' => $product->image
                 ];
+
+                // --- FIX QUAN TRỌNG ---
+                // Lưu ngay sản phẩm này vào Session Cart
+                // Để tí nữa bấm "Đặt hàng" thì hàm submitOrderAction nó mới thấy dữ liệu
+                $_SESSION['cart'] = [$item];
+                
+                $cart = $_SESSION['cart'];
             }
         } 
-        // TRƯỜNG HỢP 2: Vào Checkout từ Giỏ hàng (lấy từ Session)
+        // TRƯỜNG HỢP 2: Vào Checkout từ Giỏ hàng (nếu sau này bạn làm)
         else {
             $cart = $_SESSION['cart'] ?? [];
         }
 
+        // Kiểm tra nếu giỏ hàng vẫn trống
         if (empty($cart)) {
             echo "<script>alert('Chưa có sản phẩm nào để thanh toán!'); window.location.href='index.php';</script>";
             return;
         }
         
-
+        // --- ĐOẠN DƯỚI GIỮ NGUYÊN ---
+        // Lấy thông tin người dùng để điền sẵn vào form
         $profileName = "";
         $profilePhone = "";
         $profileAddress = "";
@@ -203,74 +217,106 @@ class ProductController
                 $profilePhone = $currentUser->phone ?? "";
                 $profileAddress = $currentUser->address ?? "";
             }
-            $savedAddresses = $this->userModel->getUserAddresses($userId);
+            // Lấy danh sách địa chỉ đã lưu (nếu có)
+            if (method_exists($this->userModel, 'getUserAddresses')) {
+                $savedAddresses = $this->userModel->getUserAddresses($userId);
+            }
 
             $profileAsAddress = [
                 'id' => 'profile', 
                 'name' => $profileName,
                 'phone' => $profilePhone,
                 'address' => $profileAddress,
-                'label' => 'Mặc định (Thông tin tài khoản)'
+                'label' => 'Mặc định'
             ];
             array_unshift($savedAddresses, $profileAsAddress);
         }
-        $total = 0;
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
-        }
 
-        // 5. Gọi View hiển thị
+        // Gọi View hiển thị
         include("View/Layout/Header.php");
-        include("View/Checkout/Checkout.php");
+        include("View/Checkout/Checkout.php"); // File HTML form thanh toán
         include("View/Layout/Footer.php");
     }
     public function submitOrderAction()
     {
+        
+        if (!isset($_SESSION['user'])) {
+             echo "<script>alert('Vui lòng đăng nhập để thanh toán!'); window.location.href='index.php?controller=user&action=login';</script>";
+             return;
+        }
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $recName = $_POST['recName'] ?? '';
-            $recPhone = $_POST['recPhone'] ?? '';
-            $recAddress = $_POST['recAddress'] ?? '';
+            require_once __DIR__ . '/../../Core/Database.php';
+            $db = new Database();
+            $conn = $db->getConnection();
+
+            $userId = $_SESSION['user']['id'];
+            $recName = $_POST['name'] ?? '';      
+            $recPhone = $_POST['phone'] ?? '';    
+            $recAddress = $_POST['address'] ?? '';
+            $note = $_POST['note'] ?? '';
+
+            $cart = $_SESSION['cart'] ?? [];
 
             $productId = $_POST['product_id'] ?? 0;
             $qty = $_POST['quantity'] ?? 1;
 
-            $product = $this->productModel->getProductById($productId);
-            $price = $product ? $product->price : 0;
-            $productName = $product ? $product->name : 'Sản phẩm';
-            $productImage = $product ? $product->image : '';
+            if (empty($cart) && !empty($_POST['cart_items'])) {
+                $cart = json_decode($_POST['cart_items'], true);
+            }
+            if (empty($cart)) {
+                echo "<script>alert('Giỏ hàng trống!'); window.location.href='index.php';</script>";
+                return;
+            }
 
-            $totalMoney = $price * $qty;
+            $subtotal = 0;
+            foreach ($cart as $item) {
+                // Đảm bảo kiểu số để tính toán
+                $price = floatval($item['price']);
+                $qty = intval($item['quantity']);
+                $subtotal += $price * $qty;
+            }
 
-            $fakeOrderId = '#' . rand(1000, 9999);
+            $shipping = ($subtotal > 500000) ? 0 : 30000;
+            $totalMoney = $subtotal + $shipping;
 
-            // 3. Chuẩn bị dữ liệu Session cho trang Success.php
-            // Cấu trúc mảng này PHẢI KHỚP với cách bạn echo trong file Success.php
-            $orderData = [
-                'id' => $fakeOrderId,
-                'name' => $recName,
-                'phone' => $recPhone,
-                'address' => $recAddress,
-                'subtotal' => $totalMoney,
-                'shipping' => 0,
-                'total' => $totalMoney,
-                'items' => [
-                    [
-                        'name' => $productName,
-                        'quantity' => $qty,
-                        'price' => $price,
-                        'image' => $productImage
-                    ]
-                ]
-            ];
+            $sqlOrder = "INSERT INTO orders (user_id, total_money, note, status, created_at, recipient_name, recipient_phone, recipient_address) 
+                         VALUES (?, ?, ?, 'pending', NOW(), ?, ?, ?)";
 
-            $_SESSION['last_order'] = $orderData;
+                         $stmt = $conn->prepare($sqlOrder);
+            if ($stmt) {
+                $stmt->bind_param("idssss", $userId, $totalMoney, $note, $recName, $recPhone, $recAddress);
+                
+                if ($stmt->execute()) {
+                    $orderId = $conn->insert_id; // Lấy ID đơn hàng vừa tạo
 
-            // 4. Chuyển hướng hoặc Include trang thành công
-            // Cách tốt nhất là redirect để tránh resubmit form khi F5
-            // Nhưng để đơn giản theo code của bạn, mình include view luôn
-            include("View/Checkout/Success.php");
+                    // -- BƯỚC 2: INSERT BẢNG ORDER_DETAILS --
+                    $sqlDetail = "INSERT INTO order_details (order_id, product_id, price, quantity) VALUES (?, ?, ?, ?)";
+                    $stmtDetail = $conn->prepare($sqlDetail);
+
+                    foreach ($cart as $item) {
+                        $pId = intval($item['product_id']);
+                        $pPrice = floatval($item['price']);
+                        $pQty = intval($item['quantity']);
+                        
+                        // Lưu từng dòng sản phẩm
+                        $stmtDetail->bind_param("iid", $orderId, $pId, $pPrice, $pQty);
+                        $stmtDetail->execute();
+                    }
+                    $stmtDetail->close();
+
+                    // -- BƯỚC 3: HOÀN TẤT --
+                    unset($_SESSION['cart']); // Xóa giỏ hàng sau khi mua xong
+                    
+                    echo "<script>alert('Đặt hàng thành công! Mã đơn: #$orderId'); window.location.href='index.php';</script>";
+                } else {
+                    echo "Lỗi khi tạo đơn hàng: " . $stmt->error;
+                }
+                $stmt->close();
+            } else {
+                echo "Lỗi kết nối cơ sở dữ liệu.";
+            }
         } else {
-            // Nếu truy cập trực tiếp mà không submit form thì về trang chủ
             header("Location: index.php");
         }
     }
