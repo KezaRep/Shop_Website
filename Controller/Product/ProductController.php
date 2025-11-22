@@ -159,6 +159,93 @@ class ProductController
             include("View/Product/ProductEdit.php");
             include("View/Layout/Footer.php");
         }
-    }}
+    }
+    public function checkoutAction()
+    {
+        $id = isset($_REQUEST['product_id']) ? (int)$_REQUEST['product_id'] : 0;
+        $quantity = isset($_REQUEST['quantity']) ? (int)$_REQUEST['quantity'] : 1;
+
+        $product = $this->productModel->getProductById($id);
+
+        if (!$product) {
+            echo "Sản phẩm không tồn tại hoặc đã bị xóa.";
+            exit;
+        }
+
+        $total = $product->price * $quantity;
+
+        $profileName = "";
+        $profilePhone = "";
+        $profileAddress = "";
+
+        if (isset($_SESSION['user'])) {
+            $userId = (int)$_SESSION['user']['id'];
+            $currentUser = $this->userModel->getUserById($userId);
+            
+            if ($currentUser) {
+                $profileName = $currentUser->full_name ?? $currentUser->username ?? ""; 
+                $profilePhone = $currentUser->phone ?? "";
+                $profileAddress = $currentUser->address ?? "";
+            }
+        }
+
+        // 5. Gọi View hiển thị
+        include("View/Layout/Header.php");
+        include("View/Checkout/Checkout.php");
+        include("View/Layout/Footer.php");
+    }
+    public function submitOrderAction()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $recName = $_POST['recName'] ?? '';
+            $recPhone = $_POST['recPhone'] ?? '';
+            $recAddress = $_POST['recAddress'] ?? '';
+            
+            $productId = $_POST['product_id'] ?? 0;
+            $qty = $_POST['quantity'] ?? 1;
+            
+            $product = $this->productModel->getProductById($productId);
+            $price = $product ? $product->price : 0;
+            $productName = $product ? $product->name : 'Sản phẩm';
+            $productImage = $product ? $product->image : ''; 
+
+            $totalMoney = $price * $qty;
+
+            $fakeOrderId = '#' . rand(1000, 9999);
+
+            // 3. Chuẩn bị dữ liệu Session cho trang Success.php
+            // Cấu trúc mảng này PHẢI KHỚP với cách bạn echo trong file Success.php
+            $orderData = [
+                'id' => $fakeOrderId,
+                'name' => $recName,
+                'phone' => $recPhone,
+                'address' => $recAddress,
+                'subtotal' => $totalMoney,
+                'shipping' => 0, 
+                'total' => $totalMoney,
+                'items' => [
+                    [
+                        'name' => $productName,
+                        'quantity' => $qty,
+                        'price' => $price,
+                        'image' => $productImage 
+                    ]
+                ]
+            ];
+
+            $_SESSION['last_order'] = $orderData;
+
+            // 4. Chuyển hướng hoặc Include trang thành công
+            // Cách tốt nhất là redirect để tránh resubmit form khi F5
+            // Nhưng để đơn giản theo code của bạn, mình include view luôn
+            include("View/Checkout/Success.php");
+            
+        } else {
+            // Nếu truy cập trực tiếp mà không submit form thì về trang chủ
+            header("Location: index.php");
+        }
+    }
+}
+    
 
 ?>

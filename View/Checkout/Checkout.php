@@ -2,20 +2,17 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
 
-// helper build image src (BLOB or path)
 function productImageSrc($img) {
     if (empty($img)) return '/Shop_Website/Assets/Images/placeholder-product-1.jpg';
     if (@getimagesizefromstring($img)) return 'data:image/jpeg;base64,' . base64_encode($img);
     return $img;
 }
 
-// user from session (fixed info)
 $user = $_SESSION['user'] ?? [];
 $profileName = $user['fullname'] ?? $user['name'] ?? $user['username'] ?? '';
 $profilePhone = $user['phone'] ?? '';
 $profileAddress = $user['address'] ?? '';
 
-// cart: allow controller to provide $cart; fallback to session or build from GET product_id
 if (!isset($cart)) {
     $cart = $_SESSION['cart'] ?? [];
     if (empty($cart) && !empty($_GET['product_id'])) {
@@ -58,7 +55,7 @@ $total = $subtotal + $shipping - $discount;
         <h1 class="page-title">Thanh toán</h1>
 
         <div class="checkout-grid">
-            <form id="checkoutForm" class="checkout-form" action="index.php?controller=checkout&action=place" method="post">
+            <form id="checkoutForm" class="checkout-form" action="index.php?controller=product&action=submitOrder" method="post">
                 <section class="card">
                     <h2 class="card-title">Thông tin người nhận</h2>
 

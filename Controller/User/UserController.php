@@ -17,7 +17,7 @@ class UserController
     public function loginAction()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $identifier = isset($_POST['identifier']) ? trim($_POST['identifier']) : ''; // email hoặc username
+            $identifier = isset($_POST['identifier']) ? trim($_POST['identifier']) : ''; 
             $password = isset($_POST['password']) ? $_POST['password'] : '';
 
             $user = $this->userModel->loginUser($identifier, $password);
