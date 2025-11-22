@@ -66,7 +66,6 @@ $total = $subtotal + $shipping - $discount;
                         <h2 class="card-title">Thông tin người nhận</h2>
 
                         <div class="recipient-mode">
-                            <label><input type="radio" name="recipient_mode" value="profile" checked> Dùng thông tin tài khoản</label>
                             <label><input type="radio" name="recipient_mode" value="saved"> Chọn địa chỉ đã lưu</label>
                             <label><input type="radio" name="recipient_mode" value="new"> Nhập thông tin mới</label>
                         </div>
@@ -95,7 +94,7 @@ $total = $subtotal + $shipping - $discount;
 
                         <label class="field">
                             <span class="label-title">Họ & tên</span>
-                            <input type="text" id="recName" name="name" value="<?= htmlspecialchars($profileName) ?>" required>
+                            <input type="text" id="recName" name="name" value="" required>
                         </label>
 
                         <label class="field">
@@ -108,14 +107,6 @@ $total = $subtotal + $shipping - $discount;
                             <textarea id="recAddress" name="address" rows="3" required><?= htmlspecialchars($profileAddress) ?></textarea>
                         </label>
 
-                        <div class="label-chooser">
-                            <div class="chooser-title">Lựa chọn tên cho địa chỉ thường dùng:</div>
-                            <div class="chooser-buttons">
-                                <button type="button" class="addr-btn" data-val="office"><i class="fas fa-briefcase"></i> VĂN PHÒNG</button>
-                                <button type="button" class="addr-btn" data-val="home"><i class="fas fa-home"></i> NHÀ RIÊNG</button>
-                            </div>
-                            <input type="hidden" name="address_label" id="address_label" value="">
-                        </div>
 
                         <label class="field">
                             <span class="label-title">Ghi chú (tùy chọn)</span>
@@ -175,65 +166,85 @@ $total = $subtotal + $shipping - $discount;
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // address label buttons
-            document.querySelectorAll('.addr-btn').forEach(b => b.addEventListener('click', function() {
-                document.querySelectorAll('.addr-btn').forEach(x => x.classList.remove('active'));
-                this.classList.add('active');
-                document.getElementById('address_label').value = this.dataset.val || '';
-            }));
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Khai báo các biến
+        const labelChooser = document.querySelector('.label-chooser'); // QUAN TRỌNG: Dòng này để lấy khung nút chọn nhãn
+        const savedWrap = document.getElementById('savedAddressWrap');
+        const savedSelect = document.getElementById('savedAddressSelect');
 
-            // recipient mode handling
-            const mode = document.getElementsByName('recipient_mode');
-            const savedWrap = document.getElementById('savedAddressWrap');
-            const savedSelect = document.getElementById('savedAddressSelect');
-            const recName = document.getElementById('recName');
-            const recPhone = document.getElementById('recPhone');
-            const recAddress = document.getElementById('recAddress');
+        const recName = document.getElementById('recName');
+        const recPhone = document.getElementById('recPhone');
+        const recAddress = document.getElementById('recAddress');
 
-            function useProfile() {
-                recName.value = <?= json_encode($profileName) ?>;
-                recPhone.value = <?= json_encode($profilePhone) ?>;
-                recAddress.value = <?= json_encode($profileAddress) ?>;
-                if (savedWrap) savedWrap.style.display = 'none';
-            }
+        const profileUrl = 'index.php?controller=user&action=profile';
+        
+        // Xử lý nút chọn nhãn (Văn phòng / Nhà riêng)
+        document.querySelectorAll('.addr-btn').forEach(b => b.addEventListener('click', function() {
+            document.querySelectorAll('.addr-btn').forEach(x => x.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('address_label').value = this.dataset.val || '';
+        }));
 
-            function useSaved() {
-                if (savedWrap) savedWrap.style.display = 'block';
-                if (savedSelect && savedSelect.value) {
-                    const o = savedSelect.options[savedSelect.selectedIndex];
-                    recName.value = o.dataset.name || '';
-                    recPhone.value = o.dataset.phone || '';
-                    recAddress.value = o.dataset.address || '';
-                    document.getElementById('address_label').value = o.dataset.label || '';
-                }
-            }
-
-            function useNew() {
-                recName.value = '';
-                recPhone.value = '';
-                recAddress.value = '';
-                if (savedWrap) savedWrap.style.display = 'none';
-            }
-
-            mode.forEach(r => r.addEventListener('change', function() {
-                if (this.value === 'profile') useProfile();
-                else if (this.value === 'saved') useSaved();
-                else useNew();
-            }));
-
-            if (savedSelect) savedSelect.addEventListener('change', function() {
-                const o = this.options[this.selectedIndex];
+        // 2. Các hàm xử lý logic
+        function useSaved() {
+            if (savedWrap) savedWrap.style.display = 'block';
+            // Ẩn nút chọn nhãn vì dùng địa chỉ cũ thì không cần chọn lại
+            if (labelChooser) labelChooser.style.display = 'none';
+            
+            // Nếu có chọn địa chỉ nào đó thì điền vào form
+            if (savedSelect && savedSelect.value) {
+                const o = savedSelect.options[savedSelect.selectedIndex];
                 recName.value = o.dataset.name || '';
                 recPhone.value = o.dataset.phone || '';
                 recAddress.value = o.dataset.address || '';
                 document.getElementById('address_label').value = o.dataset.label || '';
-            });
+            } else {
+                // Nếu chưa chọn dòng nào (đang ở "-- Chọn địa chỉ --") thì để trống
+                recName.value = '';
+                recPhone.value = '';
+                recAddress.value = '';
+            }
+        }
 
-            // init with profile
-            useProfile();
+        // 3. Bắt sự kiện khi chuyển đổi radio
+        const mode = document.getElementsByName('recipient_mode');
+        mode.forEach(r => r.addEventListener('change', function() {
+            // Chỉ còn 2 trường hợp
+            if (this.value === 'saved') {
+                useSaved();
+            }
+            else if (this.value === 'new') {
+                // Nếu chọn "Nhập thông tin mới" -> CHUYỂN TRANG
+                if(confirm('Bạn cần sang trang Cá nhân để thêm địa chỉ mới. Chuyển ngay?')) {
+                    window.location.href = profileUrl;
+                } else {
+                    // Nếu bấm Hủy, quay lại tích vào ô cũ
+                    document.querySelector('input[value="saved"]').checked = true;
+                }
+            }
+        }));
+
+        // 4. Bắt sự kiện khi chọn dropdown địa chỉ
+        if (savedSelect) savedSelect.addEventListener('change', function() {
+            const o = this.options[this.selectedIndex];
+            if (o.value) {
+                 recName.value = o.dataset.name || '';
+                 recPhone.value = o.dataset.phone || '';
+                 recAddress.value = o.dataset.address || '';
+                 document.getElementById('address_label').value = o.dataset.label || '';
+            } else {
+                 // Nếu chọn lại về "-- Chọn địa chỉ --"
+                 recName.value = '';
+                 recPhone.value = '';
+                 recAddress.value = '';
+            }
         });
-    </script>
+        document.querySelector('input[value="saved"]').checked = true;
+
+        // 5. Khởi tạo mặc định: Chạy useSaved để hiện dropdown và ẩn nút nhãn
+        useSaved();
+    });
+</script>
 </body>
 
 </html>
