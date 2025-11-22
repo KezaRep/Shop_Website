@@ -64,7 +64,6 @@ class ProductController
             include("View/Product/ProductAdd.php");
             include("View/Layout/Footer.php");
         }
-
     }
     public function detailAction()
     {
@@ -94,7 +93,6 @@ class ProductController
         include("View/Layout/Header.php");
         include("View/Product/ProductDetail.php");
         include("View/Layout/Footer.php");
-
     }
     public function editAction()
     {
@@ -153,7 +151,6 @@ class ProductController
                 include("View/Product/ProductEdit.php");
                 include("View/Layout/Footer.php");
             }
-
         } else {
             include("View/Layout/Header.php");
             include("View/Product/ProductEdit.php");
@@ -177,16 +174,18 @@ class ProductController
         $profileName = "";
         $profilePhone = "";
         $profileAddress = "";
+        $savedAddresses = [];
 
         if (isset($_SESSION['user'])) {
             $userId = (int)$_SESSION['user']['id'];
             $currentUser = $this->userModel->getUserById($userId);
-            
+
             if ($currentUser) {
-                $profileName = $currentUser->full_name ?? $currentUser->username ?? ""; 
+                $profileName = $currentUser->full_name ?? $currentUser->username ?? "";
                 $profilePhone = $currentUser->phone ?? "";
                 $profileAddress = $currentUser->address ?? "";
             }
+            $savedAddresses = $this->userModel->getUserAddresses($userId);
         }
 
         // 5. Gọi View hiển thị
@@ -200,14 +199,14 @@ class ProductController
             $recName = $_POST['recName'] ?? '';
             $recPhone = $_POST['recPhone'] ?? '';
             $recAddress = $_POST['recAddress'] ?? '';
-            
+
             $productId = $_POST['product_id'] ?? 0;
             $qty = $_POST['quantity'] ?? 1;
-            
+
             $product = $this->productModel->getProductById($productId);
             $price = $product ? $product->price : 0;
             $productName = $product ? $product->name : 'Sản phẩm';
-            $productImage = $product ? $product->image : ''; 
+            $productImage = $product ? $product->image : '';
 
             $totalMoney = $price * $qty;
 
@@ -221,14 +220,14 @@ class ProductController
                 'phone' => $recPhone,
                 'address' => $recAddress,
                 'subtotal' => $totalMoney,
-                'shipping' => 0, 
+                'shipping' => 0,
                 'total' => $totalMoney,
                 'items' => [
                     [
                         'name' => $productName,
                         'quantity' => $qty,
                         'price' => $price,
-                        'image' => $productImage 
+                        'image' => $productImage
                     ]
                 ]
             ];
@@ -239,13 +238,9 @@ class ProductController
             // Cách tốt nhất là redirect để tránh resubmit form khi F5
             // Nhưng để đơn giản theo code của bạn, mình include view luôn
             include("View/Checkout/Success.php");
-            
         } else {
             // Nếu truy cập trực tiếp mà không submit form thì về trang chủ
             header("Location: index.php");
         }
     }
 }
-    
-
-?>

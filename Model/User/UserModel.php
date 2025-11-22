@@ -233,7 +233,6 @@ class UserModel
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("si", $avatarPath, $userId);
         return $stmt->execute();
-
     }
     public function isUsernameExists($username)
     {
@@ -257,5 +256,19 @@ class UserModel
         $stmt->fetch();
         $stmt->close();
         return $count > 0;
+    }
+    public function getUserAddresses($userId)
+    {
+        $sql = "SELECT * FROM user_addresses WHERE user_id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $data = [];
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+        return $data;
     }
 }
