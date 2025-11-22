@@ -159,17 +159,35 @@ class ProductController
     }
     public function checkoutAction()
     {
-        $id = isset($_REQUEST['product_id']) ? (int)$_REQUEST['product_id'] : 0;
-        $quantity = isset($_REQUEST['quantity']) ? (int)$_REQUEST['quantity'] : 1;
-
-        $product = $this->productModel->getProductById($id);
-
-        if (!$product) {
-            echo "Sản phẩm không tồn tại hoặc đã bị xóa.";
-            exit;
+        $cart = [];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id'])) {
+            $productId = (int)$_POST['product_id'];
+            $qty = (int)$_POST['quantity'];
+            
+            // Lấy thông tin sản phẩm từ DB
+            $product = $this->productModel->getProductById($productId);
+            
+            if ($product) {
+                // Tạo một giỏ hàng "ảo" chỉ chứa 1 món này
+                $cart[] = [
+                    'product_id' => $product->id,
+                    'name' => $product->name,
+                    'price' => $product->price,
+                    'quantity' => $qty,
+                    'image' => $product->image
+                ];
+            }
+        } 
+        // TRƯỜNG HỢP 2: Vào Checkout từ Giỏ hàng (lấy từ Session)
+        else {
+            $cart = $_SESSION['cart'] ?? [];
         }
 
-        $total = $product->price * $quantity;
+        if (empty($cart)) {
+            echo "<script>alert('Chưa có sản phẩm nào để thanh toán!'); window.location.href='index.php';</script>";
+            return;
+        }
+        
 
         $profileName = "";
         $profilePhone = "";
@@ -186,6 +204,19 @@ class ProductController
                 $profileAddress = $currentUser->address ?? "";
             }
             $savedAddresses = $this->userModel->getUserAddresses($userId);
+
+            $profileAsAddress = [
+                'id' => 'profile', 
+                'name' => $profileName,
+                'phone' => $profilePhone,
+                'address' => $profileAddress,
+                'label' => 'Mặc định (Thông tin tài khoản)'
+            ];
+            array_unshift($savedAddresses, $profileAsAddress);
+        }
+        $total = 0;
+        foreach ($cart as $item) {
+            $total += $item['price'] * $item['quantity'];
         }
 
         // 5. Gọi View hiển thị

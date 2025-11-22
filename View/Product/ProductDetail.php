@@ -90,7 +90,9 @@ function productImageSrc($img) {
                             <input type="hidden" name="product_id" value="<?= intval($product->id ?? 0) ?>">
                             <input type="hidden" name="quantity" id="qtyInput" value="1">
                             <button type="button" class="btn-cart" onclick="addQtyToForm();"><i class="fas fa-shopping-cart"></i> Thêm Vào Giỏ Hàng</button>
-                            <button type="submit" class="btn-buy">Mua Ngay</button>
+                            <button type="submit" class="btn-buy"onclick="document.getElementById('qtyInput').value = document.getElementById('qty').value">
+                                Mua Ngay
+                            </button>
                         </form>
                     </div>
 

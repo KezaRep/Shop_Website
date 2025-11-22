@@ -1,19 +1,22 @@
 <?php
 class Database {
-    private $conn;
+    protected $conn;
 
     public function __construct() {
-        $host = "bpx2cyjcgumovul3e4rg-mysql.services.clever-cloud.com";
-        $user = "uyunudashin4neng";
-        $dbname = "bpx2cyjcgumovul3e4rg";
+        // 1. Cấu hình cho Localhost
+        $host = "localhost";
+        $user = "root";      // Mặc định của XAMPP/WAMP là root
+        $pass = "";          // Mặc định thường để trống (nếu dùng MAMP thì điền là "root")
         
-        $pass = "rLMTiq0xefl6vXAiQOVh"; 
+        // 2. QUAN TRỌNG: Bạn cần điền đúng tên database bạn đã tạo trong máy của bạn ở đây
+        // Ví dụ: "ban_hang", "shop_db", v.v.
+        $dbname = "shop_website"; 
 
         $this->conn = mysqli_connect($host, $user, $pass, $dbname);
 
-
         if (!$this->conn) {
-            die("Kết nối thất bại: " . mysqli_connect_error());
+            // Thêm chi tiết lỗi để dễ sửa nếu không kết nối được
+            die("Kết nối localhost thất bại: " . mysqli_connect_error());
         }
 
         mysqli_set_charset($this->conn, "utf8");

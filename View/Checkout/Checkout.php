@@ -141,7 +141,7 @@ $total = $subtotal + $shipping - $discount;
                             ?>
                                 <li class="item">
                                     <div class="left">
-                                        <img src="<?= htmlspecialchars($it['image'] ?? '/Shop_Website/Assets/Images/placeholder-product-1.jpg') ?>" alt="" />
+                                        <img src="<?= productImageSrc($it['image']) ?>" alt="Sản phẩm" width="80" height="80" style="object-fit: cover; border-radius: 5px;">
                                         <div class="meta">
                                             <div class="name"><?= htmlspecialchars($it['name'] ?? '') ?></div>
                                             <div class="qty">x<?= $qty ?></div>
