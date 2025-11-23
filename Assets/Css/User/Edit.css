@@ -1,144 +1,109 @@
 :root {
-    --max-width: 1200px;
+    --max-width: 800px;
     --primary: #10b981;
-    --muted: #fafafa;
+    --danger: #ff5722;
+    --muted: #f9f9f9;
     --text: #222;
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0
-}
-
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: var(--muted);
-    color: var(--text)
-}
+* { box-sizing: border-box; margin:0; padding:0; }
+body { font-family: Arial, sans-serif; background: var(--muted); color: var(--text); }
 
 .container {
     max-width: var(--max-width);
-    margin: 26px auto;
-    padding: 0 20px
+    margin: 30px auto;
+    padding: 0 20px;
 }
 
-.edit-product-page h2 {
-    margin-bottom: 16px;
-    font-size: 20px
+.edit-user-page h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
 }
 
-.error {
-    background: #ffe6e6;
-    color: #b00020;
-    padding: 10px;
-    border-radius: 6px;
-    margin-bottom: 12px
-}
-
-.edit-product-form {
+.edit-user-form {
     background: #fff;
-    padding: 18px;
+    padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04)
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
 }
 
 .row {
-    margin-bottom: 12px
-}
-
-.row.inline {
+    margin-bottom: 16px;
     display: flex;
-    gap: 12px
+    flex-direction: column;
 }
 
-.col {
-    flex: 1
-}
-
-label {
-    display: block;
-    margin-bottom: 6px;
+.row label {
     font-weight: 600;
-    font-size: 14px
+    margin-bottom: 6px;
 }
 
-input[type="text"],
-input[type="number"],
-textarea,
-select,
-input[type="file"] {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #e6e6e6;
-    border-radius: 6px;
+.row input[type="text"],
+.row input[type="email"],
+.row input[type="password"],
+.row input[type="number"],
+.row select,
+.row input[type="file"] {
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
     font-size: 14px;
 }
 
-textarea {
-    min-height: 120px;
-    resize: vertical
+.current-avatar {
+    margin-bottom: 6px;
 }
 
-.hint {
-    display: block;
-    margin-top: 6px;
-    color: #666;
-    font-size: 12px
-}
-
-.current-image {
-    margin-bottom: 8px
-}
-
-.current-image img {
-    width: 160px;
-    height: 160px;
+.current-avatar img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
     object-fit: cover;
-    border-radius: 6px;
-    border: 1px solid #f0f0f0
+    border: 2px solid #ddd;
 }
 
 .actions {
     display: flex;
     gap: 12px;
-    align-items: center;
-    margin-top: 8px
+    margin-top: 20px;
 }
 
 .btn {
-    display: inline-block;
-    padding: 10px 14px;
-    border-radius: 6px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
     text-decoration: none;
-    color: #333;
-    background: #fff;
-    border: 1px solid #eee
+    text-align: center;
 }
 
-.btn.btn-primary {
+.btn-primary {
     background: var(--primary);
     color: #fff;
-    border-color: transparent;
-    font-weight: 700;
-    cursor: pointer;
 }
 
-.btn.btn-cancel {
-    background: #fff;
-    color: #666
+.btn-cancel {
+    background: #eee;
+    color: #333;
 }
 
-@media(max-width:700px) {
-    .row.inline {
-        flex-direction: column
-    }
-
-    .current-image img {
-        width: 120px;
-        height: 120px
-    }
+.error {
+    background: #ffe0e0;
+    color: var(--danger);
+    padding: 10px;
+    margin-bottom: 12px;
+    border-radius: 4px;
 }
 
+.hint {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+}
 
-
+/* Responsive */
+@media(max-width:600px) {
+    .actions { flex-direction: column; }
+    .btn { width: 100%; }
+}

@@ -17,7 +17,7 @@ class UserController
     public function loginAction()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $identifier = isset($_POST['identifier']) ? trim($_POST['identifier']) : ''; 
+            $identifier = isset($_POST['identifier']) ? trim($_POST['identifier']) : '';
             $password = isset($_POST['password']) ? $_POST['password'] : '';
 
             $user = $this->userModel->loginUser($identifier, $password);
@@ -88,10 +88,66 @@ class UserController
             exit;
         }
 
+        $userId = $_SESSION['user']['id'];
+        $user = $this->userModel->getUserById($userId);
+
+        $error = '';
+        $success = '';
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Lấy dữ liệu từ form
+            $username = trim($_POST['username'] ?? '');
+            $email = trim($_POST['email'] ?? '');
+            $password = $_POST['password'] ?? '';
+            $confirmPassword = $_POST['confirm_password'] ?? '';
+
+            // Validate dữ liệu
+            if (empty($username) || empty($email)) {
+                $error = "Tên người dùng và email không được để trống!";
+            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $error = "Email không hợp lệ!";
+            } elseif ($password !== $confirmPassword) {
+                $error = "Mật khẩu mới không khớp!";
+            } else {
+                // Kiểm tra username/email có trùng với user khác không
+                $otherUsers = $this->userModel->searchUsersByUsername($username);
+                $isUsernameTaken = false;
+                foreach ($otherUsers as $u) {
+                    if ($u->id != $userId) {
+                        $isUsernameTaken = true;
+                        break;
+                    }
+                }
+
+                if ($isUsernameTaken) {
+                    $error = "Tên người dùng đã tồn tại!";
+                } elseif ($this->userModel->isEmailExists($email) && $email != $user->email) {
+                    $error = "Email đã tồn tại!";
+                } else {
+                    $user->username = $username;
+                    $user->email = $email;
+
+                    $this->userModel->updateUserEmail($userId, $email);
+
+                    if (!empty($password)) {
+                        $this->userModel->updateUserPassword($userId, $password);
+                    }
+
+                    $_SESSION['user']['username'] = $username;
+                    $_SESSION['user']['email'] = $email;
+
+                    $success = "Cập nhật thông tin thành công!";
+                }
+            }
+
+            $user = $this->userModel->getUserById($userId);
+        }
+
         include("View/Layout/Header.php");
         include("View/User/Edit.php");
         include("View/Layout/Footer.php");
     }
+
     public function profileAction()
     {
         // Redirect nếu chưa đăng nhập
