@@ -105,7 +105,6 @@ class CartController
         exit;
     }
 
-ư
     public function deleteAction()
     {
         if (!isset($_GET['id'])) {
