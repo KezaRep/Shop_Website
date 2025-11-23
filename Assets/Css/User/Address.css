@@ -1,0 +1,157 @@
+/* Container chính */
+    .address-page-container {
+        background-color: #f5f5fa;
+        padding: 20px;
+        font-family: Helvetica, Arial, sans-serif;
+        color: #333;
+        min-height: 500px;
+    }
+
+    .address-box {
+        background: #fff;
+        border-radius: 4px;
+        padding: 20px;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    /* Header của box */
+    .address-header {
+        font-size: 19px;
+        font-weight: 400;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-links a {
+        font-size: 13px;
+        color: #0b74e5;
+        text-decoration: none;
+        margin-left: 15px;
+    }
+    
+    .header-links a:hover {
+        text-decoration: underline;
+    }
+
+    /* Cảnh báo màu vàng */
+    .alert-warning {
+        background-color: #fff3cd;
+        border: 1px solid #ffeeba;
+        color: #856404;
+        padding: 12px 20px;
+        font-size: 14px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Bảng địa chỉ */
+    .table-address {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+
+    .table-address th {
+        text-align: left;
+        color: #888;
+        font-weight: 400;
+        padding: 15px 0;
+        border-bottom: 1px solid #f4f4f4;
+    }
+
+    .table-address td {
+        padding: 20px 0;
+        border-bottom: 1px solid #f4f4f4;
+        vertical-align: top;
+        color: #333;
+        line-height: 1.6;
+    }
+
+    /* Tag Nhà riêng/Văn phòng */
+    .tag-type {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 2px;
+        margin-right: 8px;
+        text-transform: uppercase;
+    }
+    
+    .tag-home {
+        color: #ff424e;
+        border: 1px solid #ff424e;
+        background: #fff;
+    }
+    
+    .tag-office {
+        color: #00ea98;
+        border: 1px solid #00ea98;
+        background: #fff;
+    }
+
+    /* Actions bên phải */
+    .action-group {
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 8px;
+    }
+
+    .action-links a {
+        color: #0b74e5;
+        text-decoration: none;
+        margin-left: 10px;
+        font-size: 13px;
+    }
+
+    .default-text {
+        color: #26bc4e; /* Màu xanh lá check */
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .default-text::before {
+        content: '✔';
+        margin-right: 4px;
+        font-size: 10px;
+        border: 1px solid #26bc4e;
+        border-radius: 50%;
+        width: 12px;
+        height: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Nút Thêm địa chỉ mới */
+    .btn-add-new {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #029da0; /* Màu xanh teal giống ảnh */
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: 500;
+        font-size: 14px;
+        float: right;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .btn-add-new:hover {
+        background-color: #008b8e;
+    }
+    
+    .clearfix::after {
+        content: "";
+        clear: both;
+        display: table;
+    }

@@ -271,4 +271,19 @@ class UserModel
         }
         return $data;
     }
+    public function addAddress($userId, $fullname, $phone, $address, $city, $district, $type) {
+        $userId   = mysqli_real_escape_string($this->conn, $userId); 
+        $fullname = mysqli_real_escape_string($this->conn, $fullname);
+        $phone    = mysqli_real_escape_string($this->conn, $phone);
+        $address  = mysqli_real_escape_string($this->conn, $address);
+        $city     = mysqli_real_escape_string($this->conn, $city);
+        $type     = mysqli_real_escape_string($this->conn, $type);
+        $district = mysqli_real_escape_string($this->conn, $district);
+
+        $fullAddress = $address . ", " . $district . ", " . $city;
+
+        $sql = "INSERT INTO user_addresses(user_id,name,phone,address,label) VALUES('$userId','$fullname','$phone','$fullAddress','$type')";
+
+        return mysqli_query($this->conn,$sql);  
+    }
 }

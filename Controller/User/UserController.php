@@ -167,6 +167,55 @@ class UserController
         header('Location: index.php');
         exit;
     }
+    public function addressAction()
+    {
+        // Kiểm tra đăng nhập
+        if (empty($_SESSION['user'])) {
+            header('Location: index.php?controller=user&action=login');
+            exit;
+        }
 
+        // TODO: Sau này bạn sẽ gọi Model để lấy danh sách địa chỉ thật từ DB
+        // $addresses = $this->userModel->getUserAddresses($_SESSION['user']['id']);
+
+        include("View/Layout/Header.php");
+        include("View/User/Address.php");
+        include("View/Layout/Footer.php");
+    }
+
+    public function addAddressAction()
+    {
+        if (empty($_SESSION['user'])) {
+            header('Location: index.php?controller=user&action=login');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $userId = $_SESSION['user']['id'];
+            $fullname = $_POST['fullname'] ?? '';
+            $phone = $_POST['phone'] ?? '';
+            $address = $_POST['address'] ?? '';
+            $city = $_POST['city'] ?? '';
+            $district = $_POST['district'] ?? '';
+            $type = $_POST['address_type'] ?? 'home';
+
+            if (empty($fullname) || empty($phone) || empty($address)) {
+                $error = "Vui lòng nhập đủ thông tin!";
+            } else {
+                $result = $this->userModel->addAddress($userId, $fullname, $phone, $address, $city, $district, $type);
+
+                if ($result) {
+                    header('Location: index.php?controller=user&action=address');
+                    exit;
+                } else {
+                    $error = "Lỗi khi lưu dữ liệu!";
+                }
+            }
+        }
+
+        include("View/Layout/Header.php");
+        include("View/User/AddAddress.php");
+        include("View/Layout/Footer.php");
+    }
 }
 ?>

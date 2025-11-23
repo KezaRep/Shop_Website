@@ -1,109 +1,131 @@
-:root {
-    --max-width: 800px;
-    --primary: #10b981;
-    --danger: #ff5722;
-    --muted: #f9f9f9;
-    --text: #222;
-}
 
-* { box-sizing: border-box; margin:0; padding:0; }
-body { font-family: Arial, sans-serif; background: var(--muted); color: var(--text); }
+    /* Reset cơ bản cho phần main này */
+    .profile-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5fa; /* Màu nền xám nhẹ giống thương mại điện tử */
+        font-family: Helvetica, Arial, sans-serif;
+        color: #333;
+    }
 
-.container {
-    max-width: var(--max-width);
-    margin: 30px auto;
-    padding: 0 20px;
-}
+    .page-title {
+        font-size: 18px;
+        font-weight: 400;
+        margin-bottom: 15px;
+        color: #333;
+    }
 
-.edit-user-page h2 {
-    margin-bottom: 20px;
-    font-size: 24px;
-}
+    /* Layout chia 2 cột: Thông tin cá nhân (nhỏ) - Sổ địa chỉ (lớn) */
+    .account-grid {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 20px;
+    }
 
-.edit-user-form {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
-}
+    /* Style chung cho các thẻ Card màu trắng */
+    .info-card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 4px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        height: 100%; /* Để 2 cột cao bằng nhau */
+    }
 
-.row {
-    margin-bottom: 16px;
-    display: flex;
-    flex-direction: column;
-}
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #eee; /* Gạch chân nhẹ nếu muốn, trong ảnh không rõ nhưng thường có */
+        padding-bottom: 10px;
+    }
 
-.row label {
-    font-weight: 600;
-    margin-bottom: 6px;
-}
+    .card-header h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 400;
+        color: #333;
+    }
 
-.row input[type="text"],
-.row input[type="email"],
-.row input[type="password"],
-.row input[type="number"],
-.row select,
-.row input[type="file"] {
-    padding: 8px 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-}
+    .link-edit {
+        color: #0b74e5; /* Màu xanh kiểu Tiki */
+        text-decoration: none;
+        font-size: 13px;
+    }
+    
+    .link-edit:hover {
+        text-decoration: underline;
+    }
 
-.current-avatar {
-    margin-bottom: 6px;
-}
+    /* Phần thông tin cá nhân */
+    .user-display-name {
+        font-size: 16px;
+        font-weight: 500;
+        margin-bottom: 15px;
+    }
 
-.current-avatar img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #ddd;
-}
+    .checkbox-row {
+        display: flex;
+        align-items: center;
+        font-size: 13px;
+        color: #555;
+    }
+    
+    .checkbox-row input {
+        margin-right: 8px;
+    }
 
-.actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 20px;
-}
+    /* Phần Sổ địa chỉ - chia 2 cột bên trong */
+    .address-container {
+        display: flex;
+    }
 
-.btn {
-    padding: 10px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 600;
-    text-decoration: none;
-    text-align: center;
-}
+    .address-col {
+        flex: 1;
+        padding-right: 20px;
+    }
 
-.btn-primary {
-    background: var(--primary);
-    color: #fff;
-}
+    /* Đường kẻ dọc phân chia 2 loại địa chỉ */
+    .address-col.has-border {
+        border-left: 1px solid #ebebf0;
+        padding-left: 20px;
+        padding-right: 0;
+    }
 
-.btn-cancel {
-    background: #eee;
-    color: #333;
-}
+    .addr-label {
+        font-size: 14px;
+        color: #787878;
+        margin-bottom: 10px;
+    }
 
-.error {
-    background: #ffe0e0;
-    color: var(--danger);
-    padding: 10px;
-    margin-bottom: 12px;
-    border-radius: 4px;
-}
+    .addr-name {
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 5px;
+        color: #333;
+    }
 
-.hint {
-    font-size: 12px;
-    color: #666;
-    margin-top: 4px;
-}
+    .addr-detail {
+        font-size: 13px;
+        color: #555;
+        line-height: 1.5;
+        margin-bottom: 4px;
+    }
 
-/* Responsive */
-@media(max-width:600px) {
-    .actions { flex-direction: column; }
-    .btn { width: 100%; }
-}
+    /* Responsive cho màn hình nhỏ */
+    @media (max-width: 768px) {
+        .account-grid {
+            grid-template-columns: 1fr;
+        }
+        .address-container {
+            flex-direction: column;
+        }
+        .address-col.has-border {
+            border-left: none;
+            border-top: 1px solid #ebebf0;
+            padding-left: 0;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+    }
