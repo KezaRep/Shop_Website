@@ -1,10 +1,13 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) session_start();
-$cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
+if (session_status() === PHP_SESSION_NONE)
+    session_start();
+
+$cart = $_SESSION['cart'] ?? [];
 ?>
 
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,42 +36,54 @@ $cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
                         <span class="c-action"></span>
                     </div>
 
-                    <?php 
-                    $grandTotal = 0; 
-                    foreach ($cart as $item): 
-                        $total = $item['price'] * $item['quantity'];
+                    <?php
+                    $grandTotal = 0;
+
+                    foreach ($cart as $item):
+
+                        // Đảm bảo dữ liệu không null
+                        $price = $item['price'] ?? 0;
+                        $qty   = $item['quantity'] ?? 1;
+                        $name  = $item['name'] ?? '';
+                        $image = $item['image'] ?? 'Assets/Images/placeholder-product-1.jpg';
+
+                        // Tính tiền sản phẩm
+                        $total = $price * $qty;
                         $grandTotal += $total;
-                    ?>
-                    <div class="cart-row">
-                        <div class="c-product">
-                            <img src="<?= $item['image'] ?>" class="cart-img">
-                            <span><?= htmlspecialchars($item['name']) ?></span>
+                        ?>
+                        
+                        <div class="cart-row">
+                            <div class="c-product">
+                                <img src="<?= $image ?>" class="cart-img">
+                                <span><?= htmlspecialchars($name) ?></span>
+                            </div>
+
+                            <div class="c-price">
+                                ₫<?= number_format($price, 0, ',', '.') ?>
+                            </div>
+                        
+                            <div class="c-qty">
+                                <form action="index.php?controller=cart&action=update" method="post">
+                                    <input type="hidden" name="id" value="<?= $item['id'] ?>">
+                                    <button type="submit" name="change" value="-" class="qty-btn">−</button>
+                                    <input type="text" class="qty-input" value="<?= $qty ?>" readonly>
+                                    <button type="submit" name="change" value="+" class="qty-btn">+</button>
+                                </form>
+                            </div>
+
+                            <div class="c-total">
+                                ₫<?= number_format($total, 0, ',', '.') ?>
+                            </div>
+
+                            <div class="c-action">
+                                <a href="index.php?controller=cart&action=delete&id=<?= $item['id'] ?>" class="delete-btn">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
                         </div>
 
-                        <div class="c-price">
-                            ₫<?= number_format($item['price'], 0, ',', '.') ?>
-                        </div>
-
-                        <div class="c-qty">
-                            <form action="index.php?controller=cart&action=update" method="post">
-                                <input type="hidden" name="id" value="<?= $item['id'] ?>">
-                                <button type="submit" name="change" value="-" class="qty-btn">−</button>
-                                <input type="text" class="qty-input" value="<?= $item['quantity'] ?>" readonly>
-                                <button type="submit" name="change" value="+" class="qty-btn">+</button>
-                            </form>
-                        </div>
-
-                        <div class="c-total">
-                            ₫<?= number_format($total, 0, ',', '.') ?>
-                        </div>
-
-                        <div class="c-action">
-                            <a href="index.php?controller=cart&action=delete&id=<?= $item['id'] ?>" class="delete-btn">
-                                <i class="fas fa-trash"></i>
-                            </a>
-                        </div>
-                    </div>
                     <?php endforeach; ?>
+
                 </div>
 
                 <div class="cart-summary">
@@ -82,4 +97,5 @@ $cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
         </div>
     </main>
 </body>
+
 </html>
