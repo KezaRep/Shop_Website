@@ -96,7 +96,7 @@ function productImageSrc($img)
                             </div>
                         </div>
 
-                        <form action="index.php?controller=cart&action=add" method="post" id="addCartForm">
+                        <form action="index.php?controller=cart&action=add&product_id=<?=htmlspecialchars($product->id) ?>" method="post" id="addCartForm">
                             <input type="hidden" name="product_id" value="<?= $product->id ?>">
                             <input type="hidden" name="quantity" id="qtyField" value="1" min="1"
                                 max="<?= intval($product->quantity ?? 100) ?>">

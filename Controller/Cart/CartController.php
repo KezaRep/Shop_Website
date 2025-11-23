@@ -63,7 +63,9 @@ class CartController
     public function indexAction()
     {
         $cart = $_SESSION['cart'] ?? [];
+        include "View/Layout/Header.php";
         include "View/Cart/CartIndex.php";
+        include "View/Layout/Footer.php";
     }
 
     // ============================

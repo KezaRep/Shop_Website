@@ -3,6 +3,19 @@ if (session_status() === PHP_SESSION_NONE)
     session_start();
 
 $cart = $_SESSION['cart'] ?? [];
+
+/** Xử lý ảnh BLOB hoặc đường dẫn */
+function productImageSrc($img) {
+    if (empty($img)) {
+        return 'Assets/Images/placeholder-product-1.jpg';
+    }
+    // Nếu dữ liệu là BLOB → encode base64
+    if (@getimagesizefromstring($img)) {
+        return 'data:image/jpeg;base64,' . base64_encode($img);
+    }
+    // Nếu là URL hoặc file path
+    return $img;
+}
 ?>
 
 <!DOCTYPE html>
@@ -41,16 +54,14 @@ $cart = $_SESSION['cart'] ?? [];
 
                     foreach ($cart as $item):
 
-                        // Đảm bảo dữ liệu không null
                         $price = $item['price'] ?? 0;
                         $qty   = $item['quantity'] ?? 1;
                         $name  = $item['name'] ?? '';
-                        $image = $item['image'] ?? 'Assets/Images/placeholder-product-1.jpg';
+                        $image = productImageSrc($item['image'] ?? '');
 
-                        // Tính tiền sản phẩm
                         $total = $price * $qty;
                         $grandTotal += $total;
-                        ?>
+                    ?>
                         
                         <div class="cart-row">
                             <div class="c-product">
