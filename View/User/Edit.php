@@ -43,10 +43,7 @@ function avatarSrc($avatar) {
                 <input id="password" name="password" type="password" placeholder="Để trống nếu không đổi">
             </div>
 
-            <div class="row">
-                <label for="balance">Số dư (VNĐ)</label>
-                <input id="balance" name="balance" type="number" value="<?= intval($user->balance ?? 0) ?>" min="0" required>
-            </div>
+           
 
             <div class="row">
                 <label for="role">Vai trò</label>
