@@ -1,250 +1,79 @@
 <?php
-
-if (session_status() === PHP_SESSION_NONE) session_start();
-
-function productImageSrc($img)
-{
-    if (empty($img)) return '/Shop_Website/Assets/Images/placeholder-product-1.jpg';
-    if (@getimagesizefromstring($img)) return 'data:image/jpeg;base64,' . base64_encode($img);
-    return $img;
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
-$user = $_SESSION['user'] ?? [];
-$profileName = $user['fullname'] ?? $user['name'] ?? $user['username'] ?? '';
-$profilePhone = $user['phone'] ?? '';
-$profileAddress = $user['address'] ?? '';
-
-if (!isset($cart)) {
-    $cart = $_SESSION['cart'] ?? [];
-    if (empty($cart) && !empty($_GET['product_id'])) {
-        include_once __DIR__ . '/../../Model/Product/ProductModel.php';
-        $pm = new ProductModel();
-        $p = $pm->getProductById((int)$_GET['product_id']);
-        if ($p) {
-            $qty = max(1, (int)($_GET['qty'] ?? 1));
-            $cart = [[
-                'product_id' => intval($p->id),
-                'name' => $p->name ?? 'Sản phẩm',
-                'price' => floatval($p->price ?? 0),
-                'quantity' => $qty,
-                'image' => !empty($p->image) ? productImageSrc($p->image) : '/Shop_Website/Assets/Images/placeholder-product-1.jpg'
-            ]];
-        }
-    }
+$cart = $_SESSION['cart'] ?? [];
+$total = 0;
+foreach ($cart as $item) {
+    $total += $item['price'] * $item['quantity'];
 }
 
-function currency($v)
-{
-    return '₫' . number_format($v, 0, ',', '.');
-}
-
-// totals
-$subtotal = 0;
-foreach ($cart as $it) $subtotal += intval($it['quantity'] ?? 1) * floatval($it['price'] ?? 0);
-$shipping = ($subtotal > 500000) ? 0 : 30000;
-$discount = 0;
-$total = $subtotal + $shipping - $discount;
+$error = $_SESSION['error'] ?? '';
+$success = $_SESSION['success'] ?? '';
+unset($_SESSION['error'], $_SESSION['success']);
 ?>
-<!DOCTYPE html>
-<html lang="vi">
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Thanh toán</title>
-    <link rel="stylesheet" href="/Shop_Website/Assets/Css/Checkout/Checkout.css">
-</head>
+<main class="checkout-page">
+    <div class="container">
+        <h1 class="page-title">Thanh toán</h1>
 
-<body>
-    <main class="checkout-page">
-        <div class="container">
-            <h1 class="page-title">Thanh toán</h1>
+        <?php if ($error): ?>
+            <div class="alert alert-error"><?= htmlspecialchars($error) ?></div>
+        <?php endif; ?>
+        <?php if ($success): ?>
+            <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
+        <?php endif; ?>
 
+        <?php if (empty($cart)): ?>
+            <p>Giỏ hàng của bạn đang trống.</p>
+        <?php else: ?>
             <div class="checkout-grid">
-                <form id="checkoutForm" class="checkout-form" action="index.php?controller=product&action=submitOrder" method="post">
-                    <section class="card">
-                        <h2 class="card-title">Thông tin người nhận</h2>
+                <!-- Danh sách sản phẩm -->
+                <div class="checkout-left">
+                    <div class="cart-list">
+                        <?php foreach ($cart as $item): 
+                            $itemTotal = $item['price'] * $item['quantity'];
+                        ?>
+                        <div class="cart-item">
+                            <img src="<?= $item['image'] ?>" alt="<?= htmlspecialchars($item['name']) ?>" class="cart-item-img">
+                            <div class="cart-item-info">
+                                <span class="cart-item-name"><?= htmlspecialchars($item['name']) ?></span>
+                                <span class="cart-item-qty">Số lượng: <?= $item['quantity'] ?></span>
+                                <span class="cart-item-price">₫<?= number_format($itemTotal,0,',','.') ?></span>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
 
-                        <div class="recipient-mode">
-                            <label><input type="radio" name="recipient_mode" value="saved"> Chọn địa chỉ đã lưu</label>
-                            <label><input type="radio" name="recipient_mode" value="new"> Nhập thông tin mới</label>
+                <!-- Form thanh toán -->
+                <div class="checkout-right">
+                    <div class="checkout-summary">
+                        <h3>Tổng tiền</h3>
+                        <div class="grand-total">₫<?= number_format($total,0,',','.') ?></div>
+                    </div>
+
+                    <form action="index.php?controller=cart&action=checkout" method="post" class="checkout-form">
+                        <div class="form-group">
+                            <label for="address">Địa chỉ nhận hàng</label>
+                            <input type="text" id="address" name="address" placeholder="Nhập địa chỉ" required>
                         </div>
 
-                        <div id="savedAddressWrap" class="saved-wrap" style="display:none">
-                            <label class="field">
-                                <span class="label-title">Địa chỉ đã lưu</span>
-                                <select id="savedAddressSelect">
-                                    <option value="">-- Chọn địa chỉ --</option>
-                                    <?php if (!empty($savedAddresses)): ?>
-                                        <?php foreach ($savedAddresses as $addr): ?>
-                                            <option
-                                                value="<?= $addr['id'] ?>"
-                                                data-name="<?= htmlspecialchars($addr['name']) ?>"
-                                                data-phone="<?= htmlspecialchars($addr['phone']) ?>"
-                                                data-address="<?= htmlspecialchars($addr['address']) ?>"
-                                                data-label="<?= htmlspecialchars($addr['label']) ?>">
-                                                <?= htmlspecialchars($addr['label']) ?> - <?= htmlspecialchars($addr['address']) ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-
-                                </select>
-                            </label>
+                        <div class="form-group">
+                            <label for="payment_method">Phương thức thanh toán</label>
+                            <select name="payment_method" id="payment_method" required>
+                                <option value="balance">Thanh toán bằng số dư</option>
+                                <option value="cod">Thanh toán khi nhận hàng (COD)</option>
+                            </select>
                         </div>
 
-                        <label class="field">
-                            <span class="label-title">Họ & tên</span>
-                            <input type="text" id="recName" name="name" value="" required>
-                        </label>
-
-                        <label class="field">
-                            <span class="label-title">Số điện thoại</span>
-                            <input type="tel" id="recPhone" name="phone" value="<?= htmlspecialchars($profilePhone) ?>" required>
-                        </label>
-
-                        <label class="field">
-                            <span class="label-title">Địa chỉ giao hàng</span>
-                            <textarea id="recAddress" name="address" rows="3" required><?= htmlspecialchars($profileAddress) ?></textarea>
-                        </label>
-
-
-                        <label class="field">
-                            <span class="label-title">Ghi chú (tùy chọn)</span>
-                            <input type="text" name="note" placeholder="Ví dụ: giao giờ hành chính">
-                        </label>
-
-                        <h3 class="section-sub">Phương thức thanh toán</h3>
-                        <label class="radio"><input type="radio" name="payment_method" value="cod" checked> Thanh toán khi nhận hàng (COD)</label>
-                        <label class="radio"><input type="radio" name="payment_method" value="card"> Thẻ / Ví (mô phỏng)</label>
-
-                        <!-- pass cart to placeAction when session cart is empty -->
-                        <input type="hidden" name="cart_items" id="cart_items" value='<?= htmlspecialchars(json_encode($cart), ENT_QUOTES) ?>'>
-
-                        <div class="form-actions">
-                            <a href="index.php?controller=product&action=list" class="btn btn-muted">Quay lại</a>
-                            <button type="submit" class="btn btn-primary">Đặt hàng — <?= currency($total) ?></button>
-                        </div>
-                    </section>
-                </form>
-
-                <aside class="order-summary card">
-                    <h2 class="card-title">Chi tiết đơn hàng</h2>
-
-                    <?php if (empty($cart)): ?>
-                        <p class="muted">Giỏ hàng trống.</p>
-                    <?php else: ?>
-                        <ul class="items">
-                            <?php foreach ($cart as $it):
-                                $qty = intval($it['quantity'] ?? 1);
-                                $price = floatval($it['price'] ?? 0);
-                                $line = $qty * $price;
-                            ?>
-                                <li class="item">
-                                    <div class="left">
-                                        <img src="<?= productImageSrc($it['image']) ?>" alt="Sản phẩm" width="80" height="80" style="object-fit: cover; border-radius: 5px;">
-                                        <div class="meta">
-                                            <div class="name"><?= htmlspecialchars($it['name'] ?? '') ?></div>
-                                            <div class="qty">x<?= $qty ?></div>
-                                        </div>
-                                    </div>
-                                    <div class="right"><?= currency($line) ?></div>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-
-                        <div class="summary-lines">
-                            <div class="line"><span>Tạm tính</span><span><?= currency($subtotal) ?></span></div>
-                            <div class="line"><span>Phí vận chuyển</span><span><?= $shipping === 0 ? 'Miễn phí' : currency($shipping) ?></span></div>
-                            <?php if ($discount > 0): ?><div class="line"><span>Giảm giá</span><span>-<?= currency($discount) ?></span></div><?php endif; ?>
-                            <div class="line total"><span>Tổng cộng</span><span><?= currency($total) ?></span></div>
-                        </div>
-                    <?php endif; ?>
-                </aside>
+                        <button type="submit" class="btn btn-primary">Thanh toán</button>
+                        <a href="index.php?controller=cart&action=index" class="btn btn-cancel">Quay lại giỏ hàng</a>
+                    </form>
+                </div>
             </div>
-        </div>
-    </main>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // 1. Khai báo các biến
-        const labelChooser = document.querySelector('.label-chooser'); // QUAN TRỌNG: Dòng này để lấy khung nút chọn nhãn
-        const savedWrap = document.getElementById('savedAddressWrap');
-        const savedSelect = document.getElementById('savedAddressSelect');
-
-        const recName = document.getElementById('recName');
-        const recPhone = document.getElementById('recPhone');
-        const recAddress = document.getElementById('recAddress');
-
-        const profileUrl = 'index.php?controller=user&action=profile';
-        
-        // Xử lý nút chọn nhãn (Văn phòng / Nhà riêng)
-        document.querySelectorAll('.addr-btn').forEach(b => b.addEventListener('click', function() {
-            document.querySelectorAll('.addr-btn').forEach(x => x.classList.remove('active'));
-            this.classList.add('active');
-            document.getElementById('address_label').value = this.dataset.val || '';
-        }));
-
-        // 2. Các hàm xử lý logic
-        function useSaved() {
-            if (savedWrap) savedWrap.style.display = 'block';
-            // Ẩn nút chọn nhãn vì dùng địa chỉ cũ thì không cần chọn lại
-            if (labelChooser) labelChooser.style.display = 'none';
-            
-            // Nếu có chọn địa chỉ nào đó thì điền vào form
-            if (savedSelect && savedSelect.value) {
-                const o = savedSelect.options[savedSelect.selectedIndex];
-                recName.value = o.dataset.name || '';
-                recPhone.value = o.dataset.phone || '';
-                recAddress.value = o.dataset.address || '';
-                document.getElementById('address_label').value = o.dataset.label || '';
-            } else {
-                // Nếu chưa chọn dòng nào (đang ở "-- Chọn địa chỉ --") thì để trống
-                recName.value = '';
-                recPhone.value = '';
-                recAddress.value = '';
-            }
-        }
-
-        // 3. Bắt sự kiện khi chuyển đổi radio
-        const mode = document.getElementsByName('recipient_mode');
-        mode.forEach(r => r.addEventListener('change', function() {
-            // Chỉ còn 2 trường hợp
-            if (this.value === 'saved') {
-                useSaved();
-            }
-            else if (this.value === 'new') {
-                // Nếu chọn "Nhập thông tin mới" -> CHUYỂN TRANG
-                if(confirm('Bạn cần sang trang Cá nhân để thêm địa chỉ mới. Chuyển ngay?')) {
-                    window.location.href = profileUrl;
-                } else {
-                    // Nếu bấm Hủy, quay lại tích vào ô cũ
-                    document.querySelector('input[value="saved"]').checked = true;
-                }
-            }
-        }));
-
-        // 4. Bắt sự kiện khi chọn dropdown địa chỉ
-        if (savedSelect) savedSelect.addEventListener('change', function() {
-            const o = this.options[this.selectedIndex];
-            if (o.value) {
-                 recName.value = o.dataset.name || '';
-                 recPhone.value = o.dataset.phone || '';
-                 recAddress.value = o.dataset.address || '';
-                 document.getElementById('address_label').value = o.dataset.label || '';
-            } else {
-                 // Nếu chọn lại về "-- Chọn địa chỉ --"
-                 recName.value = '';
-                 recPhone.value = '';
-                 recAddress.value = '';
-            }
-        });
-        document.querySelector('input[value="saved"]').checked = true;
-
-        // 5. Khởi tạo mặc định: Chạy useSaved để hiện dropdown và ẩn nút nhãn
-        useSaved();
-    });
-</script>
-</body>
-
-</html>
+        <?php endif; ?>
+    </div>
+</main>
+<link rel="stylesheet" href="/Shop_Website/Assets/CSS/Cart/Checkout.css">
