@@ -167,21 +167,6 @@ class UserController
         header('Location: index.php');
         exit;
     }
-    public function addressAction()
-    {
-        // Kiểm tra đăng nhập
-        if (empty($_SESSION['user'])) {
-            header('Location: index.php?controller=user&action=login');
-            exit;
-        }
-
-        // TODO: Sau này bạn sẽ gọi Model để lấy danh sách địa chỉ thật từ DB
-        // $addresses = $this->userModel->getUserAddresses($_SESSION['user']['id']);
-
-        include("View/Layout/Header.php");
-        include("View/User/Address.php");
-        include("View/Layout/Footer.php");
-    }
 
     public function addAddressAction()
     {
@@ -217,5 +202,72 @@ class UserController
         include("View/User/AddAddress.php");
         include("View/Layout/Footer.php");
     }
+
+    public function addressAction()
+    {
+        if (empty($_SESSION['user'])) {
+            header("Location: index.php?controller=user&action=login");
+        }
+
+        $userId = $_SESSION['user']['id'];
+
+        $addresses = $this->userModel->showAddress($userId);
+
+        include("View/Layout/Header.php");
+        include("View/User/Address.php");
+        include("View/Layout/Footer.php");
+    }
+    public function deleteAddressAction()
+    {
+        if (empty($_SESSION['user'])) {
+            header("Location: index.php?controller=user&action=login");
+        }
+
+        $id = $_GET['id'] ?? null;
+        $userId = $_SESSION['user']['id'];
+
+        if ($id) {
+            $this->userModel->deleteAddress($id, $userId);
+        }
+
+        header("Location: index.php?controller=user&action=address");
+        exit;
+    }
+    public function editAddressAction()
+    {
+        if (empty($_SESSION['user'])) {
+            header("Location: index.php?controller=user&action=login");
+            exit;
+        }
+
+        $userId = $_SESSION['user']['id'];
+        $id = $_GET['id'] ?? 0; 
+
+        if ($_SERVER["REQUEST_METHOD"] === "POST") {
+            $fullname = $_POST['fullname'] ?? '';
+            $phone = $_POST['phone'] ?? '';
+            $address = $_POST['address'] ?? '';
+            $city = $_POST['city'] ?? '';
+            $district = $_POST['district'] ?? '';
+            $type = $_POST['address_type'] ?? 'home';
+
+            $result = $this->userModel->updateAddress($id, $userId, $fullname, $phone, $address, $city, $district, $type);
+            if ($result) {
+                header('Location: index.php?controller=user&action=address');
+                exit;
+            } else {
+                $error = "Lỗi khi cập nhật!";
+            }
+        }
+        $oldData = $this->userModel->getAddressById($id, $userId);
+
+        if (!$oldData) {
+            header('Location: index.php?controller=user&action=address');
+            exit;
+        }
+
+        include("View/Layout/Header.php");
+        include("View/User/UpdateAddress.php");
+        include("View/Layout/Footer.php");
+    }
 }
-?>

@@ -271,8 +271,9 @@ class UserModel
         }
         return $data;
     }
-    public function addAddress($userId, $fullname, $phone, $address, $city, $district, $type) {
-        $userId   = mysqli_real_escape_string($this->conn, $userId); 
+    public function addAddress($userId, $fullname, $phone, $address, $city, $district, $type)
+    {
+        $userId   = mysqli_real_escape_string($this->conn, $userId);
         $fullname = mysqli_real_escape_string($this->conn, $fullname);
         $phone    = mysqli_real_escape_string($this->conn, $phone);
         $address  = mysqli_real_escape_string($this->conn, $address);
@@ -284,6 +285,52 @@ class UserModel
 
         $sql = "INSERT INTO user_addresses(user_id,name,phone,address,label) VALUES('$userId','$fullname','$phone','$fullAddress','$type')";
 
-        return mysqli_query($this->conn,$sql);  
+        return mysqli_query($this->conn, $sql);
+    }
+    public function showAddress($userId)
+    {
+        $sql = "SELECT * FROM user_addresses WHERE user_id = '$userId' ";
+        return mysqli_query($this->conn, $sql);
+    }
+    public function deleteAddress($id, $userId)
+    {
+        $id = mysqli_real_escape_string($this->conn, $id);
+        $userId = mysqli_real_escape_string($this->conn, $userId);
+        $sql = "DELETE FROM user_addresses WHERE id = '$id' AND user_id = '$userId'";
+        return mysqli_query($this->conn, $sql);
+    }
+
+    public function getAddressById($id, $userId)
+    {
+        $id = mysqli_real_escape_string($this->conn, $id);
+        $userId = mysqli_real_escape_string($this->conn, $userId);
+
+        $sql = "SELECT * FROM user_addresses WHERE id = '$id' AND user_id = '$userId'";
+        $result = mysqli_query($this->conn, $sql);
+
+        return mysqli_fetch_assoc($result);
+    }
+    
+    public function updateAddress($id, $userId, $fullname, $phone, $address, $city, $district, $type)
+    {
+        $id = mysqli_real_escape_string($this->conn, $id);
+        $userId = mysqli_real_escape_string($this->conn, $userId);
+        $fullname = mysqli_real_escape_string($this->conn, $fullname);
+        $phone = mysqli_real_escape_string($this->conn, $phone);
+        $address = mysqli_real_escape_string($this->conn, $address);
+        $city = mysqli_real_escape_string($this->conn, $city);
+        $district = mysqli_real_escape_string($this->conn, $district);
+        $type = mysqli_real_escape_string($this->conn, $type);
+
+        $fullAddress = $address . "," . $district . "," . $city;
+
+        $sql = "UPDATE user_addresses
+                SET name = '$fullname',
+                    phone = '$phone',
+                    address = '$fullAddress',
+                    label = '$type'
+                    WHERE id = '$id' AND user_id = '$userId'";
+        return mysqli_query($this->conn, $sql);
+                    
     }
 }
