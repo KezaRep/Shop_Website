@@ -1,130 +1,118 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+// Nhớ include Model
+include_once("Model/Cart/CartModel.php");
 
-include_once "Model/Product/ProductModel.php";
+class CartController {
+    public $cartModel;
 
-class CartController
-{
-    // ============================
-    // ADD TO CART
-    // ============================
-    public function addAction()
-    {
-        if (!isset($_POST['product_id'])) {
-            die("Thiếu product_id");
-        }
-
-        $id = (int) $_POST['product_id'];
-        $qty = isset($_POST['quantity']) ? (int) $_POST['quantity'] : 1;
-
-        $productModel = new ProductModel();
-        $product = $productModel->getProductById($id);
-
-        if (!$product) {
-            die("Sản phẩm không tồn tại!");
-        }
-
-        // Convert object -> array để lưu vào session
-        $item = [
-            'id'       => $product->id,
-            'name'     => $product->name,
-            'price'    => (int) $product->price,
-            'quantity' => $qty,
-            'image'    => $product->image
-        ];
-
-        if (!isset($_SESSION['cart'])) {
-            $_SESSION['cart'] = [];
-        }
-
-        // Nếu đã tồn tại thì tăng số lượng
-        $found = false;
-        foreach ($_SESSION['cart'] as &$cart_item) {
-            if ($cart_item['id'] == $id) {
-                $cart_item['quantity'] += $qty;
-                $found = true;
-                break;
-            }
-        }
-
-        if (!$found) {
-            $_SESSION['cart'][] = $item;
-        }
-
-        header("Location: index.php?controller=cart&action=index");
-        exit;
+    public function __construct() {
+        $this->cartModel = new CartModel();
     }
 
-    // ============================
-    // SHOW CART
-    // ============================
-    public function indexAction()
-    {
-        $cart = $_SESSION['cart'] ?? [];
-        include "View/Layout/Header.php";
-        include "View/Cart/CartIndex.php";
-        include "View/Layout/Footer.php";
-    }
-
-    // ============================
-    // UPDATE ITEM
-    // ============================
-    public function updateAction()
-    {
-        if (!isset($_POST['id']) || !isset($_POST['change'])) {
-            die("Thiếu dữ liệu cập nhật giỏ hàng");
-        }
-
-        $id = (int) $_POST['id'];
-        $change = $_POST['change']; // "+" hoặc "-"
-
-        if (!isset($_SESSION['cart'])) {
-            header("Location: index.php?controller=cart&action=index");
+    public function addAction() {
+        // 1. Kiểm tra đăng nhập
+        // Vì lưu vào DB nên bắt buộc phải có User ID
+        if (empty($_SESSION['user'])) {
+            // Chưa đăng nhập thì đá về trang login
+            header("Location: index.php?controller=user&action=login");
             exit;
         }
 
-        foreach ($_SESSION['cart'] as &$item) {
-            if ($item['id'] == $id) {
+        // 2. Lấy dữ liệu
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $userId = $_SESSION['user']['id'];
+            $productId = intval($_POST['product_id']);
+            $quantity = intval($_POST['quantity']);
 
-                if ($change === '+') {
-                    $item['quantity']++;
-                }
+            if ($quantity <= 0) $quantity = 1; // Validate số lượng tối thiểu
 
-                if ($change === '-') {
-                    $item['quantity']--;
-                    if ($item['quantity'] <= 0) {
-                        $item['quantity'] = 1;
-                    }
-                }
+            // 3. Kiểm tra sản phẩm đã tồn tại trong giỏ chưa
+            $existingItem = $this->cartModel->checkProductInCart($userId, $productId);
 
-                break;
+            if ($existingItem) {
+                // TRƯỜNG HỢP A: Đã có -> Cộng dồn số lượng
+                $newQuantity = $existingItem['quantity'] + $quantity;
+                $this->cartModel->updateQuantity($existingItem['id'], $newQuantity);
+            } else {
+                // TRƯỜNG HỢP B: Chưa có -> Thêm mới
+                $this->cartModel->addToCart($userId, $productId, $quantity);
             }
+
+            // 4. Thông báo và chuyển hướng
+            // Có thể set session thông báo thành công nếu muốn
+            // Chuyển hướng về trang giỏ hàng hoặc trang sản phẩm vừa xem
+            header("Location: index.php?controller=cart&action=index"); 
+            exit;
+        }
+    }
+    
+    // Hàm hiển thị giỏ hàng (Cập nhật lại từ bài trước để dùng DB)
+    public function indexAction() {
+         if (empty($_SESSION['user'])) {
+            header("Location: index.php?controller=user&action=login");
+            exit;
+        }
+        
+        $userId = $_SESSION['user']['id'];
+        // Lấy giỏ hàng từ DB thay vì Session
+        $cartResult = $this->cartModel->getCartByUser($userId);
+        
+        $cart = [];
+        while($row = mysqli_fetch_assoc($cartResult)) {
+            $cart[] = $row;
         }
 
+        include("View/Layout/Header.php");
+        include("View/Cart/CartIndex.php"); // View giỏ hàng
+        include("View/Layout/Footer.php");
+    }
+    public function deleteAction() {
+        // Kiểm tra đăng nhập
+        if (empty($_SESSION['user'])) {
+            header("Location: index.php?controller=user&action=login");
+            exit;
+        }
+
+        // Lấy ID từ URL (phương thức GET)
+        $id = $_GET['id'] ?? 0;
+
+        if ($id) {
+            $this->cartModel->deleteCart($id);
+        }
+
+        // Quay lại trang giỏ hàng
         header("Location: index.php?controller=cart&action=index");
         exit;
     }
 
-    public function deleteAction()
-    {
-        if (!isset($_GET['id'])) {
-            die("Thiếu id sản phẩm để xóa");
+    public function updateAjaxAction() {
+        header('Content-Type: application/json');
+
+        if (empty($_SESSION['user'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Chưa đăng nhập']);
+            exit;
         }
 
-        $id = (int) $_GET['id'];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $cartId = $_POST['cart_id'] ?? 0;
+            $qty = intval($_POST['quantity'] ?? 0);
 
-        if (isset($_SESSION['cart'])) {
-            foreach ($_SESSION['cart'] as $key => $item) {
-                if ($item['id'] == $id) {
-                    unset($_SESSION['cart'][$key]);
-                    break;
-                }
+            if ($qty < 1) $qty = 1;
+
+            $result = $this->cartModel->updateQuantity($cartId, $qty);
+
+            if ($result) {
+                $item = $this->cartModel->getCartItemById($cartId);
+                
+                echo json_encode([
+                    'status' => 'success', 
+                    'message' => 'Cập nhật thành công'
+                ]);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Lỗi DB']);
             }
+            exit;
         }
-
-        header("Location: index.php?controller=cart&action=index");
-        exit;
     }
 }
+?>

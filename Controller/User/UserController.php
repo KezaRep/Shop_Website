@@ -82,18 +82,21 @@ class UserController
     }
     public function editAction()
     {
-        // Redirect nếu chưa đăng nhập
+        // 1. Kiểm tra đăng nhập
         if (empty($_SESSION['user'])) {
             header('Location: index.php?controller=user&action=login');
             exit;
         }
 
         $userId = $_SESSION['user']['id'];
+
+        // Lấy thông tin User hiện tại
         $user = $this->userModel->getUserById($userId);
 
         $error = '';
         $success = '';
 
+        // 2. Xử lý logic khi bấm nút LƯU (POST request)
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Lấy dữ liệu từ form
             $username = trim($_POST['username'] ?? '');
@@ -124,6 +127,7 @@ class UserController
                 } elseif ($this->userModel->isEmailExists($email) && $email != $user->email) {
                     $error = "Email đã tồn tại!";
                 } else {
+                    // Update dữ liệu
                     $user->username = $username;
                     $user->email = $email;
 
@@ -133,16 +137,20 @@ class UserController
                         $this->userModel->updateUserPassword($userId, $password);
                     }
 
+                    // Cập nhật lại Session
                     $_SESSION['user']['username'] = $username;
                     $_SESSION['user']['email'] = $email;
 
                     $success = "Cập nhật thông tin thành công!";
                 }
             }
-
             $user = $this->userModel->getUserById($userId);
         }
 
+        $addressResult = $this->userModel->showAddress($userId);
+        $defaultAddress = mysqli_fetch_assoc($addressResult);
+
+        // 4. Gọi View
         include("View/Layout/Header.php");
         include("View/User/Edit.php");
         include("View/Layout/Footer.php");
@@ -241,7 +249,7 @@ class UserController
         }
 
         $userId = $_SESSION['user']['id'];
-        $id = $_GET['id'] ?? 0; 
+        $id = $_GET['id'] ?? 0;
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $fullname = $_POST['fullname'] ?? '';

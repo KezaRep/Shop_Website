@@ -92,7 +92,7 @@ function productImageSrc($img)
                                 <button class="qty-btn" type="button">−</button>
                                 <input type="number" id="qty" name="quantity" value="1" min="1"
                                     max="<?= intval($product->quantity ?? 100) ?>">
-                                <button class="qty-btn" type="button">+</button>
+                                <button class="qty-btn plus" type="button">+</button>
                             </div>
                         </div>
 
@@ -251,74 +251,48 @@ function productImageSrc($img)
         </div>
     </main>
 
-
     <script>
-        // quantity control
-        document.querySelectorAll('.qty-btn').forEach(btn => {
-            btn.addEventListener('click', function (e) {
-                e.preventDefault();
-                const qty = document.getElementById('qty');
-                const max = parseInt(qty.max) || 100;
-                if (this.textContent.trim() === '−') {
-                    qty.value = Math.max(1, parseInt(qty.value) - 1);
-                } else {
-                    qty.value = Math.min(max, parseInt(qty.value) + 1);
-                }
-            });
-        });
+    document.addEventListener("DOMContentLoaded", function() {
+        const qtyInput = document.getElementById('qty');      
+        const qtyField = document.getElementById('qtyField'); 
+        const btnMinus = document.querySelector('.qty-btn.minus') || document.querySelectorAll('.qty-btn')[0];
+        const btnPlus  = document.querySelector('.qty-btn.plus')  || document.querySelectorAll('.qty-btn')[1];
 
-        function addQtyToForm() {
-            document.getElementById('qtyInput').value = document.getElementById('qty').value;
+        function updateHiddenField() {
+            qtyField.value = qtyInput.value;
         }
 
-        function changeImage(src) {
-            document.getElementById('mainImage').src = src;
-        }
-
-        // tabs (single review tab used)
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const tab = this.dataset.tab;
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                this.classList.add('active');
-                if (tab) document.getElementById(tab).classList.add('active');
-            });
-        });
-
-        // star input: hover & click
-        (function () {
-            const starsContainer = document.getElementById('starsInput');
-            const ratingInput = document.getElementById('ratingValue');
-            if (starsContainer && ratingInput) {
-                const stars = starsContainer.querySelectorAll('.star');
-
-                function setVisual(r) {
-                    stars.forEach(s => {
-                        const v = parseInt(s.dataset.value, 10);
-                        s.classList.toggle('filled', v <= r);
-                    });
-                }
-
-                setVisual(parseInt(ratingInput.value, 10) || 5);
-
-                stars.forEach(s => {
-                    s.addEventListener('mouseenter', () => {
-                        const v = parseInt(s.dataset.value, 10);
-                        setVisual(v);
-                    });
-                    s.addEventListener('mouseleave', () => {
-                        setVisual(parseInt(ratingInput.value, 10) || 5);
-                    });
-                    s.addEventListener('click', () => {
-                        const v = parseInt(s.dataset.value, 10);
-                        ratingInput.value = v;
-                        setVisual(v);
-                    });
-                });
+        btnMinus.addEventListener('click', function() {
+            let currentValue = parseInt(qtyInput.value) || 1;
+            if (currentValue > 1) {
+                qtyInput.value = currentValue - 1;
+                updateHiddenField(); 
             }
-        })();
-    </script>
+        });
+
+        btnPlus.addEventListener('click', function() {
+            let currentValue = parseInt(qtyInput.value) || 1;
+            let max = parseInt(qtyInput.getAttribute('max')) || 100;
+            
+            if (currentValue < max) {
+                qtyInput.value = currentValue + 1;
+                updateHiddenField(); 
+            }
+        });
+
+        qtyInput.addEventListener('input', function() {
+            // Kiểm tra max min
+            let val = parseInt(this.value);
+            let max = parseInt(this.getAttribute('max'));
+            let min = parseInt(this.getAttribute('min'));
+
+            if (val > max) this.value = max;
+            if (val < min) this.value = min;
+            
+            updateHiddenField();
+        });
+    });
+</script>
 </body>
 
 </html>

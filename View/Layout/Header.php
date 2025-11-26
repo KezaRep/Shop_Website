@@ -1,4 +1,18 @@
 <?php
+$cartCount = 0;
+if (!empty($_SESSION['user'])) {
+    include_once("Model/Cart/CartModel.php");
+
+    $cartModelHeader = new CartModel();
+    $userId = $_SESSION['user']['id'];
+
+    $cartResult = $cartModelHeader->getCartByUser($userId);
+
+    if ($cartResult) {
+        $cartCount = mysqli_num_rows($cartResult);
+    }
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -51,9 +65,9 @@
                 </a>
             <?php endif; ?>
 
-            <a href="#" class="header-icon cart-icon" title="Giỏ hàng" id="cartBtn">
+            <a href="index.php?controller=cart&action=index" class="header-icon cart-icon" title="Giỏ hàng" id="cartBtn">
                 <i class="fas fa-shopping-cart"></i>
-                <span class="cart-badge" id="cartCount">0</span>
+                <span class="cart-badge" id="cartCount"><?php echo $cartCount ?></span>
             </a>
             <!-- Mini Cart Label -->
             <div class="mini-cart" id="miniCart">
@@ -67,23 +81,5 @@
 </body>
 
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const cartBtn = document.getElementById('cartBtn');
-        const miniCart = document.getElementById('miniCart');
-
-        cartBtn.addEventListener('click', function (e) {
-            e.preventDefault();
-            miniCart.classList.toggle('active');
-        });
-
-        // Click ra ngoài thì ẩn label
-        document.addEventListener('mousedown', function (event) {
-            if (!miniCart.contains(event.target) && !cartBtn.contains(event.target)) {
-                miniCart.classList.remove('active');
-            }
-        });
-    });
-</script>
 
 </html>
