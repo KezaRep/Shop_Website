@@ -133,11 +133,19 @@ class ProductModel
         }
         return $products;
     }
-    public function addProduct($name, $price, $image, $description, $seller_id, $quantity, $category_id)
+    public function addProduct($name, $price, $image, $video_url, $description, $seller_id, $quantity, $category_id)
     {
-        $sql = "INSERT INTO products (name, price, image, description, seller_id, quantity, sold, rating, category_id, created_at) VALUES (?, ?, ?, ?, ?, ?, 0, 0, ?, NOW())";
+        // Câu lệnh SQL thêm cột video_url
+        // Cột 'image' bây giờ lưu chuỗi đường dẫn, không phải BLOB
+        $sql = "INSERT INTO products (name, price, image, video_url, description, seller_id, quantity, sold, rating, category_id, created_at) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0, ?, NOW())";
+        
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("sdssiii", $name, $price, $image, $description, $seller_id, $quantity, $category_id);
+        
+        // Kiểu dữ liệu: 
+        // s (name), d (price), s (image path), s (video path), s (desc), i (seller), i (qty), i (category)
+        $stmt->bind_param("sdsssiii", $name, $price, $image, $video_url, $description, $seller_id, $quantity, $category_id);
+        
         return $stmt->execute();
     }
     public function updateProductQuantity($product_id, $new_quantity)

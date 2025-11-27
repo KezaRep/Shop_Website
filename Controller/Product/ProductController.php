@@ -39,14 +39,33 @@ class ProductController
             $quantity = isset($_POST['quantity']) ? (int) $_POST['quantity'] : 0;
             $category_id = isset($_POST['category_id']) ? (int) $_POST['category_id'] : 0;
 
+            $targetDir = "Assets/Uploads/Products/";
+
             // Xử lý ảnh upload (lưu vào DB dưới dạng binary BLOB)
-            $imageData = '';
-            if (!empty($_FILES['image']['tmp_name']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
-                $imageData = file_get_contents($_FILES['image']['tmp_name']);
+            $imagePath = ""; // Mặc định rỗng hoặc đường dẫn ảnh default
+            if (!empty($_FILES['image']['name'])) {
+                // Tạo tên file mới để tránh trùng: timestamp_tenfilegoc
+                $fileName = time() . "_" . basename($_FILES["image"]["name"]);
+                $targetFilePath = $targetDir . $fileName;
+                
+                // Di chuyển file vào thư mục
+                if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFilePath)) {
+                    $imagePath = $targetFilePath; // Lưu chuỗi "Assets/Uploads/Products/..."
+                }
+            }
+
+            $videoPath = NULL; // Mặc định NULL
+            if (!empty($_FILES['video']['name'])) {
+                $videoName = time() . "_" . basename($_FILES["video"]["name"]);
+                $targetVideoPath = $targetDir . $videoName;
+                
+                if (move_uploaded_file($_FILES["video"]["tmp_name"], $targetVideoPath)) {
+                    $videoPath = $targetVideoPath;
+                }
             }
 
             // Thêm product
-            $ok = $this->productModel->addProduct($name, $price, $imageData, $description, $seller_id, $quantity, $category_id);
+            $ok = $this->productModel->addProduct($name, $price, $imagePath, $videoPath, $description, $seller_id, $quantity, $category_id);
 
             // Redirect về danh sách hoặc hiển thị thông báo
             if ($ok) {

@@ -2,9 +2,9 @@
 $headerTitle = "Kết quả tìm kiếm";
 ?>
 <?php
-include_once("Core/Database.php"); 
+include_once("Core/Database.php");
 
-$db = new Database();           
+$db = new Database();
 $conn = $db->getConnection();
 
 if (!$conn) {
@@ -165,11 +165,20 @@ if ($result) {
                             <article class="product-card">
                                 <a href="index.php?controller=product&action=detail&id=<?= $p_id ?>">
                                     <div class="product-media">
-                                        <?php if (!empty($product->image)) { ?>
-                                            <img src="data:image/jpeg;base64,<?= base64_encode($product->image) ?>" alt="<?= htmlspecialchars($product->name) ?>">
-                                        <?php } else { ?>
-                                            <div class="no-image">No Image</div>
-                                        <?php } ?>
+                                        <?php
+                                        // Kiểm tra xem có ảnh không
+                                        if (!empty($product->image)) {
+                                        ?>
+                                            <img src="<?= htmlspecialchars($product->image) ?>"
+                                                alt="<?= htmlspecialchars($product->name) ?>"
+                                                style="width: 100%; height: 100%; object-fit: cover;">
+                                        <?php
+                                        } else {
+                                        ?>
+                                            <img src="Assets/Images/placeholder-product-1.jpg" alt="No Image">
+                                        <?php
+                                        }
+                                        ?>
                                     </div>
                                     <div class="product-body">
                                         <h4 class="product-title"><?= htmlspecialchars($product->name) ?></h4>
@@ -219,7 +228,6 @@ if ($result) {
                 b.classList.add('active');
             });
         });
-
     </script>
 </body>
 
