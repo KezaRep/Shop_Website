@@ -22,12 +22,21 @@ class ProductController
     }
     public function searchAction()
     {
-        $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : '';
+        $keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
+
+        // Lấy danh sách sản phẩm gần đúng theo từ khóa
         $productList = $this->productModel->searchProducts($keyword);
+
+        $Shop = $this->userModel->searchOneUser($keyword); // dùng hàm mới
+
+        // Chuyển biến Shop xuống view
+        $shop = $Shop; // đặt lại biến để view dùng thống nhất
+
         include("View/Layout/Header.php");
         include("View/Product/ProductList.php");
         include("View/Layout/Footer.php");
     }
+
     public function addAction()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -41,21 +50,21 @@ class ProductController
 
             $targetDir = "Assets/Uploads/Products/";
 
-            $imagePath = ""; 
+            $imagePath = "";
             if (!empty($_FILES['image']['name'])) {
                 $fileName = time() . "_" . basename($_FILES["image"]["name"]);
                 $targetFilePath = $targetDir . $fileName;
-                
+
                 if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFilePath)) {
-                    $imagePath = $targetFilePath; 
+                    $imagePath = $targetFilePath;
                 }
             }
 
-            $videoPath = NULL; 
+            $videoPath = NULL;
             if (!empty($_FILES['video']['name'])) {
                 $videoName = time() . "_" . basename($_FILES["video"]["name"]);
                 $targetVideoPath = $targetDir . $videoName;
-                
+
                 if (move_uploaded_file($_FILES["video"]["tmp_name"], $targetVideoPath)) {
                     $videoPath = $targetVideoPath;
                 }
@@ -176,18 +185,19 @@ class ProductController
     public function checkoutAction()
     {
         // Khởi động session nếu chưa có
-        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (session_status() === PHP_SESSION_NONE)
+            session_start();
 
         $cart = [];
 
         // TRƯỜNG HỢP 1: Bấm nút "MUA NGAY" (POST từ trang chi tiết)
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id'])) {
-            $productId = (int)$_POST['product_id'];
-            $qty = (int)($_POST['quantity'] ?? 1);
-            
+            $productId = (int) $_POST['product_id'];
+            $qty = (int) ($_POST['quantity'] ?? 1);
+
             // Gọi Model lấy thông tin sản phẩm
             $product = $this->productModel->getProductById($productId);
-            
+
             if ($product) {
                 // Tạo mảng sản phẩm
                 $item = [
@@ -202,10 +212,10 @@ class ProductController
                 // Lưu ngay sản phẩm này vào Session Cart
                 // Để tí nữa bấm "Đặt hàng" thì hàm submitOrderAction nó mới thấy dữ liệu
                 $_SESSION['cart'] = [$item];
-                
+
                 $cart = $_SESSION['cart'];
             }
-        } 
+        }
         // TRƯỜNG HỢP 2: Vào Checkout từ Giỏ hàng (nếu sau này bạn làm)
         else {
             $cart = $_SESSION['cart'] ?? [];
@@ -216,7 +226,7 @@ class ProductController
             echo "<script>alert('Chưa có sản phẩm nào để thanh toán!'); window.location.href='index.php';</script>";
             return;
         }
-        
+
         // --- ĐOẠN DƯỚI GIỮ NGUYÊN ---
         // Lấy thông tin người dùng để điền sẵn vào form
         $profileName = "";
@@ -225,7 +235,7 @@ class ProductController
         $savedAddresses = [];
 
         if (isset($_SESSION['user'])) {
-            $userId = (int)$_SESSION['user']['id'];
+            $userId = (int) $_SESSION['user']['id'];
             $currentUser = $this->userModel->getUserById($userId);
 
             if ($currentUser) {
@@ -239,7 +249,7 @@ class ProductController
             }
 
             $profileAsAddress = [
-                'id' => 'profile', 
+                'id' => 'profile',
                 'name' => $profileName,
                 'phone' => $profilePhone,
                 'address' => $profileAddress,
@@ -255,10 +265,10 @@ class ProductController
     }
     public function submitOrderAction()
     {
-        
+
         if (!isset($_SESSION['user'])) {
-             echo "<script>alert('Vui lòng đăng nhập để thanh toán!'); window.location.href='index.php?controller=user&action=login';</script>";
-             return;
+            echo "<script>alert('Vui lòng đăng nhập để thanh toán!'); window.location.href='index.php?controller=user&action=login';</script>";
+            return;
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -267,8 +277,8 @@ class ProductController
             $conn = $db->getConnection();
 
             $userId = $_SESSION['user']['id'];
-            $recName = $_POST['name'] ?? '';      
-            $recPhone = $_POST['phone'] ?? '';    
+            $recName = $_POST['name'] ?? '';
+            $recPhone = $_POST['phone'] ?? '';
             $recAddress = $_POST['address'] ?? '';
             $note = $_POST['note'] ?? '';
 
@@ -299,10 +309,10 @@ class ProductController
             $sqlOrder = "INSERT INTO orders (user_id, total_money, note, status, created_at, recipient_name, recipient_phone, recipient_address) 
                          VALUES (?, ?, ?, 'pending', NOW(), ?, ?, ?)";
 
-                         $stmt = $conn->prepare($sqlOrder);
+            $stmt = $conn->prepare($sqlOrder);
             if ($stmt) {
                 $stmt->bind_param("idssss", $userId, $totalMoney, $note, $recName, $recPhone, $recAddress);
-                
+
                 if ($stmt->execute()) {
                     $orderId = $conn->insert_id; // Lấy ID đơn hàng vừa tạo
 
@@ -314,7 +324,7 @@ class ProductController
                         $pId = intval($item['product_id']);
                         $pPrice = floatval($item['price']);
                         $pQty = intval($item['quantity']);
-                        
+
                         // Lưu từng dòng sản phẩm
                         $stmtDetail->bind_param("iid", $orderId, $pId, $pPrice, $pQty);
                         $stmtDetail->execute();
@@ -323,7 +333,7 @@ class ProductController
 
                     // -- BƯỚC 3: HOÀN TẤT --
                     unset($_SESSION['cart']); // Xóa giỏ hàng sau khi mua xong
-                    
+
                     echo "<script>alert('Đặt hàng thành công! Mã đơn: #$orderId'); window.location.href='index.php';</script>";
                 } else {
                     echo "Lỗi khi tạo đơn hàng: " . $stmt->error;

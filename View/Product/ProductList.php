@@ -13,8 +13,9 @@ if (!$conn) {
 mysqli_set_charset($conn, "utf8");
 
 $limit = 40;
-$page = isset($_GET['page']) ? (int)$_GET["page"] : 1;
-if ($page < 1) $page = 1;
+$page = isset($_GET['page']) ? (int) $_GET["page"] : 1;
+if ($page < 1)
+    $page = 1;
 $offset = ($page - 1) * $limit;
 
 $productList = [];
@@ -32,7 +33,7 @@ if ($sort == 'new') {
 
 if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
     $keyword = $_GET['keyword'];
-    $safe_keyword = mysqli_real_escape_string($conn,     $keyword);
+    $safe_keyword = mysqli_real_escape_string($conn, $keyword);
 
     $sql_count = "SELECT COUNT(*) as total FROM products WHERE name LIKE '%$safe_keyword%'";
     $sql = "SELECT * FROM products WHERE name LIKE '%$safe_keyword%' $order_sql LIMIT $limit OFFSET $offset";
@@ -114,21 +115,41 @@ if ($result) {
             </aside>
 
             <section class="content">
+                <!-- Shop Card -->
                 <div class="shop-card">
                     <div class="shop-card__left">
                         <img src="Assets/Images/placeholder-avatar.png" alt="shop" class="shop-avatar">
                         <div>
-                            <h3 class="shop-name">Sản phẩm An</h3>
-                            <div class="shop-meta">trammhokami • 10 Người Theo Dõi • 24 Đang Theo</div>
+                            <h3 class="shop-name">
+                                <?= !empty($shop) ? htmlspecialchars($shop->username) : 'Tên shop' ?>
+                            </h3>
+                            <div class="shop-meta">
+                                <?= !empty($shop) ? ($shop->followers_count ?? 0) . ' Người Theo Dõi' : '' ?>
+                            </div>
+
                         </div>
                     </div>
                     <div class="shop-stats">
-                        <div><strong>10</strong><span>Sản Phẩm</span></div>
-                        <div><strong>5</strong><span>Đánh Giá</span></div>
-                        <div><strong>66%</strong><span>Tỷ Lệ Phản Hồi</span></div>
-                        <div><strong>trong vài giờ</strong><span>Thời gian phản hồi</span></div>
+                        <?php if (!empty($Shop)): ?>
+                            <div><strong><?= isset($Shop->product_count) ? $Shop->product_count : 0 ?></strong><span>Sản
+                                    Phẩm</span></div>
+                            <div><strong><?= isset($Shop->review_count) ? $Shop->review_count : 0 ?></strong><span>Đánh
+                                    Giá</span></div>
+                            <div><strong><?= isset($Shop->response_rate) ? $Shop->response_rate : '0%' ?></strong><span>Tỷ
+                                    Lệ Phản Hồi</span></div>
+                            <div>
+                                <strong><?= isset($Shop->response_time) ? $Shop->response_time : 'Chưa cập nhật' ?></strong><span>Thời
+                                    gian phản hồi</span>
+                            </div>
+                        <?php else: ?>
+                            <div><strong>0</strong><span>Sản Phẩm</span></div>
+                            <div><strong>0</strong><span>Đánh Giá</span></div>
+                            <div><strong>0%</strong><span>Tỷ Lệ Phản Hồi</span></div>
+                            <div><strong>Chưa cập nhật</strong><span>Thời gian phản hồi</span></div>
+                        <?php endif; ?>
                     </div>
                 </div>
+
 
                 <!-- Info line -->
                 <div class="results-info">
@@ -161,28 +182,30 @@ if ($result) {
                         foreach ($productList as $product) {
                             // Xử lý ID (đôi khi DB trả về p_id hoặc id)
                             $p_id = $product->id ?? $product->p_id ?? 0;
-                    ?>
+                            ?>
                             <article class="product-card">
                                 <a href="index.php?controller=product&action=detail&id=<?= $p_id ?>">
                                     <div class="product-media">
                                         <?php
                                         // Kiểm tra xem có ảnh không
                                         if (!empty($product->image)) {
-                                        ?>
+                                            ?>
                                             <img src="<?= htmlspecialchars($product->image) ?>"
                                                 alt="<?= htmlspecialchars($product->name) ?>"
                                                 style="width: 100%; height: 100%; object-fit: cover;">
-                                        <?php
+                                            <?php
                                         } else {
-                                        ?>
+                                            ?>
                                             <img src="Assets/Images/placeholder-product-1.jpg" alt="No Image">
-                                        <?php
+                                            <?php
                                         }
                                         ?>
                                     </div>
                                     <div class="product-body">
                                         <h4 class="product-title"><?= htmlspecialchars($product->name) ?></h4>
-                                        <div class="product-price"><?= number_format((float)$product->price, 0, ',', '.') ?> VNĐ</div>
+                                        <div class="product-price"><?= number_format((float) $product->price, 0, ',', '.') ?>
+                                            VNĐ
+                                        </div>
                                     </div>
                                 </a>
                             </article>
@@ -195,7 +218,8 @@ if ($result) {
                     <div class="pagination">
 
                         <?php if ($page > 1): ?>
-                            <a href="index.php?controller=product&action=list&page=<?= $page - 1 ?><?= $param ?>" class="arrow">&lt;</a>
+                            <a href="index.php?controller=product&action=list&page=<?= $page - 1 ?><?= $param ?>"
+                                class="arrow">&lt;</a>
                         <?php else: ?>
                             <span class="disabled">&lt;</span>
                         <?php endif; ?>
@@ -209,7 +233,8 @@ if ($result) {
                         <?php endfor; ?>
 
                         <?php if ($page < $total_page): ?>
-                            <a href="index.php?controller=product&action=list&page=<?= $page + 1 ?><?= $param ?>" class="arrow">&gt;</a>
+                            <a href="index.php?controller=product&action=list&page=<?= $page + 1 ?><?= $param ?>"
+                                class="arrow">&gt;</a>
                         <?php else: ?>
                             <span class="disabled">&gt;</span>
                         <?php endif; ?>

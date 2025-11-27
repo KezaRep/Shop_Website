@@ -274,12 +274,12 @@ class UserModel
     }
     public function addAddress($userId, $fullname, $phone, $address, $city, $district, $type)
     {
-        $userId   = mysqli_real_escape_string($this->conn, $userId);
+        $userId = mysqli_real_escape_string($this->conn, $userId);
         $fullname = mysqli_real_escape_string($this->conn, $fullname);
-        $phone    = mysqli_real_escape_string($this->conn, $phone);
-        $address  = mysqli_real_escape_string($this->conn, $address);
-        $city     = mysqli_real_escape_string($this->conn, $city);
-        $type     = mysqli_real_escape_string($this->conn, $type);
+        $phone = mysqli_real_escape_string($this->conn, $phone);
+        $address = mysqli_real_escape_string($this->conn, $address);
+        $city = mysqli_real_escape_string($this->conn, $city);
+        $type = mysqli_real_escape_string($this->conn, $type);
         $district = mysqli_real_escape_string($this->conn, $district);
 
         $fullAddress = $address . ", " . $district . ", " . $city;
@@ -311,7 +311,7 @@ class UserModel
 
         return mysqli_fetch_assoc($result);
     }
-    
+
     public function updateAddress($id, $userId, $fullname, $phone, $address, $city, $district, $type)
     {
         $id = mysqli_real_escape_string($this->conn, $id);
@@ -332,6 +332,34 @@ class UserModel
                     label = '$type'
                     WHERE id = '$id' AND user_id = '$userId'";
         return mysqli_query($this->conn, $sql);
-                    
+
     }
+    public function searchOneUser($keyword)
+    {
+        // Tránh lỗi null và SQL Injection
+        $keyword = trim($keyword);
+        if (empty($keyword)) {
+            return null;
+        }
+
+        $safe_keyword = mysqli_real_escape_string($this->conn, $keyword);
+
+        // Tìm user khớp gần đúng username hoặc email
+        $sql = "SELECT * FROM users 
+            WHERE username LIKE '%$safe_keyword%' 
+               OR email LIKE '%$safe_keyword%' 
+            ORDER BY username ASC
+            LIMIT 1";
+
+        $result = mysqli_query($this->conn, $sql);
+
+        if ($result && mysqli_num_rows($result) > 0) {
+            // Trả về object thay vì array
+            return mysqli_fetch_object($result);
+        }
+
+        return null; // nếu không tìm thấy
+    }
+
+
 }

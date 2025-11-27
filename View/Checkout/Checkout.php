@@ -152,4 +152,3 @@ $grandTotal = $totalPrice + $shippingFee;
     </div>
 </main>
 
-<?php require_once './View/Layout/Footer.php'; ?>
