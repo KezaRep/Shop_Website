@@ -4,14 +4,23 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 include_once("Model/User/UserModel.php");
 
+$product->extra_images = [
+    'Assets/Uploads/Products/image2.jpg' 
+];
+
 // $product, $related, $comments, $seller expected from controller
 function productImageSrc($img)
 {
-    if (empty($img))
+    if (empty($img)) {
         return '/Shop_Website/Assets/Images/placeholder-product-1.jpg';
-    if (@getimagesizefromstring($img)) {
-        return 'data:image/jpeg;base64,' . base64_encode($img);
     }
+
+    // Nếu ảnh là đường dẫn file (không phải base64)
+    // Kiểm tra xem đã có dấu / ở đầu chưa, nếu chưa thì thêm tên dự án vào
+    if (strpos($img, 'Assets/') === 0) {
+        return '/Shop_Website/' . $img;
+    }
+
     return $img;
 }
 ?>
@@ -34,19 +43,52 @@ function productImageSrc($img)
             <!-- Top: gallery + summary -->
             <div class="product-top">
                 <div class="product-gallery">
-                    <div class="main-img">
-                        <img id="mainImage" src="<?= productImageSrc($product->image ?? '') ?>"
-                            alt="<?= htmlspecialchars($product->name ?? '') ?>">
+
+                    <div class="main-media-viewer" style="width: 100%; aspect-ratio: 1/1; border: 1px solid #eee; border-radius: 4px; overflow: hidden; position: relative; background: #fff;">
+                        <?php if (!empty($product->video_url)): ?>
+                            <video id="mainVideo" controls style="width: 100%; height: 100%; object-fit: contain; background: #000; display: block;">
+                                <source src="/Shop_Website/<?= htmlspecialchars($product->video_url) ?>" type="video/mp4">
+                            </video>
+                            <img id="mainImage" src="" style="width: 100%; height: 100%; object-fit: contain; display: none;">
+
+                        <?php else: ?>
+                            <video id="mainVideo" controls style="width: 100%; height: 100%; object-fit: contain; background: #000; display: none;"></video>
+
+                            <img id="mainImage"
+                                src="<?= productImageSrc($product->image ?? '') ?>"
+                                style="width: 100%; height: 100%; object-fit: contain; display: block;">
+                        <?php endif; ?>
                     </div>
-                    <div class="thumbnails">
-                        <img src="<?= productImageSrc($product->image ?? '') ?>" alt="thumb" class="thumb active"
-                            onclick="changeImage(this.src)">
+
+                    <div class="thumbnails-row" style="display: flex; gap: 10px; margin-top: 10px; overflow-x: auto;">
+
+                        <?php if (!empty($product->video_url)): ?>
+                            <div class="thumb-item active" onclick="showMainVideo()"
+                                style="width: 60px; height: 60px; position: relative; cursor: pointer; border: 2px solid #ee4d2d; border-radius: 4px; overflow: hidden; background: #000;">
+
+                                <img src="<?= productImageSrc($product->image ?? '') ?>"
+                                    style="width: 100%; height: 100%; object-fit: cover; opacity: 0.6;">
+
+                                <i class="fas fa-play-circle"
+                                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ee4d2d; font-size: 24px; text-shadow: 0 0 5px rgba(0,0,0,0.8); z-index: 10;">
+                                </i>
+                            </div>
+                        <?php endif; ?>
+
+                        <div class="thumb-item" onclick="showMainImage('<?= productImageSrc($product->image ?? '') ?>', this)"
+                            style="width: 60px; height: 60px; cursor: pointer; border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
+                            <img src="/Shop_Website/<?= htmlspecialchars($product->image ?? '') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+
                         <?php if (!empty($product->extra_images) && is_array($product->extra_images)): ?>
                             <?php foreach ($product->extra_images as $ei): ?>
-                                <img src="<?= productImageSrc($ei) ?>" alt="thumb" class="thumb"
-                                    onclick="changeImage(this.src)">
+                                <div class="thumb-item" onclick="showMainImage('<?= productImageSrc($ei) ?>', this)"
+                                    style="width: 60px; height: 60px; cursor: pointer; border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
+                                    <img src="<?= productImageSrc($ei) ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
+
                     </div>
                 </div>
 
@@ -96,7 +138,7 @@ function productImageSrc($img)
                             </div>
                         </div>
 
-                        <form action="index.php?controller=cart&action=add&product_id=<?=htmlspecialchars($product->id) ?>" method="post" id="addCartForm">
+                        <form action="index.php?controller=cart&action=add&product_id=<?= htmlspecialchars($product->id) ?>" method="post" id="addCartForm">
                             <input type="hidden" name="product_id" value="<?= $product->id ?>">
                             <input type="hidden" name="quantity" id="qtyField" value="1" min="1"
                                 max="<?= intval($product->quantity ?? 100) ?>">
@@ -252,47 +294,96 @@ function productImageSrc($img)
     </main>
 
     <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const qtyInput = document.getElementById('qty');      
-        const qtyField = document.getElementById('qtyField'); 
-        const btnMinus = document.querySelector('.qty-btn.minus') || document.querySelectorAll('.qty-btn')[0];
-        const btnPlus  = document.querySelector('.qty-btn.plus')  || document.querySelectorAll('.qty-btn')[1];
+        document.addEventListener("DOMContentLoaded", function() {
+            const qtyInput = document.getElementById('qty');
+            const qtyField = document.getElementById('qtyField');
+            const btnMinus = document.querySelector('.qty-btn.minus') || document.querySelectorAll('.qty-btn')[0];
+            const btnPlus = document.querySelector('.qty-btn.plus') || document.querySelectorAll('.qty-btn')[1];
 
-        function updateHiddenField() {
-            qtyField.value = qtyInput.value;
+            function updateHiddenField() {
+                qtyField.value = qtyInput.value;
+            }
+
+            btnMinus.addEventListener('click', function() {
+                let currentValue = parseInt(qtyInput.value) || 1;
+                if (currentValue > 1) {
+                    qtyInput.value = currentValue - 1;
+                    updateHiddenField();
+                }
+            });
+
+            btnPlus.addEventListener('click', function() {
+                let currentValue = parseInt(qtyInput.value) || 1;
+                let max = parseInt(qtyInput.getAttribute('max')) || 100;
+
+                if (currentValue < max) {
+                    qtyInput.value = currentValue + 1;
+                    updateHiddenField();
+                }
+            });
+
+            qtyInput.addEventListener('input', function() {
+                // Kiểm tra max min
+                let val = parseInt(this.value);
+                let max = parseInt(this.getAttribute('max'));
+                let min = parseInt(this.getAttribute('min'));
+
+                if (val > max) this.value = max;
+                if (val < min) this.value = min;
+
+                updateHiddenField();
+            });
+        });
+    </script>
+    <script>
+        // Hàm hiển thị Video trên khung lớn
+        function showMainVideo() {
+            const video = document.getElementById('mainVideo');
+            const img = document.getElementById('mainImage');
+
+            // Ẩn ảnh, hiện video
+            img.style.display = 'none';
+            video.style.display = 'block';
+            video.play(); // Tự động phát khi bấm vào
+
+            // Xử lý viền cam active cho thumbnail
+            updateActiveThumb(0); // Giả sử video luôn là thumb đầu tiên
         }
 
-        btnMinus.addEventListener('click', function() {
-            let currentValue = parseInt(qtyInput.value) || 1;
-            if (currentValue > 1) {
-                qtyInput.value = currentValue - 1;
-                updateHiddenField(); 
+        // Hàm hiển thị Ảnh trên khung lớn
+        function showMainImage(src, thumbElement) {
+            const video = document.getElementById('mainVideo');
+            const img = document.getElementById('mainImage');
+
+            // Ẩn video, hiện ảnh
+            video.pause(); // Dừng video nếu đang chạy
+            video.style.display = 'none';
+
+            img.src = src;
+            img.style.display = 'block';
+
+            // Xử lý viền cam
+            document.querySelectorAll('.thumb-item').forEach(el => {
+                el.style.border = '1px solid #ddd';
+                el.classList.remove('active');
+            });
+            thumbElement.style.border = '2px solid #ee4d2d';
+            thumbElement.classList.add('active');
+        }
+
+        // Hàm phụ trợ update viền (cho video)
+        function updateActiveThumb(index) {
+            const thumbs = document.querySelectorAll('.thumb-item');
+            thumbs.forEach(el => {
+                el.style.border = '1px solid #ddd';
+                el.classList.remove('active');
+            });
+            if (thumbs[index]) {
+                thumbs[index].style.border = '2px solid #ee4d2d';
+                thumbs[index].classList.add('active');
             }
-        });
-
-        btnPlus.addEventListener('click', function() {
-            let currentValue = parseInt(qtyInput.value) || 1;
-            let max = parseInt(qtyInput.getAttribute('max')) || 100;
-            
-            if (currentValue < max) {
-                qtyInput.value = currentValue + 1;
-                updateHiddenField(); 
-            }
-        });
-
-        qtyInput.addEventListener('input', function() {
-            // Kiểm tra max min
-            let val = parseInt(this.value);
-            let max = parseInt(this.getAttribute('max'));
-            let min = parseInt(this.getAttribute('min'));
-
-            if (val > max) this.value = max;
-            if (val < min) this.value = min;
-            
-            updateHiddenField();
-        });
-    });
-</script>
+        }
+    </script>
 </body>
 
 </html>

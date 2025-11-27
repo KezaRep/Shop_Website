@@ -5,6 +5,7 @@ class Product
     public $name;
     public $price;
     public $image;
+    public $video_url;
     public $description;
     public $seller_id;
     public $quantity;
@@ -12,12 +13,16 @@ class Product
     public $rating;
     public $category_id;
     public $created_at;
-    public function __construct($id, $name, $price, $image, $description,$seller_id, $quantity, $sold, $rating, $category_id, $created_at)
+
+    public $extra_images = [];
+    
+    public function __construct($id, $name, $price, $image, $video_url, $description,$seller_id, $quantity, $sold, $rating, $category_id, $created_at)
     {
         $this->id = $id;
         $this->name = $name;
         $this->price = $price;
         $this->image = $image;
+        $this->video_url = $video_url;
         $this->description = $description;
         $this->seller_id = $seller_id;
         $this->quantity = $quantity;

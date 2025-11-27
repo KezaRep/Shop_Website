@@ -32,8 +32,125 @@ body {
     margin-bottom: 24px;
 }
 
+/* --- KHUNG MEDIA CHÍNH --- */
 .product-gallery {
-    width: 40%;
+    width: 100%;
+    /* Giới hạn chiều rộng khung ảnh để không bị quá to */
+    max-width: 450px;
+}
+
+.main-media-viewer {
+    width: 100%;
+    aspect-ratio: 1/1;
+    /* Luôn giữ tỉ lệ vuông 1:1 */
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #f5f5f5;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.main-media-viewer img,
+.main-media-viewer video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    /* Đảm bảo ảnh/video nằm trọn trong khung, không bị cắt */
+}
+
+/* --- THANH CUỘN THUMBNAIL (BÊN DƯỚI) --- */
+.thumbnails-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    overflow-x: auto;
+    /* Cho phép cuộn ngang nếu nhiều ảnh */
+    padding-bottom: 5px;
+    scrollbar-width: thin;
+    /* Thanh cuộn nhỏ cho Firefox */
+}
+
+/* Từng ô thumbnail */
+.thumb-item {
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    /* Cố định không bị co lại */
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    /* Để icon play căn theo ô này */
+    transition: border-color 0.2s;
+}
+
+.thumb-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Trạng thái đang chọn (Active) - Viền cam */
+.thumb-item.active {
+    border: 2px solid #ee4d2d !important;
+}
+
+.thumb-item:hover {
+    border-color: #ee4d2d;
+}
+
+.thumb-item .fa-play-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    /* Màu sắc và kích thước */
+    color: #fff;
+    font-size: 20px;
+
+    /* Thêm nền đen mờ để dễ nhìn trên mọi loại ảnh */
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    /* Bo tròn nền */
+    width: 30px;
+    /* Kích thước vùng bấm */
+    height: 30px;
+
+    /* Căn giữa icon trong vùng nền */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 10;
+    pointer-events: none;
+    /* Để bấm vào icon thì vẫn ăn sự kiện click của cha */
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+    /* Thêm bóng đổ */
+}
+
+.thumb-item .fa-play-circle {
+    z-index: 10 !important;
+    display: block !important;
+}
+
+/* Khi hover vào thumbnail video */
+.thumb-item:hover .fa-play-circle {
+    transform: translate(-50%, -50%) scale(1.2);
+    /* Phóng to nhẹ khi di chuột */
+}
+
+/* Hiệu ứng khi di chuột vào thumbnail video */
+.thumb-item:hover .fa-play-circle {
+    background-color: #ee4d2d;
+    /* Đổi sang màu cam khi hover */
+    transform: translate(-50%, -50%) scale(1.1);
+    /* Phóng to nhẹ */
+    transition: all 0.2s;
 }
 
 .main-img {

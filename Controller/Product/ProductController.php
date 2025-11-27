@@ -41,20 +41,17 @@ class ProductController
 
             $targetDir = "Assets/Uploads/Products/";
 
-            // Xử lý ảnh upload (lưu vào DB dưới dạng binary BLOB)
-            $imagePath = ""; // Mặc định rỗng hoặc đường dẫn ảnh default
+            $imagePath = ""; 
             if (!empty($_FILES['image']['name'])) {
-                // Tạo tên file mới để tránh trùng: timestamp_tenfilegoc
                 $fileName = time() . "_" . basename($_FILES["image"]["name"]);
                 $targetFilePath = $targetDir . $fileName;
                 
-                // Di chuyển file vào thư mục
                 if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFilePath)) {
-                    $imagePath = $targetFilePath; // Lưu chuỗi "Assets/Uploads/Products/..."
+                    $imagePath = $targetFilePath; 
                 }
             }
 
-            $videoPath = NULL; // Mặc định NULL
+            $videoPath = NULL; 
             if (!empty($_FILES['video']['name'])) {
                 $videoName = time() . "_" . basename($_FILES["video"]["name"]);
                 $targetVideoPath = $targetDir . $videoName;
