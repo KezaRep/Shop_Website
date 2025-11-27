@@ -4,16 +4,14 @@ include_once("Model/Cart/CartModel.php");
 
 class CartController {
     public $cartModel;
+    public $userModel;
 
     public function __construct() {
         $this->cartModel = new CartModel();
     }
 
     public function addAction() {
-        // 1. Kiểm tra đăng nhập
-        // Vì lưu vào DB nên bắt buộc phải có User ID
         if (empty($_SESSION['user'])) {
-            // Chưa đăng nhập thì đá về trang login
             header("Location: index.php?controller=user&action=login");
             exit;
         }
@@ -24,29 +22,22 @@ class CartController {
             $productId = intval($_POST['product_id']);
             $quantity = intval($_POST['quantity']);
 
-            if ($quantity <= 0) $quantity = 1; // Validate số lượng tối thiểu
+            if ($quantity <= 0) $quantity = 1; 
 
-            // 3. Kiểm tra sản phẩm đã tồn tại trong giỏ chưa
             $existingItem = $this->cartModel->checkProductInCart($userId, $productId);
 
             if ($existingItem) {
-                // TRƯỜNG HỢP A: Đã có -> Cộng dồn số lượng
                 $newQuantity = $existingItem['quantity'] + $quantity;
                 $this->cartModel->updateQuantity($existingItem['id'], $newQuantity);
             } else {
-                // TRƯỜNG HỢP B: Chưa có -> Thêm mới
                 $this->cartModel->addToCart($userId, $productId, $quantity);
             }
 
-            // 4. Thông báo và chuyển hướng
-            // Có thể set session thông báo thành công nếu muốn
-            // Chuyển hướng về trang giỏ hàng hoặc trang sản phẩm vừa xem
             header("Location: index.php?controller=cart&action=index"); 
             exit;
         }
     }
     
-    // Hàm hiển thị giỏ hàng (Cập nhật lại từ bài trước để dùng DB)
     public function indexAction() {
          if (empty($_SESSION['user'])) {
             header("Location: index.php?controller=user&action=login");
@@ -54,7 +45,6 @@ class CartController {
         }
         
         $userId = $_SESSION['user']['id'];
-        // Lấy giỏ hàng từ DB thay vì Session
         $cartResult = $this->cartModel->getCartByUser($userId);
         
         $cart = [];
@@ -67,20 +57,15 @@ class CartController {
         include("View/Layout/Footer.php");
     }
     public function deleteAction() {
-        // Kiểm tra đăng nhập
         if (empty($_SESSION['user'])) {
             header("Location: index.php?controller=user&action=login");
             exit;
         }
-
-        // Lấy ID từ URL (phương thức GET)
         $id = $_GET['id'] ?? 0;
 
         if ($id) {
             $this->cartModel->deleteCart($id);
         }
-
-        // Quay lại trang giỏ hàng
         header("Location: index.php?controller=cart&action=index");
         exit;
     }
@@ -113,6 +98,62 @@ class CartController {
             }
             exit;
         }
+    }
+
+    public function checkoutAction() {
+        // 1. Kiểm tra đăng nhập
+        if (empty($_SESSION['user'])) {
+            header("Location: index.php?controller=user&action=login");
+            exit;
+        }
+
+        $userId = $_SESSION['user']['id'];
+        $cart = []; // Mảng chứa sản phẩm thanh toán
+        
+        // --- PHẦN 1: XỬ LÝ SẢN PHẨM (Lấy những món được tick chọn) ---
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_cart_id'])) {
+            $selectedIds = $_POST['selected_cart_id']; // Mảng ID các món được chọn
+
+            // Lấy toàn bộ giỏ hàng của user
+            $cartResult = $this->cartModel->getCartByUser($userId);
+
+            // Lọc ra những món trùng ID với danh sách đã chọn
+            while($row = mysqli_fetch_assoc($cartResult)) {
+                if (in_array($row['cart_id'], $selectedIds)) {
+                    $cart[] = $row;
+                }
+            }
+        } 
+        // Lưu ý: Nếu F5 trang, code sẽ không chạy vào if này -> $cart rỗng -> Tiền = 0
+
+        // --- PHẦN 2: XỬ LÝ ĐỊA CHỈ (Code bạn vừa làm) ---
+        // Khởi tạo UserModel nếu chưa có
+        if (!isset($this->userModel)) {
+            require_once './Model/User/UserModel.php';
+            $this->userModel = new UserModel();
+        }
+
+        // Lấy danh sách địa chỉ
+        $addresses = $this->userModel->getUserAddresses($userId);
+        
+        // Lấy địa chỉ đầu tiên làm mặc định
+        $deliveryAddress = null;
+        if (!empty($addresses)) {
+            $deliveryAddress = $addresses[0]; 
+        }
+
+        // --- PHẦN 3: GỌI VIEW ---
+        // Nếu giỏ hàng rỗng (do F5 hoặc hack), có thể đá về trang giỏ hàng
+        if (empty($cart)) {
+             // Tạm thời comment dòng này để bạn debug, 
+             // nếu chạy thật thì nên mở ra để chặn đơn hàng 0 đồng
+             // echo "<script>alert('Giỏ hàng rỗng! Vui lòng chọn sản phẩm.'); window.location.href='index.php?controller=cart&action=index';</script>";
+             // exit;
+        }
+
+        include("View/Layout/Header.php");
+        include("View/Checkout/Checkout.php");
+        include("View/Layout/Footer.php");
     }
 }
 ?>

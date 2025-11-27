@@ -37,131 +37,133 @@ function productImageSrc($img)
                 </div>
             <?php else: ?>
 
-                <div class="cart-wrapper">
-                    <div class="cart-left">
-                        <div class="cart-header-row">
-                            <div class="col-checkbox">
-                                <input type="checkbox" id="checkAll" title="Chọn tất cả">
-                            </div>
-                            <div class="col-product">Sản phẩm (<?= count($cart) ?>)</div>
-                            <div class="col-price">Đơn giá</div>
-                            <div class="col-qty">Số lượng</div>
-                            <div class="col-total">Thành tiền</div>
-                            <div class="col-action"><i class="fas fa-trash-alt"></i></div>
-                        </div>
+                <form action="index.php?controller=cart&action=checkout" method="POST" id="cartForm">
 
-                        <div class="shop-section">
-                            <div class="shop-header">
+                    <div class="cart-wrapper">
+                        <div class="cart-left">
+                            <div class="cart-header-row">
                                 <div class="col-checkbox">
-                                    <input type="checkbox" id="shopCheck">
+                                    <input type="checkbox" id="checkAll" title="Chọn tất cả">
                                 </div>
-                                <div class="shop-name-group">
-                                    <i class="fas fa-store shop-icon"></i>
-                                    <span>Shop Chính Hãng (Official)</span>
-                                    <i class="fas fa-angle-right shop-arrow"></i>
-                                </div>
+                                <div class="col-product">Sản phẩm (<?= count($cart) ?>)</div>
+                                <div class="col-price">Đơn giá</div>
+                                <div class="col-qty">Số lượng</div>
+                                <div class="col-total">Thành tiền</div>
+                                <div class="col-action"><i class="fas fa-trash-alt"></i></div>
                             </div>
 
-                            <?php foreach ($cart as $item):
-                                $cartId    = $item['cart_id'];
-                                $productId = $item['product_id'];
-                                $price     = $item['price'] ?? 0;
-                                $qty       = $item['quantity'] ?? 1;
-                                $name      = $item['name'] ?? 'Sản phẩm chưa có tên';
-                                $image     = productImageSrc($item['image'] ?? '');
-                                $total     = $price * $qty;
-                            ?>
-                                <div class="cart-item-box">
+                            <div class="shop-section">
+                                <div class="shop-header">
                                     <div class="col-checkbox">
-                                        <input type="checkbox" class="item-check"
-                                            data-total="<?= $total ?>"
-                                            name="selected_cart_id[]"
-                                            value="<?= $cartId ?>">
+                                        <input type="checkbox" id="shopCheck">
                                     </div>
+                                    <div class="shop-name-group">
+                                        <i class="fas fa-store shop-icon"></i>
+                                        <span>Shop Chính Hãng (Official)</span>
+                                        <i class="fas fa-angle-right shop-arrow"></i>
+                                    </div>
+                                </div>
 
-                                    <div class="col-product">
-                                        <img src="<?= $image ?>" class="cart-img" alt="<?= htmlspecialchars($name) ?>">
-                                        <div class="product-info">
-                                            <a href="index.php?controller=product&action=detail&id=<?= $productId ?>" class="product-name">
-                                                <?= htmlspecialchars($name) ?>
-                                            </a>
-                                            <div style="font-size: 12px; color: #ee4d2d; border: 1px solid #ee4d2d; display: inline-block; padding: 1px 4px; margin-top: 5px; border-radius: 2px;">
-                                                Đổi ý miễn phí 15 ngày
+                                <?php foreach ($cart as $item):
+                                    $cartId    = $item['cart_id'];
+                                    $productId = $item['product_id'];
+                                    $price     = $item['price'] ?? 0;
+                                    $qty       = $item['quantity'] ?? 1;
+                                    $name      = $item['name'] ?? 'Sản phẩm chưa có tên';
+                                    $image     = productImageSrc($item['image'] ?? '');
+                                    $total     = $price * $qty;
+                                ?>
+                                    <div class="cart-item-box">
+                                        <div class="col-checkbox">
+                                            <input type="checkbox" class="item-check"
+                                                data-total="<?= $total ?>"
+                                                name="selected_cart_id[]"
+                                                value="<?= $cartId ?>">
+                                        </div>
+
+                                        <div class="col-product">
+                                            <img src="<?= $image ?>" class="cart-img" alt="<?= htmlspecialchars($name) ?>">
+                                            <div class="product-info">
+                                                <a href="index.php?controller=product&action=detail&id=<?= $productId ?>" class="product-name">
+                                                    <?= htmlspecialchars($name) ?>
+                                                </a>
+                                                <div style="font-size: 12px; color: #ee4d2d; border: 1px solid #ee4d2d; display: inline-block; padding: 1px 4px; margin-top: 5px; border-radius: 2px;">
+                                                    Đổi ý miễn phí 15 ngày
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <div class="col-price">
-                                        ₫<?= number_format($price, 0, ',', '.') ?>
-                                    </div>
+                                        <div class="col-price">
+                                            ₫<?= number_format($price, 0, ',', '.') ?>
+                                        </div>
 
-                                    <div class="col-qty">
-                                        <div class="qty-control">
-                                            <button type="button" class="qty-btn btn-minus"
-                                                data-id="<?= $cartId ?>"
-                                                data-price="<?= $price ?>">
-                                                -
-                                            </button>
+                                        <div class="col-qty">
+                                            <div class="qty-control">
+                                                <button type="button" class="qty-btn btn-minus"
+                                                    data-id="<?= $cartId ?>"
+                                                    data-price="<?= $price ?>">
+                                                    -
+                                                </button>
 
-                                            <input type="text" class="qty-input" id="qty-<?= $cartId ?>" value="<?= $qty ?>" readonly>
+                                                <input type="text" class="qty-input" id="qty-<?= $cartId ?>" value="<?= $qty ?>" readonly>
 
-                                            <button type="button" class="qty-btn btn-plus"
-                                                data-id="<?= $cartId ?>"
-                                                data-price="<?= $price ?>">
-                                                +
-                                            </button>
+                                                <button type="button" class="qty-btn btn-plus"
+                                                    data-id="<?= $cartId ?>"
+                                                    data-price="<?= $price ?>">
+                                                    +
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-total" id="total-text-<?= $cartId ?>">
+                                            ₫<?= number_format($total, 0, ',', '.') ?>
+                                        </div>
+
+                                        <div class="col-action">
+                                            <a href="index.php?controller=cart&action=delete&id=<?= $cartId ?>" class="delete-btn" onclick="return confirm('Bạn muốn xóa sản phẩm này?');">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
                                         </div>
                                     </div>
+                                <?php endforeach; ?>
 
-                                    <div class="col-total" id="total-text-<?= $cartId ?>">
-                                        ₫<?= number_format($total, 0, ',', '.') ?>
-                                    </div>
+                            </div>
+                        </div>
 
-                                    <div class="col-action">
-                                        <a href="index.php?controller=cart&action=delete&id=<?= $cartId ?>" class="delete-btn" onclick="return confirm('Bạn muốn xóa sản phẩm này?');">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
-                                    </div>
+                        <div class="cart-right">
+                            <div class="order-summary">
+                                <span class="summary-title">Thông tin đơn hàng</span>
+
+                                <div class="summary-row">
+                                    <span>Tạm tính (<span id="displayCount">0</span> sản phẩm)</span>
+                                    <span id="displaySubTotal">0 ₫</span>
                                 </div>
-                            <?php endforeach; ?>
 
+                                <div class="summary-row">
+                                    <span>Phí vận chuyển</span>
+                                    <span>0 ₫</span>
+                                </div>
+
+                                <div class="voucher-box">
+                                    <input type="text" placeholder="Nhập mã voucher" class="voucher-input">
+                                    <button class="voucher-btn">ÁP DỤNG</button>
+                                </div>
+
+                                <div class="summary-total">
+                                    <span>Tổng cộng</span>
+                                    <span class="total-price">
+                                        <span id="displayGrandTotal">0 ₫</span>
+                                        <div style="font-size: 12px; color: #666; font-weight: normal; text-align: right; margin-top: 5px;">Đã bao gồm VAT (nếu có)</div>
+                                    </span>
+                                </div>
+
+                                <button type="submit" class="checkout-btn" name="btn_checkout">
+                                    THANH TOÁN (<span id="btnCount">0</span>)
+                                </button>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="cart-right">
-                        <div class="order-summary">
-                            <span class="summary-title">Thông tin đơn hàng</span>
-
-                            <div class="summary-row">
-                                <span>Tạm tính (<span id="displayCount">0</span> sản phẩm)</span>
-                                <span id="displaySubTotal">0 ₫</span>
-                            </div>
-
-                            <div class="summary-row">
-                                <span>Phí vận chuyển</span>
-                                <span>0 ₫</span>
-                            </div>
-
-                            <div class="voucher-box">
-                                <input type="text" placeholder="Nhập mã voucher" class="voucher-input">
-                                <button class="voucher-btn">ÁP DỤNG</button>
-                            </div>
-
-                            <div class="summary-total">
-                                <span>Tổng cộng</span>
-                                <span class="total-price">
-                                    <span id="displayGrandTotal">0 ₫</span>
-                                    <div style="font-size: 12px; color: #666; font-weight: normal; text-align: right; margin-top: 5px;">Đã bao gồm VAT (nếu có)</div>
-                                </span>
-                            </div>
-
-                            <a href="index.php?controller=cart&action=checkout" class="checkout-btn">
-                                THANH TOÁN (<span id="btnCount">0</span>)
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
+                </form>
             <?php endif; ?>
         </div>
     </main>

@@ -1,159 +1,371 @@
-:root {
-  --primary: #10b981;
-  --danger: #ff5722;
-  --bg: #f9f9f9;
-  --text: #222;
-  --muted: #fafafa;
-}
-
+/* --- 1. CẤU TRÚC CHUNG (LAYOUT) --- */
 * {
   box-sizing: border-box;
+}
+
+body {
+  background-color: #eff0f5;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  color: #212121;
   margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
+}
+
+.checkout-page-lazada {
+  padding: 20px 0;
 }
 
 .container {
-  max-width: 1000px;
-  margin: 20px auto;
-  padding: 0 20px;
+  width: 1180px;
+  /* Thu hẹp 1 xíu cho gọn chuẩn Lazada */
+  margin: 0 auto;
+  max-width: 100%;
+  padding: 0 15px;
 }
 
-.page-title {
-  font-size: 28px;
-  margin-bottom: 20px;
-  color: var(--text);
-}
-
-.alert {
-  padding: 10px 16px;
-  border-radius: 4px;
-  margin-bottom: 12px;
-}
-
-.alert-error {
-  background: #ffe0e0;
-  color: var(--danger);
-}
-
-.alert-success {
-  background: #e0ffe0;
-  color: var(--primary);
-}
-
-.checkout-grid {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.checkout-left {
-  flex: 2;
-}
-
-.checkout-right {
-  flex: 1;
-  background: #fff;
-  padding: 16px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-.cart-list {
-  background: #fff;
-  padding: 16px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-}
-
-.cart-item {
+.checkout-layout {
   display: flex;
   gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
+  /* Khoảng cách giữa 2 cột nhỏ lại xíu */
+  align-items: flex-start;
 }
 
-.cart-item:last-child {
-  border-bottom: none;
+.col-left {
+  flex: 1;
 }
 
-.cart-item-img {
+.col-right {
+  width: 340px;
+  /* [CHỈNH LẠI] Giảm độ rộng cột phải cho cân đối */
+  flex-shrink: 0;
+}
+
+/* Các khung trắng */
+.section-box {
+  background: #fff;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  border-radius: 2px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+  color: #212121;
+}
+
+.btn-edit {
+  color: #1a9cb7;
+  font-size: 13px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* --- 2. PHẦN ĐỊA CHỈ (ĐÃ TÚT LẠI) --- */
+.addr-info-row {
+  margin-bottom: 8px;
+  /* Tăng khoảng cách dưới tên */
+  display: flex;
+  align-items: baseline;
+}
+
+.addr-name {
+  font-weight: 700;
+  margin-right: 15px;
+  /* Cách xa sđt ra chút */
+  font-size: 14px;
+  color: #212121;
+}
+
+.addr-phone {
+  font-size: 14px;
+  color: #212121;
+}
+
+.addr-detail-row {
+  margin-bottom: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #212121;
+  display: flex;
+  /* Dùng flex để căn badge và text thẳng hàng */
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.badge-home {
+  background: #00bfa5;
+  /* Màu xanh ngọc */
+  color: #fff;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 2px;
+  white-space: nowrap;
+  /* Không cho xuống dòng */
+  margin-top: 2px;
+  /* Căn chỉnh lại xíu cho khớp dòng text */
+}
+
+/* HỘP CẢNH BÁO (QUAN TRỌNG) */
+/* --- SỬA LẠI ĐOẠN NÀY TRONG FILE CSS --- */
+
+/* Hộp cảnh báo màu cam */
+.addr-warning {
+  background-color: #fff5f0 !important;
+  /* Màu nền cam nhạt */
+  border: 1px solid #ffdec8 !important;
+  /* Viền cam */
+  color: #f57224 !important;
+  /* Chữ màu cam */
+  padding: 10px 12px;
+  font-size: 13px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border-radius: 2px;
+  margin-top: 10px;
+}
+
+/* Icon bên trong */
+.addr-warning i {
+  color: #f57224 !important;
+  font-size: 16px;
+  margin-top: 2px;
+}
+
+/* Nút chỉnh sửa */
+.section-header .btn-edit {
+  color: #1a9cb7;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* --- 3. PHẦN KIỆN HÀNG --- */
+.package-header {
+  font-size: 14px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  color: #212121;
+}
+
+.delivery-source {
+  font-size: 12px;
+  color: #757575;
+}
+
+.delivery-source strong {
+  color: #212121;
+  font-weight: 500;
+}
+
+.opt-title {
+  font-size: 12px;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #212121;
+}
+
+.delivery-card {
+  border: 1px solid #00bfa5;
+  padding: 12px;
+  border-radius: 4px;
+  width: fit-content;
+  min-width: 300px;
+  margin-bottom: 20px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.check-icon {
+  color: #00bfa5;
+  font-size: 18px;
+}
+
+.shipping-price {
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.ship-method {
+  font-size: 13px;
+  margin-left: 26px;
+  margin-bottom: 3px;
+  color: #212121;
+}
+
+.ship-date {
+  font-size: 12px;
+  color: #757575;
+  margin-left: 26px;
+}
+
+/* Danh sách sản phẩm */
+.item-row {
+  display: flex;
+  gap: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eff0f5;
+  margin-top: 10px;
+}
+
+.item-img img {
   width: 80px;
+  /* [CHỈNH LẠI] Tăng kích thước ảnh lên 80px */
   height: 80px;
   object-fit: cover;
   border-radius: 4px;
 }
 
-.cart-item-info {
+.item-info {
+  flex: 1;
+}
+
+.item-name {
+  font-size: 14px;
+  line-height: 20px;
+  margin-bottom: 4px;
+  color: #212121;
+  /* Giới hạn 2 dòng */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.item-meta {
+  font-size: 12px;
+  color: #9e9e9e;
+}
+
+.item-price-qty {
+  text-align: right;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  align-items: flex-end;
+  min-width: 100px;
 }
 
-.cart-item-name {
-  font-weight: 600;
-}
-
-.cart-item-qty,
-.cart-item-price {
-  color: #666;
-  font-size: 14px;
-}
-
-.checkout-summary {
+.item-price {
+  color: #f57224;
+  font-size: 16px;
+  font-weight: 500;
   margin-bottom: 20px;
 }
 
-.checkout-summary h3 {
-  margin-bottom: 8px;
+.item-qty-trash {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: #757575;
+  font-size: 13px;
 }
 
-.grand-total {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--danger);
-}
-
-.checkout-form .form-group {
-  margin-bottom: 16px;
-}
-
-.checkout-form label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 600;
-}
-
-.checkout-form input,
-.checkout-form select {
-  width: 100%;
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-}
-
-.checkout-form button,
-.checkout-form .btn-cancel {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 4px;
-  font-weight: 600;
+.trash-btn {
+  color: #9e9e9e;
   cursor: pointer;
-  text-align: center;
   text-decoration: none;
-  display: inline-block;
+  font-size: 16px;
 }
 
-.checkout-form button.btn-primary {
-  background: var(--primary);
+.trash-btn:hover {
+  color: #757575;
+}
+
+/* --- 4. PHẦN THANH TOÁN (CỘT PHẢI) --- */
+.payment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.payment-method {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #fff;
+}
+
+/* Style khi được chọn */
+.payment-method:has(input:checked),
+.payment-method.active {
+  border: 1px solid #00bfa5;
+  background-color: #fafffe;
+}
+
+.method-icon i {
+  font-size: 20px;
+  color: #1a9cb7;
+}
+
+.method-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #212121;
+}
+
+/* --- 5. TỔNG KẾT --- */
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: #757575;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  align-items: center;
+}
+
+.total-price {
+  color: #f57224;
+  font-size: 20px;
+  /* [CHỈNH LẠI] Font to hơn cho giống Lazada */
+  font-weight: 500;
+}
+
+.vat-note {
+  text-align: right;
+  font-size: 12px;
+  color: #9e9e9e;
+  margin-bottom: 15px;
+  margin-top: 5px;
+}
+
+.btn-checkout {
+  width: 100%;
+  background: #f57224;
   color: #fff;
   border: none;
+  height: 40px;
+  font-size: 16px;
+  text-transform: uppercase;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: opacity 0.2s;
 }
 
-.checkout-form .btn-cancel {
-  background: #f0f0f0;
-  color: #333;
-  border: none;
-} 
+.btn-checkout:hover {
+  opacity: 0.9;
+}

@@ -3,6 +3,7 @@ include_once('Core/Database.php');
 include('Model/User/User.php');
 class UserModel
 {
+    /** @var \mysqli */
     private $conn;
 
     public function __construct()
