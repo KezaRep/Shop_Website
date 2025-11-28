@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 include_once("Model/User/UserModel.php");
 
 $product->extra_images = [
-    'Assets/Uploads/Products/image2.jpg' 
+    'Assets/Uploads/Products/image2.jpg'
 ];
 
 function productImageSrc($img)
@@ -128,10 +128,12 @@ function productImageSrc($img)
                         <div class="quantity-box">
                             <label>Số Lượng</label>
                             <div class="qty-control">
-                                <button class="qty-btn" type="button">−</button>
+                                <button class="qty-btn minus" type="button"><i class="fas fa-minus"></i></button>
+
                                 <input type="number" id="qty" name="quantity" value="1" min="1"
                                     max="<?= intval($product->quantity ?? 100) ?>">
-                                <button class="qty-btn plus" type="button">+</button>
+
+                                <button class="qty-btn plus" type="button"><i class="fas fa-plus"></i></button>
                             </div>
                         </div>
 
@@ -292,44 +294,61 @@ function productImageSrc($img)
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            // 1. Khoanh vùng container để tránh bắt nhầm nút ở Header hay Footer
+            const qtyContainer = document.querySelector('.product-actions .qty-control');
+
+            // Nếu không tìm thấy container thì dừng lại để tránh lỗi
+            if (!qtyContainer) return;
+
             const qtyInput = document.getElementById('qty');
             const qtyField = document.getElementById('qtyField');
-            const btnMinus = document.querySelector('.qty-btn.minus') || document.querySelectorAll('.qty-btn')[0];
-            const btnPlus = document.querySelector('.qty-btn.plus') || document.querySelectorAll('.qty-btn')[1];
+
+            // 2. Tìm nút Minus và Plus CHÍNH XÁC trong container này
+            const btnMinus = qtyContainer.querySelector('.qty-btn.minus');
+            const btnPlus = qtyContainer.querySelector('.qty-btn.plus');
 
             function updateHiddenField() {
-                qtyField.value = qtyInput.value;
+                if (qtyField && qtyInput) {
+                    qtyField.value = qtyInput.value;
+                }
             }
 
-            btnMinus.addEventListener('click', function() {
-                let currentValue = parseInt(qtyInput.value) || 1;
-                if (currentValue > 1) {
-                    qtyInput.value = currentValue - 1;
+            if (btnMinus) {
+                btnMinus.addEventListener('click', function() {
+                    let currentValue = parseInt(qtyInput.value) || 1;
+                    let min = parseInt(qtyInput.getAttribute('min')) || 1;
+
+                    if (currentValue > min) {
+                        qtyInput.value = currentValue - 1;
+                        updateHiddenField();
+                    }
+                });
+            }
+
+            if (btnPlus) {
+                btnPlus.addEventListener('click', function() {
+                    let currentValue = parseInt(qtyInput.value) || 1;
+                    let max = parseInt(qtyInput.getAttribute('max')) || 100;
+
+                    if (currentValue < max) {
+                        qtyInput.value = currentValue + 1;
+                        updateHiddenField();
+                    }
+                });
+            }
+
+            if (qtyInput) {
+                qtyInput.addEventListener('change', function() {
+                    let val = parseInt(this.value) || 1;
+                    let max = parseInt(this.getAttribute('max')) || 100;
+                    let min = parseInt(this.getAttribute('min')) || 1;
+
+                    if (val > max) this.value = max;
+                    if (val < min) this.value = min;
+
                     updateHiddenField();
-                }
-            });
-
-            btnPlus.addEventListener('click', function() {
-                let currentValue = parseInt(qtyInput.value) || 1;
-                let max = parseInt(qtyInput.getAttribute('max')) || 100;
-
-                if (currentValue < max) {
-                    qtyInput.value = currentValue + 1;
-                    updateHiddenField();
-                }
-            });
-
-            qtyInput.addEventListener('input', function() {
-                // Kiểm tra max min
-                let val = parseInt(this.value);
-                let max = parseInt(this.getAttribute('max'));
-                let min = parseInt(this.getAttribute('min'));
-
-                if (val > max) this.value = max;
-                if (val < min) this.value = min;
-
-                updateHiddenField();
-            });
+                });
+            }
         });
     </script>
     <script>

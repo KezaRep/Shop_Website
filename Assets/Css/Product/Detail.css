@@ -757,3 +757,18 @@ body {
         width: 100%;
     }
 }
+
+.qty-control {
+    position: relative;
+    z-index: 10;
+    /* Đảm bảo nó nổi lên trên */
+    display: flex;
+    /* Dàn hàng ngang */
+    align-items: center;
+}
+
+.qty-btn {
+    cursor: pointer;
+    /* Hiển thị bàn tay khi di chuột */
+    z-index: 20;
+}

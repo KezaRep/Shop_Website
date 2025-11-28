@@ -71,6 +71,9 @@ function productImageSrc($img)
                                     $qty       = $item['quantity'] ?? 1;
                                     $name      = $item['name'] ?? 'Sản phẩm chưa có tên';
                                     $image     = productImageSrc($item['image'] ?? '');
+
+                                    $stock     = $item['stock'] ?? 100;
+
                                     $total     = $price * $qty;
                                 ?>
                                     <div class="cart-item-box">
@@ -105,7 +108,11 @@ function productImageSrc($img)
                                                     -
                                                 </button>
 
-                                                <input type="text" class="qty-input" id="qty-<?= $cartId ?>" value="<?= $qty ?>" readonly>
+                                                <input type="text" class="qty-input" id="qty-<?= $cartId ?>"
+                                                    value="<?= $qty ?>"
+                                                    data-max="<?= $stock ?>"
+                                                    readonly>
+
 
                                                 <button type="button" class="qty-btn btn-plus"
                                                     data-id="<?= $cartId ?>"
@@ -179,6 +186,8 @@ function productImageSrc($img)
             const displayGrandTotal = document.getElementById('displayGrandTotal');
             const btnCount = document.getElementById('btnCount');
 
+            const checkoutBtn = document.querySelector('.checkout-btn');
+
             function formatCurrency(amount) {
                 return new Intl.NumberFormat('vi-VN', {
                     style: 'currency',
@@ -189,17 +198,32 @@ function productImageSrc($img)
             function recalculateTotal() {
                 let total = 0;
                 let count = 0;
+
+                // Cộng tiền những ô được tick
                 document.querySelectorAll('.item-check').forEach(checkbox => {
                     if (checkbox.checked) {
                         total += parseFloat(checkbox.getAttribute('data-total'));
                         count++;
                     }
                 });
+
+                // Cập nhật giao diện text
                 displayCount.innerText = count;
                 btnCount.innerText = count;
                 const formattedTotal = formatCurrency(total);
                 displaySubTotal.innerText = formattedTotal;
                 displayGrandTotal.innerText = formattedTotal;
+
+                // --- MỚI: Khóa nút thanh toán nếu count = 0 ---
+                if (count === 0) {
+                    checkoutBtn.disabled = true; // Vô hiệu hóa nút (không bấm được)
+                    checkoutBtn.style.opacity = '0.6'; // Làm mờ nút đi cho dễ nhìn
+                    checkoutBtn.style.cursor = 'not-allowed'; // Đổi con trỏ chuột thành dấu cấm
+                } else {
+                    checkoutBtn.disabled = false; // Kích hoạt lại nút
+                    checkoutBtn.style.opacity = '1'; // Sáng rõ
+                    checkoutBtn.style.cursor = 'pointer'; // Con trỏ bàn tay
+                }
             }
 
             // --- PHẦN 2: XỬ LÝ AJAX CỘNG TRỪ (MỚI) ---
@@ -229,36 +253,44 @@ function productImageSrc($img)
                     const price = parseFloat(this.getAttribute('data-price'));
                     const inputQty = document.getElementById(`qty-${cartId}`);
                     const totalText = document.getElementById(`total-text-${cartId}`);
-                    // Tìm cái checkbox tương ứng của dòng này để cập nhật data-total
                     const checkbox = document.querySelector(`.item-check[value="${cartId}"]`);
 
                     let currentQty = parseInt(inputQty.value);
+                    // --- MỚI: Lấy số tồn kho từ HTML ---
+                    let maxQty = parseInt(inputQty.getAttribute('data-max')) || 999;
+
                     let newQty = currentQty;
 
                     // Kiểm tra nút bấm là cộng hay trừ
                     if (this.classList.contains('btn-plus')) {
-                        newQty++;
+                        // --- MỚI: Chỉ tăng nếu nhỏ hơn Max ---
+                        if (currentQty < maxQty) {
+                            newQty++;
+                        }
+                        // Ngược lại thì không làm gì cả (bấm vào trơ ra)
                     } else {
                         if (currentQty > 1) newQty--;
                     }
 
                     if (newQty !== currentQty) {
-                        // 1. Cập nhật giao diện ngay lập tức (cho mượt)
+                        // ... (Phần code update giao diện và AJAX giữ nguyên như cũ) ...
+
+                        // 1. Cập nhật giao diện
                         inputQty.value = newQty;
 
-                        // 2. Tính lại thành tiền của dòng đó
+                        // 2. Tính lại thành tiền dòng
                         const newRowTotal = newQty * price;
                         totalText.innerText = formatCurrency(newRowTotal);
 
-                        // 3. Cập nhật data-total vào checkbox để hàm tính tổng chạy đúng
-                        checkbox.setAttribute('data-total', newRowTotal);
+                        // 3. Cập nhật checkbox data
+                        if (checkbox) checkbox.setAttribute('data-total', newRowTotal);
 
-                        // 4. Tính lại tổng đơn hàng (nếu đang được tích chọn)
-                        if (checkbox.checked) {
+                        // 4. Tính tổng đơn hàng
+                        if (checkbox && checkbox.checked) {
                             recalculateTotal();
                         }
 
-                        // 5. Gửi AJAX về server lưu lại
+                        // 5. Gửi AJAX
                         updateCartAjax(cartId, newQty);
                     }
                 });
@@ -292,6 +324,7 @@ function productImageSrc($img)
                     recalculateTotal();
                 });
             });
+            recalculateTotal();
         });
     </script>
 

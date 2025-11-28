@@ -29,7 +29,7 @@ $grandTotal = $totalPrice + $shippingFee;
 <main class="checkout-page-lazada">
     <div class="container">
 
-        <form action="index.php?controller=cart&action=order" method="post" id="checkoutForm">
+        <form action="index.php?controller=checkout&action=order" method="post" id="checkoutForm">
             <div class="checkout-layout">
 
                 <div class="col-left">
@@ -89,6 +89,9 @@ $grandTotal = $totalPrice + $shippingFee;
                                 <?php foreach ($cart as $item): ?>
                                     <?php $imgSrc = checkProductImg($item['image'] ?? ''); ?>
                                     <div class="item-row">
+
+                                    <input type="hidden" name="selected_items[]" value="<?= $item['cart_id'] ?>">
+                                    
                                         <div class="item-img">
                                             <img src="<?= $imgSrc ?>" alt="Product">
                                         </div>

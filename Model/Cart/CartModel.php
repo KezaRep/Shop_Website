@@ -19,19 +19,28 @@ class CartModel extends Database
     }
     public function getCartByUser($userId)
     {
-        $sql = "SELECT c.id as cart_id, c.quantity, p.id as product_id, p.name, p.price, p.image 
-                FROM carts c 
-                JOIN products p ON c.product_id = p.id 
-                WHERE c.user_id = $userId";
+        $sql = "SELECT c.id as cart_id, 
+                   c.quantity, 
+                   p.id as product_id, 
+                   p.name, 
+                   p.price, 
+                   p.image, 
+                   p.quantity as stock  
+            FROM carts c 
+            JOIN products p ON c.product_id = p.id 
+            WHERE c.user_id = $userId";
+
         return mysqli_query($this->conn, $sql);
     }
-    public function getCartItemById($cartId) {
-        $cartId = intval($cartId); 
+    public function getCartItemById($cartId)
+    {
+        $cartId = intval($cartId);
         $sql = "SELECT * FROM carts WHERE id = $cartId";
         $result = mysqli_query($this->conn, $sql);
         return mysqli_fetch_assoc($result);
     }
-    public function deleteCart($cartId) {
+    public function deleteCart($cartId)
+    {
         $cartId = intval($cartId);
         $sql = "DELETE FROM carts WHERE id = $cartId";
         return mysqli_query($this->conn, $sql);
