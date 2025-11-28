@@ -1,0 +1,71 @@
+body {
+    font-family: "Poppins", sans-serif;
+    background: #f4f7fb;
+    margin: 0;
+    padding: 0;
+}
+
+.dashboard-container {
+    width: 90%;
+    margin: 40px auto;
+    text-align: center;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.stats-grid {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    width: 250px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-card h2 {
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.stat-card p {
+    font-size: 2rem;
+    color: #111;
+    font-weight: bold;
+}
+
+.stat-card.users { border-top: 5px solid #007bff; }
+.stat-card.products { border-top: 5px solid #28a745; }
+.stat-card.revenue { border-top: 5px solid #ffc107; }
+
+.admin-actions {
+    margin-top: 40px;
+}
+
+.admin-actions a {
+    background: #007bff;
+    color: white;
+    padding: 10px 20px;
+    margin: 0 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.3s;
+}
+
+.admin-actions a:hover {
+    background: #0056b3;
+}
