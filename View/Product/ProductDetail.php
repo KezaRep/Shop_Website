@@ -8,15 +8,12 @@ $product->extra_images = [
     'Assets/Uploads/Products/image2.jpg' 
 ];
 
-// $product, $related, $comments, $seller expected from controller
 function productImageSrc($img)
 {
     if (empty($img)) {
         return '/Shop_Website/Assets/Images/placeholder-product-1.jpg';
     }
 
-    // Nếu ảnh là đường dẫn file (không phải base64)
-    // Kiểm tra xem đã có dấu / ở đầu chưa, nếu chưa thì thêm tên dự án vào
     if (strpos($img, 'Assets/') === 0) {
         return '/Shop_Website/' . $img;
     }

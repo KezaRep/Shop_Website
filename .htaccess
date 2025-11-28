@@ -1,0 +1,8 @@
+# Bật tính năng rewrite (để server hiểu)
+RewriteEngine On
+
+# Đặt thư mục gốc
+RewriteBase /Shop_Website/
+
+# Chỉ giữ lại dòng này để bắt lỗi 404
+ErrorDocument 404 /Shop_Website/404.php
