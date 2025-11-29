@@ -82,10 +82,28 @@ class CheckoutController
                     $this->cartModel->deleteCart($item['cart_id']);
                 }
 
-                echo "<script>alert('Đặt hàng thành công!'); window.location.href='index.php?controller=user&action=history';</script>";
+                header("Location: index.php?controller=checkout&action=success&order_id=$orderId");
+                exit();
             } else {
                 echo "<script>alert('Có lỗi xảy ra khi tạo đơn hàng!'); history.back();</script>";
             }
         }
+    }
+    public function successAction()
+    {
+        if (!isset($_GET['order_id'])) {
+            header("Location: index.php");
+            exit();
+        }
+
+        $orderId = intval($_GET['order_id']);
+
+        $order = $this->checkoutModel->findOrder($orderId);
+        $order_details = $this->checkoutModel->findOrderDetails($orderId);
+        if (!$order) {
+            die("Không tìm thấy đơn hàng");
+        }
+
+        require_once __DIR__ . '/../../View/Checkout/Success.php';
     }
 }
