@@ -72,8 +72,22 @@ $headerTitle = "Thêm sản phẩm";
                 </div>
 
                 <div class="form-row">
-                    <label for="category_id">Category ID</label>
-                    <input id="category_id" name="category_id" type="number" value="0" min="0">
+                    <label for="category_id">Danh mục sản phẩm</label>
+                    <select id="category_id" name="category_id" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                        <option value="">-- Chọn danh mục --</option>
+
+                        <?php
+                        if (isset($categories) && !empty($categories)):
+                            foreach ($categories as $cat):
+                        ?>
+                                <option value="<?= $cat->id ?>">
+                                    <?= htmlspecialchars($cat->name) ?>
+                                </option>
+                        <?php
+                            endforeach;
+                        endif;
+                        ?>
+                    </select>
                 </div>
 
                 <div class="form-actions">

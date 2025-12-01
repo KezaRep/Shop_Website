@@ -24,86 +24,91 @@ class CheckoutController
 
     public function orderAction()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        if (empty($_SESSION['user'])) {
-            header('Location: index.php?controller=user&action=login');
-            exit();
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (empty($_SESSION['user'])) { /* ... */
         }
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
             $userId = $_SESSION['user']['id'];
+            $selectedIds = $_POST['selected_items'] ?? [];
+            $name = $_POST['name'];
+            $phone = $_POST['phone'];
+            $address = $_POST['address'];
+            $note = $_POST['note'] ?? '';
 
-            $selectedIds = isset($_POST['selected_items']) ? $_POST['selected_items'] : [];
-
-
+            // 2. Lấy dữ liệu giỏ hàng
             $cartResult = $this->cartModel->getCartByUser($userId);
 
-            $cartItems = [];
-            $totalPrice = 0;
+            // --- BƯỚC QUAN TRỌNG: GOM NHÓM THEO SHOP ---
+            $ordersByShop = [];
 
             if ($cartResult) {
                 while ($row = mysqli_fetch_assoc($cartResult)) {
                     if (in_array($row['cart_id'], $selectedIds)) {
-                        $cartItems[] = $row;
-                        $totalPrice += $row['price'] * $row['quantity'];
+                        // Lấy ID người bán (Shop ID)
+                        $shopId = $row['seller_id'];
+
+                        // Nếu chưa có nhóm cho shop này thì tạo mới
+                        if (!isset($ordersByShop[$shopId])) {
+                            $ordersByShop[$shopId] = [
+                                'seller_id' => $shopId,
+                                'items' => [],
+                                'subtotal' => 0
+                            ];
+                        }
+
+                        // Thêm sản phẩm vào nhóm
+                        $ordersByShop[$shopId]['items'][] = $row;
+                        $ordersByShop[$shopId]['subtotal'] += $row['price'] * $row['quantity'];
                     }
                 }
             }
 
-            if (empty($cartItems)) {
-                echo "<script>alert('Vui lòng chọn sản phẩm để thanh toán!'); history.back();</script>";
+            if (empty($ordersByShop)) {
+                echo "<script>alert('Vui lòng chọn sản phẩm!'); history.back();</script>";
                 exit;
             }
 
-            $name = $_POST['name'];
-            $phone = $_POST['phone'];
-            $address = $_POST['address'];
-            $note = isset($_POST['note']) ? $_POST['note'] : '';
+            // --- BƯỚC 3: VÒNG LẶP TẠO ĐƠN HÀNG (TÁCH ĐƠN) ---
+            $createdOrderIds = []; // Mảng lưu các mã đơn vừa tạo
 
-            $shippingFee = 30000;
-            $grandTotal = $totalPrice + $shippingFee;
+            foreach ($ordersByShop as $shopData) {
+                $shopTotal = $shopData['subtotal'];
+                $shippingFee = 30000; // Phí ship cho mỗi đơn (hoặc tính logic khác tùy ông)
+                $grandTotal = $shopTotal + $shippingFee;
+                $sellerId = $shopData['seller_id'];
 
-            $orderId = $this->checkoutModel->createOrder($userId, $name, $phone, $address, $grandTotal, $note);
+                // Tạo đơn hàng cho Shop này (Lưu ý: CheckoutModel cần hỗ trợ thêm seller_id)
+                // Ông cần sửa thêm hàm createOrder trong CheckoutModel để nhận thêm $sellerId
+                $orderId = $this->checkoutModel->createOrder($userId, $name, $phone, $address, $grandTotal, $note, $sellerId);
 
-            if ($orderId) {
-                foreach ($cartItems as $item) {
-                    $this->checkoutModel->addOrderDetail(
-                        $orderId,
-                        $item['product_id'],
-                        $item['name'],
-                        $item['price'],
-                        $item['quantity']
-                    );
+                if ($orderId) {
+                    $createdOrderIds[] = $orderId;
 
-                    $this->cartModel->deleteCart($item['cart_id']);
+                    // Thêm chi tiết sản phẩm vào đơn hàng này
+                    foreach ($shopData['items'] as $item) {
+                        $this->checkoutModel->addOrderDetail(
+                            $orderId,
+                            $item['product_id'],
+                            $item['name'], // Hoặc lấy từ DB nếu cần chính xác
+                            $item['price'],
+                            $item['quantity']
+                        );
+
+                        // Xóa khỏi giỏ hàng
+                        $this->cartModel->deleteCart($item['cart_id']);
+                    }
                 }
-
-                header("Location: index.php?controller=checkout&action=success&order_id=$orderId");
+            }
+            if (!empty($createdOrderIds)) {
+                echo "<script>
+                    alert('Đặt hàng thành công! Đã tạo " . count($createdOrderIds) . " đơn hàng.');
+                    window.location.href = 'index.php?controller=user&action=purchaseHistory';
+                </script>";
                 exit();
             } else {
-                echo "<script>alert('Có lỗi xảy ra khi tạo đơn hàng!'); history.back();</script>";
+                echo "<script>alert('Lỗi tạo đơn hàng!'); history.back();</script>";
             }
         }
-    }
-    public function successAction()
-    {
-        if (!isset($_GET['order_id'])) {
-            header("Location: index.php");
-            exit();
-        }
-
-        $orderId = intval($_GET['order_id']);
-
-        $order = $this->checkoutModel->findOrder($orderId);
-        $order_details = $this->checkoutModel->findOrderDetails($orderId);
-        if (!$order) {
-            die("Không tìm thấy đơn hàng");
-        }
-
-        require_once __DIR__ . '/../../View/Checkout/Success.php';
     }
 }

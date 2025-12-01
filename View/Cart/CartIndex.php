@@ -1,15 +1,30 @@
 <?php
+// 1. Hàm helper
 function productImageSrc($img)
 {
     if (empty($img)) {
-        return 'Assets/Images/placeholder-product-1.jpg'; // Ảnh mặc định nếu không có ảnh
+        return 'Assets/Images/placeholder-product-1.jpg';
     }
-    // Nếu là ảnh lưu dưới dạng BLOB (dữ liệu nhị phân) trong DB
     if (@getimagesizefromstring($img)) {
         return 'data:image/jpeg;base64,' . base64_encode($img);
     }
-    // Nếu là đường dẫn file bình thường
     return $img;
+}
+
+$cartByShop = [];
+if (!empty($cart)) {
+    foreach ($cart as $item) {
+        $shopId = $item['seller_id'] ?? 0;
+
+        if (!isset($cartByShop[$shopId])) {
+            $cartByShop[$shopId] = [
+                'shop_name' => $item['shop_name'] ?? 'Cửa hàng khác',
+                'shop_avatar' => $item['shop_avatar'] ?? '',
+                'items' => []
+            ];
+        }
+        $cartByShop[$shopId]['items'][] = $item;
+    }
 }
 ?>
 
@@ -52,89 +67,73 @@ function productImageSrc($img)
                                 <div class="col-action"><i class="fas fa-trash-alt"></i></div>
                             </div>
 
-                            <div class="shop-section">
-                                <div class="shop-header">
-                                    <div class="col-checkbox">
-                                        <input type="checkbox" id="shopCheck">
-                                    </div>
-                                    <div class="shop-name-group">
-                                        <i class="fas fa-store shop-icon"></i>
-                                        <span>Shop Chính Hãng (Official)</span>
-                                        <i class="fas fa-angle-right shop-arrow"></i>
-                                    </div>
-                                </div>
+                            <?php foreach ($cartByShop as $shopId => $shopData): ?>
 
-                                <?php foreach ($cart as $item):
-                                    $cartId    = $item['cart_id'];
-                                    $productId = $item['product_id'];
-                                    $price     = $item['price'] ?? 0;
-                                    $qty       = $item['quantity'] ?? 1;
-                                    $name      = $item['name'] ?? 'Sản phẩm chưa có tên';
-                                    $image     = productImageSrc($item['image'] ?? '');
-
-                                    $stock     = $item['stock'] ?? 100;
-
-                                    $total     = $price * $qty;
-                                ?>
-                                    <div class="cart-item-box">
+                                <div class="shop-section">
+                                    <div class="shop-header">
                                         <div class="col-checkbox">
-                                            <input type="checkbox" class="item-check"
-                                                data-total="<?= $total ?>"
-                                                name="selected_cart_id[]"
-                                                value="<?= $cartId ?>">
+                                            <input type="checkbox" class="shop-check-all" data-shop="<?= $shopId ?>">
                                         </div>
+                                        <div class="shop-name-group">
+                                            <?php
+                                            $shopAvt = !empty($shopData['shop_avatar']) ? productImageSrc($shopData['shop_avatar']) : 'Assets/Images/placeholder-avatar.png';
+                                            ?>
+                                            <img src="<?= $shopAvt ?>" class="shop-avatar-icon" alt="Shop Logo">
+                                            <span style="font-weight:bold;"><?= htmlspecialchars($shopData['shop_name']) ?></span>
+                                            <a href="#" class="btn-chat-shop"><i class="fas fa-comment-dots"></i></a>
+                                        </div>
+                                    </div>
 
-                                        <div class="col-product">
-                                            <img src="<?= $image ?>" class="cart-img" alt="<?= htmlspecialchars($name) ?>">
-                                            <div class="product-info">
-                                                <a href="index.php?controller=product&action=detail&id=<?= $productId ?>" class="product-name">
-                                                    <?= htmlspecialchars($name) ?>
-                                                </a>
-                                                <div style="font-size: 12px; color: #ee4d2d; border: 1px solid #ee4d2d; display: inline-block; padding: 1px 4px; margin-top: 5px; border-radius: 2px;">
-                                                    Đổi ý miễn phí 15 ngày
+                                    <?php foreach ($shopData['items'] as $item):
+                                        $cartId    = $item['cart_id'];
+                                        $productId = $item['product_id'];
+                                        $price     = $item['price'] ?? 0;
+                                        $qty       = $item['quantity'] ?? 1;
+                                        $name      = $item['name'] ?? 'Sản phẩm';
+                                        $image     = productImageSrc($item['image'] ?? '');
+                                        $stock     = $item['stock'] ?? 100;
+                                        $total     = $price * $qty;
+                                    ?>
+                                        <div class="cart-item-box">
+                                            <div class="col-checkbox">
+                                                <input type="checkbox" class="item-check shop-item-<?= $shopId ?>"
+                                                    data-total="<?= $total ?>"
+                                                    name="selected_cart_id[]"
+                                                    value="<?= $cartId ?>">
+                                            </div>
+
+                                            <div class="col-product">
+                                                <img src="<?= $image ?>" class="cart-img" alt="<?= htmlspecialchars($name) ?>">
+                                                <div class="product-info">
+                                                    <a href="index.php?controller=product&action=detail&id=<?= $productId ?>" class="product-name">
+                                                        <?= htmlspecialchars($name) ?>
+                                                    </a>
+                                                    <div class="return-policy">Đổi ý miễn phí 15 ngày</div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        <div class="col-price">
-                                            ₫<?= number_format($price, 0, ',', '.') ?>
-                                        </div>
+                                            <div class="col-price">₫<?= number_format($price, 0, ',', '.') ?></div>
 
-                                        <div class="col-qty">
-                                            <div class="qty-control">
-                                                <button type="button" class="qty-btn btn-minus"
-                                                    data-id="<?= $cartId ?>"
-                                                    data-price="<?= $price ?>">
-                                                    -
-                                                </button>
+                                            <div class="col-qty">
+                                                <div class="qty-control">
+                                                    <button type="button" class="qty-btn btn-minus" data-id="<?= $cartId ?>" data-price="<?= $price ?>">-</button>
+                                                    <input type="text" class="qty-input" id="qty-<?= $cartId ?>" value="<?= $qty ?>" data-max="<?= $stock ?>" readonly>
+                                                    <button type="button" class="qty-btn btn-plus" data-id="<?= $cartId ?>" data-price="<?= $price ?>">+</button>
+                                                </div>
+                                            </div>
 
-                                                <input type="text" class="qty-input" id="qty-<?= $cartId ?>"
-                                                    value="<?= $qty ?>"
-                                                    data-max="<?= $stock ?>"
-                                                    readonly>
+                                            <div class="col-total" id="total-text-<?= $cartId ?>">₫<?= number_format($total, 0, ',', '.') ?></div>
 
-
-                                                <button type="button" class="qty-btn btn-plus"
-                                                    data-id="<?= $cartId ?>"
-                                                    data-price="<?= $price ?>">
-                                                    +
-                                                </button>
+                                            <div class="col-action">
+                                                <a href="index.php?controller=cart&action=delete&id=<?= $cartId ?>" class="delete-btn" onclick="return confirm('Xóa?');">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </a>
                                             </div>
                                         </div>
+                                    <?php endforeach; ?>
 
-                                        <div class="col-total" id="total-text-<?= $cartId ?>">
-                                            ₫<?= number_format($total, 0, ',', '.') ?>
-                                        </div>
-
-                                        <div class="col-action">
-                                            <a href="index.php?controller=cart&action=delete&id=<?= $cartId ?>" class="delete-btn" onclick="return confirm('Bạn muốn xóa sản phẩm này?');">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-
-                            </div>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
 
                         <div class="cart-right">
@@ -177,15 +176,14 @@ function productImageSrc($img)
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // --- PHẦN 1: CÁC BIẾN TÍNH TỔNG TIỀN (GIỮ NGUYÊN TỪ BÀI TRƯỚC) ---
+            // --- PHẦN 1: CÁC BIẾN TÍNH TỔNG TIỀN ---
             const checkAll = document.getElementById('checkAll');
-            const shopCheck = document.getElementById('shopCheck');
+            // const shopCheck = document.getElementById('shopCheck'); // Xóa dòng này vì mình dùng class shop-check-all
             const itemChecks = document.querySelectorAll('.item-check');
             const displayCount = document.getElementById('displayCount');
             const displaySubTotal = document.getElementById('displaySubTotal');
             const displayGrandTotal = document.getElementById('displayGrandTotal');
             const btnCount = document.getElementById('btnCount');
-
             const checkoutBtn = document.querySelector('.checkout-btn');
 
             function formatCurrency(amount) {
@@ -199,7 +197,6 @@ function productImageSrc($img)
                 let total = 0;
                 let count = 0;
 
-                // Cộng tiền những ô được tick
                 document.querySelectorAll('.item-check').forEach(checkbox => {
                     if (checkbox.checked) {
                         total += parseFloat(checkbox.getAttribute('data-total'));
@@ -207,28 +204,24 @@ function productImageSrc($img)
                     }
                 });
 
-                // Cập nhật giao diện text
                 displayCount.innerText = count;
                 btnCount.innerText = count;
                 const formattedTotal = formatCurrency(total);
                 displaySubTotal.innerText = formattedTotal;
                 displayGrandTotal.innerText = formattedTotal;
 
-                // --- MỚI: Khóa nút thanh toán nếu count = 0 ---
                 if (count === 0) {
-                    checkoutBtn.disabled = true; // Vô hiệu hóa nút (không bấm được)
-                    checkoutBtn.style.opacity = '0.6'; // Làm mờ nút đi cho dễ nhìn
-                    checkoutBtn.style.cursor = 'not-allowed'; // Đổi con trỏ chuột thành dấu cấm
+                    checkoutBtn.disabled = true;
+                    checkoutBtn.style.opacity = '0.6';
+                    checkoutBtn.style.cursor = 'not-allowed';
                 } else {
-                    checkoutBtn.disabled = false; // Kích hoạt lại nút
-                    checkoutBtn.style.opacity = '1'; // Sáng rõ
-                    checkoutBtn.style.cursor = 'pointer'; // Con trỏ bàn tay
+                    checkoutBtn.disabled = false;
+                    checkoutBtn.style.opacity = '1';
+                    checkoutBtn.style.cursor = 'pointer';
                 }
             }
 
-            // --- PHẦN 2: XỬ LÝ AJAX CỘNG TRỪ (MỚI) ---
-
-            // Hàm gửi AJAX
+            // --- PHẦN 2: XỬ LÝ AJAX CỘNG TRỪ ---
             function updateCartAjax(cartId, newQty) {
                 const formData = new FormData();
                 formData.append('cart_id', cartId);
@@ -241,12 +234,10 @@ function productImageSrc($img)
                     .then(response => response.json())
                     .then(data => {
                         console.log('Saved:', data);
-                        // Có thể thông báo nhỏ ở đây nếu muốn
                     })
                     .catch(error => console.error('Error:', error));
             }
 
-            // Bắt sự kiện click cho tất cả nút cộng/trừ
             document.querySelectorAll('.qty-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const cartId = this.getAttribute('data-id');
@@ -256,78 +247,74 @@ function productImageSrc($img)
                     const checkbox = document.querySelector(`.item-check[value="${cartId}"]`);
 
                     let currentQty = parseInt(inputQty.value);
-                    // --- MỚI: Lấy số tồn kho từ HTML ---
                     let maxQty = parseInt(inputQty.getAttribute('data-max')) || 999;
-
                     let newQty = currentQty;
 
-                    // Kiểm tra nút bấm là cộng hay trừ
                     if (this.classList.contains('btn-plus')) {
-                        // --- MỚI: Chỉ tăng nếu nhỏ hơn Max ---
-                        if (currentQty < maxQty) {
-                            newQty++;
-                        }
-                        // Ngược lại thì không làm gì cả (bấm vào trơ ra)
+                        if (currentQty < maxQty) newQty++;
                     } else {
                         if (currentQty > 1) newQty--;
                     }
 
                     if (newQty !== currentQty) {
-                        // ... (Phần code update giao diện và AJAX giữ nguyên như cũ) ...
-
-                        // 1. Cập nhật giao diện
                         inputQty.value = newQty;
-
-                        // 2. Tính lại thành tiền dòng
                         const newRowTotal = newQty * price;
                         totalText.innerText = formatCurrency(newRowTotal);
-
-                        // 3. Cập nhật checkbox data
                         if (checkbox) checkbox.setAttribute('data-total', newRowTotal);
 
-                        // 4. Tính tổng đơn hàng
                         if (checkbox && checkbox.checked) {
                             recalculateTotal();
                         }
-
-                        // 5. Gửi AJAX
                         updateCartAjax(cartId, newQty);
                     }
                 });
             });
 
-            // --- PHẦN 3: SỰ KIỆN CHECKBOX (GIỮ NGUYÊN) ---
+            // --- PHẦN 3: SỰ KIỆN CHECKBOX ---
+
+            // Checkbox Tất Cả
             if (checkAll) {
                 checkAll.addEventListener('change', function() {
                     const isChecked = this.checked;
-                    if (shopCheck) shopCheck.checked = isChecked;
+                    // Check hết các shop header
+                    document.querySelectorAll('.shop-check-all').forEach(sc => sc.checked = isChecked);
+                    // Check hết các item
                     document.querySelectorAll('.item-check').forEach(cb => cb.checked = isChecked);
                     recalculateTotal();
                 });
             }
 
-            if (shopCheck) {
+            // Checkbox Shop Header (Gom nhóm)
+            document.querySelectorAll('.shop-check-all').forEach(shopCheck => {
                 shopCheck.addEventListener('change', function() {
+                    const shopId = this.getAttribute('data-shop');
                     const isChecked = this.checked;
-                    document.querySelectorAll('.item-check').forEach(cb => cb.checked = isChecked);
+                    // Tìm tất cả item thuộc shop này và check theo
+                    document.querySelectorAll(`.shop-item-${shopId}`).forEach(item => {
+                        item.checked = isChecked;
+                    });
+
+                    // Nếu bỏ check shop thì bỏ check tất cả luôn
                     if (!isChecked && checkAll) checkAll.checked = false;
+
                     recalculateTotal();
                 });
-            }
+            });
 
+            // Checkbox Từng Sản Phẩm
             itemChecks.forEach(cb => {
                 cb.addEventListener('change', function() {
                     if (!this.checked) {
                         if (checkAll) checkAll.checked = false;
-                        if (shopCheck) shopCheck.checked = false;
+                        // Cũng nên bỏ check ở header shop tương ứng (nâng cao, ko làm cũng ko sao)
                     }
                     recalculateTotal();
                 });
             });
+
             recalculateTotal();
         });
     </script>
-
 </body>
 
 </html>

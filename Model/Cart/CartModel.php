@@ -20,15 +20,19 @@ class CartModel extends Database
     public function getCartByUser($userId)
     {
         $sql = "SELECT c.id as cart_id, 
-                   c.quantity, 
-                   p.id as product_id, 
-                   p.name, 
-                   p.price, 
-                   p.image, 
-                   p.quantity as stock  
-            FROM carts c 
-            JOIN products p ON c.product_id = p.id 
-            WHERE c.user_id = $userId";
+                       c.quantity, 
+                       p.id as product_id, 
+                       p.name, 
+                       p.price, 
+                       p.image, 
+                       p.quantity as stock,
+                       p.seller_id,            
+                       s.shop_name, 
+                       s.avatar as shop_avatar
+                FROM carts c 
+                JOIN products p ON c.product_id = p.id 
+                LEFT JOIN shops s ON p.seller_id = s.user_id
+                WHERE c.user_id = '$userId'";
 
         return mysqli_query($this->conn, $sql);
     }

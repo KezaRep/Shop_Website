@@ -6,6 +6,9 @@ include_once("Controller/User/UserController.php");
 include_once("Controller/Comment/CommentController.php");
 include_once("Controller/Checkout/CheckoutController.php");
 include_once("Controller/Cart/CartController.php");
+include_once("Controller/Map/MapController.php");
+include_once("Controller/Shop/ShopController.php");
+
 $controllerName = isset($_GET['controller']) ? $_GET['controller'] : 'Product';
 $actionName = isset($_GET['action']) ? $_GET['action'] : 'List';
 $controllerClass = ucfirst($controllerName) . "Controller";

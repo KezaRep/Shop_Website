@@ -85,6 +85,11 @@ class ProductController
             }
         } else {
             // GET: hiển thị form
+
+            require_once "Model/Category/CategoryModel.php";
+            $cateModel = new CategoryModel();
+            $categories = $cateModel->getCategoryList();
+
             include("View/Layout/Header.php");
             include("View/Product/ProductAdd.php");
             include("View/Layout/Footer.php");
@@ -110,6 +115,24 @@ class ProductController
         include_once("Model/User/UserModel.php");
         $userModel = new UserModel();
         $seller = $userModel->getUserById(intval($product->seller_id ?? 0));
+        
+        $shop_data = null;
+        if (!empty($product->seller_id)) {
+            // 1. Gọi file Database để kết nối (giống hàm submitOrderAction ông đã làm)
+            require_once __DIR__ . '/../../Core/Database.php';
+            $db = new Database();
+            $conn = $db->getConnection();
+
+            // 2. Query bảng shops
+            $stmt_shop = $conn->prepare("SELECT * FROM shops WHERE user_id = ?");
+            $stmt_shop->bind_param("i", $product->seller_id);
+            $stmt_shop->execute();
+            $result_shop = $stmt_shop->get_result();
+            $shop_data = $result_shop->fetch_object();
+            
+            // (Nếu muốn kỹ tính thì đóng stmt lại, không thì PHP tự lo)
+            $stmt_shop->close();
+        }
 
         // related products
         $related = $this->productModel->getProductsBySeller($product->seller_id);
@@ -177,6 +200,11 @@ class ProductController
                 include("View/Layout/Footer.php");
             }
         } else {
+
+            require_once "Model/Category/CategoryModel.php";
+            $cateModel = new CategoryModel();
+            $categories = $cateModel->getCategoryList();
+
             include("View/Layout/Header.php");
             include("View/Product/ProductEdit.php");
             include("View/Layout/Footer.php");
@@ -326,7 +354,7 @@ class ProductController
                         $pQty = intval($item['quantity']);
 
                         // Lưu từng dòng sản phẩm
-                        $stmtDetail->bind_param("iid", $orderId, $pId, $pPrice, $pQty);
+                        $stmtDetail->bind_param("idii", $orderId, $pId, $pPrice, $pQty);
                         $stmtDetail->execute();
                     }
                     $stmtDetail->close();
@@ -344,6 +372,59 @@ class ProductController
             }
         } else {
             header("Location: index.php");
+        }
+    }
+    public function deleteAction()
+    {
+        // 1. Kiểm tra đăng nhập
+        if (!isset($_SESSION['user'])) {
+            header("Location: index.php?controller=user&action=login");
+            exit;
+        }
+
+        // 2. Lấy ID sản phẩm cần xóa
+        $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
+        // 3. Lấy thông tin sản phẩm
+        $product = $this->productModel->getProductById($id);
+
+        if (!$product) {
+            echo "<script>alert('Sản phẩm không tồn tại!'); window.history.back();</script>";
+            return;
+        }
+
+        // 4. KIỂM TRA QUYỀN: Chỉ chủ shop (người đăng) hoặc Admin mới được xóa
+        $currentUserId = (int) $_SESSION['user']['id'];
+        $isOwner = $currentUserId === (int) $product->seller_id;
+        $isAdmin = ($_SESSION['user']['role'] ?? '') === 'admin';
+
+        if (!$isOwner && !$isAdmin) {
+            echo "<script>alert('Bạn không có quyền xóa sản phẩm này!'); window.history.back();</script>";
+            return;
+        }
+
+        // 5. Xóa ảnh cũ trên server (Dọn dẹp bộ nhớ)
+        if (!empty($product->image) && file_exists($product->image)) {
+            if (strpos($product->image, 'placeholder') === false) {
+                @unlink($product->image);
+            }
+        }
+        // Xóa video cũ nếu có
+        if (!empty($product->video_url) && file_exists($product->video_url)) {
+             @unlink($product->video_url);
+        }
+
+        // 6. Gọi Model để xóa trong Database
+        $isDeleted = $this->productModel->deleteProduct($id);
+
+        if ($isDeleted) {
+            // --- SỬA Ở ĐÂY: Chuyển về controller=user&action=profile ---
+            echo "<script>
+                alert('Xóa sản phẩm thành công!'); 
+                window.location.href='index.php?controller=user&action=profile';
+            </script>";
+        } else {
+            echo "<script>alert('Có lỗi xảy ra, không thể xóa!'); window.history.back();</script>";
         }
     }
 }

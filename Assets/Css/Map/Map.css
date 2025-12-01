@@ -1,0 +1,180 @@
+.map-page-container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 15px;
+    font-family: Arial, sans-serif;
+}
+
+.map-layout {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    height: 600px;
+}
+
+
+.map-sidebar {
+    flex: 1;
+    min-width: 300px;
+    background: #fff;
+    overflow-y: auto;
+    height: 100%;
+    padding-right: 10px;
+}
+
+.map-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.map-sidebar::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+
+.map-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    outline: none;
+}
+
+/* Thẻ thông tin cửa hàng */
+.store-card {
+    margin-top: 15px;
+    /* Giảm chút cho gọn */
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    background-color: #fff;
+    cursor: pointer;
+    /* Thêm cái này để biết là bấm được */
+    transition: all 0.2s ease;
+}
+/* --- [MỚI] Hiệu ứng khi rê chuột vào --- */
+.store-card:hover {
+    background-color: #f8f9fa;
+    border-color: #d93025; /* Màu đỏ Google */
+    transform: translateX(5px); /* Nhích nhẹ sang phải */
+}
+
+/* --- [MỚI] Hiệu ứng khi thẻ đang được chọn (Active) --- */
+.store-card.active {
+    border-left: 5px solid #d93025;
+    background-color: #fff8f8;
+}
+
+.store-name {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #333;
+}
+
+.store-info {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 5px;
+}
+
+/* Cột bên phải: Bản đồ Google */
+.map-display {
+    flex: 2;
+    min-width: 400px;
+    height: 100%; /* Chiều cao ăn theo cha */
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    position: relative; /* Quan trọng cho Google Map */
+}
+
+.view-map-link {
+    display: inline-block;
+    margin-top: 10px;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.view-map-link:hover {
+    text-decoration: underline;
+}
+#map {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+
+@media (max-width: 768px) {
+    .map-layout {
+        flex-direction: column;
+        height: auto; 
+    }
+    .map-sidebar {
+        height: auto;
+        max-height: 300px;
+    }
+    .map-display {
+        height: 400px;
+    }
+}
+    .filter-group { margin-bottom: 20px; }
+    .filter-label { display: block; font-weight: bold; margin-bottom: 8px; color: #333; }
+    .filter-select { 
+        width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; 
+        font-size: 14px; outline: none; background: #fff;
+    }
+    .filter-select:disabled { background: #f5f5f5; cursor: not-allowed; }
+    
+    #result-container { margin-top: 20px; }
+    
+    .map-display { position: relative; height: 600px; width: 100%; }
+    #map { height: 100%; width: 100%; border-radius: 8px; }
+    .filter-group { margin-bottom: 20px; }
+    .filter-label { display: block; font-weight: bold; margin-bottom: 8px; color: #333; }
+    .filter-select { 
+        width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; 
+        font-size: 14px; outline: none; background: #fff;
+    }
+    .filter-select:disabled { background: #f5f5f5; cursor: not-allowed; }
+    
+    /* Nút Tìm quanh đây (Mới) */
+    .btn-locate-me {
+        width: 100%; padding: 12px; 
+        background: #fff; border: 1px solid #d93025; color: #d93025;
+        border-radius: 6px; cursor: pointer; font-weight: bold;
+        transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;
+        margin-bottom: 20px;
+    }
+    .btn-locate-me:hover { background: #fff8f8; }
+
+    /* Kết quả */
+    #result-container { margin-top: 20px; border-top: 1px dashed #ddd; padding-top: 20px; }
+    
+    .map-display { position: relative; height: 600px; width: 100%; }
+    #map { height: 100%; width: 100%; border-radius: 8px; }

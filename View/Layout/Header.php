@@ -38,6 +38,16 @@ if (!empty($_SESSION['user'])) {
             <!-- Menu -->
             <nav class="site-nav">
                 <a href="index.php?controller=product&action=list" class="nav-link">Sản phẩm</a>
+                <a href="index.php?controller=map&action=index" class="nav-link">Khám phá cửa hàng</a>
+
+                <?php
+                if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 0): ?>
+                    <a href="index.php?controller=shop&action=register" class="nav-link" style="color: #ee4d2d; font-weight: bold;">Đăng ký bán hàng</a>
+                <?php endif; ?>
+                <?php
+                if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 1): ?>
+                    <a href="index.php?controller=shop&action=profile&id=<?= $_SESSION['user']['id'] ?>" class="nav-link">Kênh người bán</a>
+                <?php endif; ?>
             </nav>
 
             <!-- Right: Search, User, Cart -->

@@ -278,4 +278,27 @@ class UserController
         include("View/User/UpdateAddress.php");
         include("View/Layout/Footer.php");
     }
+    public function purchaseHistoryAction() {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (!isset($_SESSION['user'])) {
+            header("Location: index.php?controller=user&action=login");
+            exit;
+        }
+        $user = $_SESSION['user'];
+
+        require_once "Model/Order/OrderModel.php";
+        $orderModel = new OrderModel();
+        
+        $ordersRaw = $orderModel->getOrdersByUser($user['id']);
+        
+        $orders = [];
+        foreach ($ordersRaw as $ord) {
+            $items = $orderModel->getOrderDetails($ord->id); 
+            $ord->items = $items;
+            $orders[] = $ord;
+        }
+
+        require_once "View/User/PurchaseHistory.php";
+    }
+    
 }

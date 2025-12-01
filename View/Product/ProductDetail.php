@@ -4,9 +4,6 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 include_once("Model/User/UserModel.php");
 
-$product->extra_images = [
-    'Assets/Uploads/Products/image2.jpg'
-];
 
 function productImageSrc($img)
 {
@@ -160,7 +157,18 @@ function productImageSrc($img)
             <!-- Seller card -->
             <div class="seller-card">
                 <div class="seller-left">
-                    <img src="/Shop_Website/Assets/Images/placeholder-avatar.png" alt="seller" class="seller-avatar">
+                    <?php
+                    $shopAvatar = '/Shop_Website/Assets/Images/placeholder-avatar.png'; // Mặc định
+
+                    if (!empty($shop_data->avatar)) {
+                        // Xử lý đường dẫn nếu trong DB đã có sẵn 'Assets/'
+                        $shopAvatar = (strpos($shop_data->avatar, 'Assets/') === 0)
+                            ? '/Shop_Website/' . $shop_data->avatar
+                            : '/Shop_Website/Assets/Uploads/' . $shop_data->avatar;
+                    }
+                    ?>
+
+                    <img src="<?= $shopAvatar ?>" alt="seller" class="seller-avatar">
                     <div class="seller-info">
                         <h4><?= htmlspecialchars($seller->username ?? 'Gitraell Shop') ?></h4>
                         <p>Online gần đây</p>
@@ -173,7 +181,10 @@ function productImageSrc($img)
                 </div>
                 <div class="seller-actions">
                     <button class="btn-msg"><i class="fas fa-comment"></i> Chat Ngay</button>
-                    <button class="btn-view"><i class="fas fa-store"></i> Xem Shop</button>
+
+                    <a href="index.php?controller=shop&action=profile&id=<?= $product->seller_id ?>" class="btn-view" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-store" style="margin-right: 5px;"></i> Xem Shop
+                    </a>
                 </div>
             </div>
 

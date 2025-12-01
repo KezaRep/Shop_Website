@@ -1,6 +1,6 @@
 <?php
-include_once('Core/Database.php');
-include_once('Model/Category/Category.php'); // Class Category
+require_once 'Core/Database.php';
+require_once 'Model/Category/Category.php'; // Gọi file Class Category
 
 class CategoryModel
 {
@@ -14,29 +14,21 @@ class CategoryModel
 
     public function getCategoryList()
     {
-        $query = "SELECT * FROM categories";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
+        $query = "SELECT * FROM categories ORDER BY id ASC";
+        $result = mysqli_query($this->conn, $query);
 
         $categories = [];
 
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $categories[] = new Category(
-                $row['id'],
-                $row['name'],
-                $row['description']
-            );
+        if ($result) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $categories[] = new Category(
+                    $row['id'],
+                    $row['name'],
+                    isset($row['description']) ? $row['description'] : null
+                );
+            }
         }
-
         return $categories;
     }
-    public function addCategory($name, $description = null)
-    {
-        $query = "INSERT INTO categories (name, description) VALUES (?, ?)";
-        $stmt = $this->conn->prepare($query);
-
-        // Truyền giá trị theo thứ tự placeholder
-        return $stmt->execute([$name, $description]);
-    }
-
 }
+?>

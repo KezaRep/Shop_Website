@@ -76,6 +76,28 @@ if ($result) {
 
 <body>
     <main class="page-container">
+        <div class="banner-wrapper-full">
+            <div class="promo-banner-section">
+                <div class="banner-large">
+                    <a href="#">
+                        <img src="Assets/img/banner-main.jpg" alt="Banner Lớn">
+                    </a>
+                </div>
+
+                <div class="banner-column-right">
+                    <div class="banner-small">
+                        <a href="#">
+                            <img src="Assets/img/banner-sub1.jpg" alt="Banner Nhỏ 1">
+                        </a>
+                    </div>
+                    <div class="banner-small">
+                        <a href="#">
+                            <img src="Assets/img/banner-sub2.jpg" alt="Banner Nhỏ 2">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="page-inner">
             <aside class="sidebar">
                 <h3 class="sidebar-title"><i class="fas fa-filter"></i> Bộ lọc tìm kiếm</h3>
@@ -115,130 +137,73 @@ if ($result) {
             </aside>
 
             <section class="content">
-                <!-- Shop Card -->
-                <div class="shop-card">
-                    <div class="shop-card__left">
-                        <img src="Assets/Images/placeholder-avatar.png" alt="shop" class="shop-avatar">
-                        <div>
-                            <h3 class="shop-name">
-                                <?= !empty($shop) ? htmlspecialchars($shop->username) : 'Tên shop' ?>
-                            </h3>
-                            <div class="shop-meta">
-                                <?= !empty($shop) ? ($shop->followers_count ?? 0) . ' Người Theo Dõi' : '' ?>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="shop-stats">
-                        <?php if (!empty($Shop)): ?>
-                            <div><strong><?= isset($Shop->product_count) ? $Shop->product_count : 0 ?></strong><span>Sản
-                                    Phẩm</span></div>
-                            <div><strong><?= isset($Shop->review_count) ? $Shop->review_count : 0 ?></strong><span>Đánh
-                                    Giá</span></div>
-                            <div><strong><?= isset($Shop->response_rate) ? $Shop->response_rate : '0%' ?></strong><span>Tỷ
-                                    Lệ Phản Hồi</span></div>
-                            <div>
-                                <strong><?= isset($Shop->response_time) ? $Shop->response_time : 'Chưa cập nhật' ?></strong><span>Thời
-                                    gian phản hồi</span>
-                            </div>
-                        <?php else: ?>
-                            <div><strong>0</strong><span>Sản Phẩm</span></div>
-                            <div><strong>0</strong><span>Đánh Giá</span></div>
-                            <div><strong>0%</strong><span>Tỷ Lệ Phản Hồi</span></div>
-                            <div><strong>Chưa cập nhật</strong><span>Thời gian phản hồi</span></div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-
-
-                <!-- Info line -->
-                <div class="results-info">
-                    Kết quả tìm kiếm cho từ khoá <strong><?php echo $keyword ?></strong>
-                </div>
-
-                <!-- Sort bar -->
                 <div class="sort-bar">
                     <div class="sort-left">
+                        <span class="sort-label">Sắp xếp theo</span>
+
                         <a href="index.php?controller=product&action=list<?= isset($_GET['keyword']) ? '&keyword=' . $_GET['keyword'] : '' ?>"
-                            class="btn <?= ($sort == '') ? 'active' : '' ?>">
+                            class="btn-sort <?= ($sort == '') ? 'active' : '' ?>">
                             Liên Quan
                         </a>
 
                         <a href="index.php?controller=product&action=list&sort=new<?= isset($_GET['keyword']) ? '&keyword=' . $_GET['keyword'] : '' ?>"
-                            class="btn <?= ($sort == 'new') ? 'active' : '' ?>">
+                            class="btn-sort <?= ($sort == 'new') ? 'active' : '' ?>">
                             Mới Nhất
                         </a>
+
+                        <a href="#" class="btn-sort">Bán Chạy</a>
                     </div>
                     <div class="sort-right">
                         <select>
-                            <option>Giá</option>
+                            <option>Giá: Thấp đến Cao</option>
+                            <option>Giá: Cao đến Thấp</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- Product grid -->
+                <div style="margin-bottom: 15px; font-size: 14px; color: #555;">
+                    Kết quả tìm kiếm cho từ khoá: <strong style="color: #ee4d2d;"><?= htmlspecialchars($keyword) ?></strong>
+                </div>
+
+
                 <div class="products-grid">
                     <?php if (!empty($productList)) {
                         foreach ($productList as $product) {
-                            // Xử lý ID (đôi khi DB trả về p_id hoặc id)
                             $p_id = $product->id ?? $product->p_id ?? 0;
-                            ?>
-                            <article class="product-card">
-                                <a href="index.php?controller=product&action=detail&id=<?= $p_id ?>">
-                                    <div class="product-media">
-                                        <?php
-                                        // Kiểm tra xem có ảnh không
-                                        if (!empty($product->image)) {
-                                            ?>
-                                            <img src="<?= htmlspecialchars($product->image) ?>"
-                                                alt="<?= htmlspecialchars($product->name) ?>"
-                                                style="width: 100%; height: 100%; object-fit: cover;">
-                                            <?php
-                                        } else {
-                                            ?>
-                                            <img src="Assets/Images/placeholder-product-1.jpg" alt="No Image">
-                                            <?php
-                                        }
-                                        ?>
+                    ?>
+                            <a href="index.php?controller=product&action=detail&id=<?= $p_id ?>" class="product-card">
+                                <div class="product-media">
+                                    <?php
+                                    $imgSrc = !empty($product->image) ? $product->image : 'https://via.placeholder.com/300';
+                                    ?>
+                                    <img src="<?= htmlspecialchars($imgSrc) ?>" alt="Product">
+
+                                    <div class="badge-mall">Mall</div>
+                                    <div class="discount-tag">-10%</div>
+                                </div>
+
+                                <div class="product-body">
+                                    <div class="product-title"><?= htmlspecialchars($product->name) ?></div>
+
+                                    <div class="price-row">
+                                        <div class="price">₫<?= number_format((float)$product->price, 0, ',', '.') ?></div>
+                                        <div class="sold">Đã bán 1.2k</div>
                                     </div>
-                                    <div class="product-body">
-                                        <h4 class="product-title"><?= htmlspecialchars($product->name) ?></h4>
-                                        <div class="product-price"><?= number_format((float) $product->price, 0, ',', '.') ?>
-                                            VNĐ
-                                        </div>
-                                    </div>
-                                </a>
-                            </article>
+                                </div>
+                            </a>
                         <?php }
                     } else { ?>
-                        <p style="text-align:center; width:100%">Không tìm thấy sản phẩm nào.</p>
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #888;">
+                            <p>Không tìm thấy sản phẩm nào phù hợp.</p>
+                        </div>
                     <?php } ?>
                 </div>
+
                 <?php if ($total_page > 1): ?>
-                    <div class="pagination">
-
-                        <?php if ($page > 1): ?>
-                            <a href="index.php?controller=product&action=list&page=<?= $page - 1 ?><?= $param ?>"
-                                class="arrow">&lt;</a>
-                        <?php else: ?>
-                            <span class="disabled">&lt;</span>
-                        <?php endif; ?>
-
+                    <div class="pagination" style="margin-top: 30px; display: flex; justify-content: center; gap: 10px;">
                         <?php for ($i = 1; $i <= $total_page; $i++): ?>
-                            <?php if ($i == $page): ?>
-                                <span class="active"><?= $i ?></span>
-                            <?php else: ?>
-                                <a href="index.php?controller=product&action=list&page=<?= $i ?><?= $param ?>"><?= $i ?></a>
-                            <?php endif; ?>
+                            <a href="?page=<?= $i ?>" style="padding: 5px 10px; border: 1px solid #ddd; <?= $i == $page ? 'background:#ee4d2d; color:#fff' : '' ?>"><?= $i ?></a>
                         <?php endfor; ?>
-
-                        <?php if ($page < $total_page): ?>
-                            <a href="index.php?controller=product&action=list&page=<?= $page + 1 ?><?= $param ?>"
-                                class="arrow">&gt;</a>
-                        <?php else: ?>
-                            <span class="disabled">&gt;</span>
-                        <?php endif; ?>
-
                     </div>
                 <?php endif; ?>
             </section>
