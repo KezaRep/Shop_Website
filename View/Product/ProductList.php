@@ -27,7 +27,14 @@ $order_sql = "";
 
 if ($sort == 'new') {
     $order_sql = " ORDER BY id DESC";
-} else {
+} 
+else if ($sort == 'price_asc') {
+    $order_sql = " ORDER BY price ASC";
+}
+else if ($sort == 'price_desc') {
+    $order_sql = " ORDER BY price DESC";
+}
+else {
     $order_sql = " ORDER BY id ASC";
 }
 
@@ -154,10 +161,17 @@ if ($result) {
                         <a href="#" class="btn-sort">Bán Chạy</a>
                     </div>
                     <div class="sort-right">
-                        <select>
-                            <option>Giá: Thấp đến Cao</option>
-                            <option>Giá: Cao đến Thấp</option>
-                        </select>
+                        <form method="GET" action="index.php">
+                            <input type="hidden" name="controller" value="product">
+                            <input type="hidden" name="action" value="sort">
+
+                            <select name="sort" onchange="this.form.submit()">
+                                <option value="" <?= ($sort == '') ? 'selected' : '' ?>>-- Sắp xếp --</option>
+                                <option value="price_asc" <?= ($sort == 'price_asc') ? 'selected' : '' ?>>Giá: Thấp đến Cao</option>
+                                <option value="price_desc" <?= ($sort == 'price_desc') ? 'selected' : '' ?>>Giá: Cao đến Thấp</option>
+                            </select>
+                        </form>
+
                     </div>
                 </div>
 
