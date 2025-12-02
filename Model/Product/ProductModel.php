@@ -12,7 +12,7 @@ class ProductModel
         $this->conn = $Database->getConnection();
     }
 
-    public function getAllProducts($sort = '')
+    public function getAllProducts()
     {
         $sql = "SELECT * FROM products";
         $result = $this->conn->query($sql);
