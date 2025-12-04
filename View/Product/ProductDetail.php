@@ -155,7 +155,29 @@ function productImageSrc($img)
                         <a href="#" class="social-btn"><i class="fab fa-facebook"></i></a>
                         <a href="#" class="social-btn"><i class="fab fa-twitter"></i></a>
                         <a href="#" class="social-btn"><i class="fab fa-pinterest"></i></a>
-                        <a href="#" class="wishlist"><i class="far fa-heart"></i> Đã thích
+                        
+                        <?php
+                            if (session_status() === PHP_SESSION_NONE) {
+                                session_start();
+                            }
+
+                            // THÊM 2 DÒNG NÀY VÀO ĐẦU FILE
+                            require_once __DIR__ . '/../../Model/Product/ProductModel.php';
+                            $productModel = new ProductModel(); // <--- TẠO MỚI MODEL Ở ĐÂY
+
+                            $userId = $_SESSION['user']['id'] ?? null;
+                            $isLiked = false;
+                            if ($userId) {
+                                $isLiked = $productModel->isWishlisted($userId, $product->id);
+                            }
+                        ?>
+
+
+                        <button class="wishlist-btn <?= $isLiked ? 'liked' : '' ?>" data-id="<?= $product->id ?>">
+                            <i class="fa-heart <?= $isLiked ? 'fas' : 'far' ?>"></i>
+                            Thích
+                        </button>
+
                             (<?= intval($product->likes ?? 0) ?>)</a>
                     </div>
                 </div>
@@ -418,6 +440,50 @@ function productImageSrc($img)
             }
         }
     </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        $('.wishlist-btn').on('click', function() {
+            var btn = $(this);
+            var productId = btn.data('id');
+            var heart = btn.find('.fa-heart');
+
+            // Nếu chưa đăng nhập → báo luôn
+            <?php if (!isset($_SESSION['user'])): ?>
+                alert('Vui lòng đăng nhập để thích sản phẩm!');
+                window.location.href = 'index.php?controller=user&action=login';
+                return;
+            <?php endif; ?>
+
+            $.ajax({
+                url: 'index.php?controller=product&action=toggleWishlist',
+                type: 'POST',
+                data: { product_id: productId },
+                success: function(res) {
+                    console.log("Response:", res); // <<< MỞ DEVTOOL XEM DÒNG NÀY
+
+                    try {
+                        var data = JSON.parse(res);
+                        if (data.status === 'liked') {
+                            heart.removeClass('far').addClass('fas');
+                            btn.addClass('liked');
+                        } else if (data.status === 'unliked') {
+                            heart.removeClass('fas').addClass('far');
+                            btn.removeClass('liked');
+                        }
+                    } catch(e) {
+                        alert('Lỗi hệ thống. Vui lòng thử lại!');
+                        console.error(res);
+                    }
+                },
+                error: function() {
+                    alert('Lỗi kết nối server!');
+                }
+            });
+        });
+    });
+    </script>
+
 </body>
 
 </html>

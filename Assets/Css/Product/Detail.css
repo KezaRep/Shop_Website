@@ -445,6 +445,10 @@ body {
     font-size: 14px;
 }
 
+
+.wishlist-btn.liked .fa-heart { color: #ee4d2d !important; }
+.wishlist-btn .fa-heart { transition: all 0.3s; }
+
 .social-btn {
     display: inline-flex;
     align-items: center;
