@@ -36,6 +36,27 @@ class ProductController
         include("View/Product/ProductList.php");
         include("View/Layout/Footer.php");
     }
+    public function sortAction() {
+        // Lấy sort từ GET
+        $sort = $_GET['sort'] ?? '';
+
+        // Gọi model để lấy danh sách đã sắp xếp
+        $productModel = new ProductModel();
+        if ($sort === 'price_asc') {
+            $productList = $productModel->getProductsPriceAsc();
+        }
+        else if ($sort === 'price_desc') {
+            $productList = $productModel->getProductsPriceDesc();
+        }
+        else {
+            $productList = $productModel->getAllProducts();
+        }
+
+        // Gọi view
+        include("View/Layout/Header.php");
+        include("View/Product/ProductList.php");
+        include("View/Layout/Footer.php");
+    }
 
     public function addAction()
     {

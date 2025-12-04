@@ -80,7 +80,7 @@ class CheckoutController
 
                 // Tạo đơn hàng cho Shop này (Lưu ý: CheckoutModel cần hỗ trợ thêm seller_id)
                 // Ông cần sửa thêm hàm createOrder trong CheckoutModel để nhận thêm $sellerId
-                $orderId = $this->checkoutModel->createOrder($userId, $name, $phone, $address, $grandTotal, $note, $sellerId);
+                $orderId = $this->checkoutModel->createOrder($userId, $name, $phone, $address, $grandTotal, $sellerId, $note);
 
                 if ($orderId) {
                     $createdOrderIds[] = $orderId;

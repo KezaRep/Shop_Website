@@ -18,13 +18,12 @@ class ProductModel
         $result = $this->conn->query($sql);
         $products = [];
         while ($row = $result->fetch_assoc()) {
-            // Đã thêm $row['video_url']
             $products[] = new Product(
                 $row['id'],
                 $row['name'],
                 $row['price'],
                 $row['image'],
-                $row['video_url'], // <--- THÊM Ở ĐÂY
+                $row['video_url'],
                 $row['description'],
                 $row['seller_id'],
                 $row['quantity'],
@@ -148,6 +147,45 @@ class ProductModel
         }
         return $products;
     }
+
+    public function getProductsPriceAsc()
+    {
+        $sql = "SELECT * FROM products ORDER BY price ASC";
+        return $this->fetchProducts($sql);
+    }
+
+    public function getProductsPriceDesc()
+    {
+        $sql = "SELECT * FROM products ORDER BY price DESC";
+        return $this->fetchProducts($sql);
+    }
+
+    public function fetchProducts($sql)
+    {
+        $result = $this->conn->query($sql);
+        $products = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $products[] = new Product(
+                $row['id'],
+                $row['name'],
+                $row['price'],
+                $row['image'],
+                $row['video_url'],
+                $row['description'],
+                $row['seller_id'],
+                $row['quantity'],
+                $row['sold'],
+                $row['rating'],
+                $row['category_id'],
+                $row['created_at']
+            );
+        }
+
+        return $products;
+    }
+
+
 
     // Các hàm add/update giữ nguyên vì không ảnh hưởng việc LẤY dữ liệu hiển thị
     public function addProduct($name, $price, $image, $video_url, $description, $seller_id, $quantity, $category_id)
