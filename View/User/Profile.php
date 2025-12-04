@@ -51,7 +51,6 @@ function productImageSrc($img)
       </a>
 
       <?php if ($isSeller): ?>
-        <a class="btn" href="index.php?controller=product&action=list&seller=<?= intval($user['id']) ?>">Chỉnh sửa sản phẩm</a>
         <a class="btn primary" href="index.php?controller=product&action=add">Thêm sản phẩm</a>
         <a class="btn shop-task" href="index.php?controller=shop&action=orderManager">
             <i class="fas fa-clipboard-check" style="color: #ee4d2d;"></i> 

@@ -15,9 +15,6 @@ $user = $_SESSION['user'];
 
     <aside class="profile-sidebar">
         <div class="user-card">
-            <div class="avatar">
-                <img src="Assets/Images/placeholder-avatar.png" alt="avatar">
-            </div>
             <div class="user-info">
                 <h3 class="username"><?= htmlspecialchars($user['username']) ?></h3>
                 <div class="balance">Số dư: <strong>0 ₫</strong></div>
