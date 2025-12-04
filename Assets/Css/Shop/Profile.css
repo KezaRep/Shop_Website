@@ -800,3 +800,102 @@ html { scroll-behavior: smooth; }
 
 /* Focus Styles */
 *:focus { outline: 2px solid var(--primary); outline-offset: 2px; }
+.chart-container {
+    height: 300px; /* Chiều cao cố định chuẩn */
+    position: relative;
+    padding: 30px 10px 10px 10px;
+    background: #ffffff;
+    border: 1px solid #f0f0f0;
+    border-radius: 12px;
+    display: flex; /* Dùng Flexbox để căn đáy */
+    align-items: flex-end; /* Quan trọng: Đẩy tất cả cột xuống đáy */
+    justify-content: space-around; /* Chia đều khoảng cách */
+}
+
+/* 2. Các đường kẻ ngang mờ (Background Grid) */
+.chart-grid-lines {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+.grid-line {
+    border-top: 1px dashed #e5e7eb;
+    height: 25%; /* Chia làm 4 dòng */
+    width: 100%;
+}
+
+/* 3. Cột chứa (Gồm số tiền + thanh bar + ngày) */
+.bar-wrapper {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end; /* Đẩy nội dung xuống đáy */
+    height: 100%;
+    width: 40px; /* Độ rộng vùng cột */
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.bar-wrapper:hover {
+    transform: translateY(-5px); /* Hiệu ứng nảy lên khi hover */
+}
+
+/* 4. Số tiền hiển thị trên đỉnh (Tooltip tĩnh) */
+.bar-tooltip {
+    font-size: 11px;
+    font-weight: bold;
+    color: #3b82f6;
+    margin-bottom: 8px;
+    background: #eff6ff;
+    padding: 4px 8px;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    opacity: 0; /* Mặc định ẩn */
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+/* Luôn hiện số tiền nếu cột đó có dữ liệu */
+.bar-wrapper.has-data .bar-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 5. THANH BAR CHÍNH (Gradient màu) */
+.bar-fill {
+    width: 16px; /* Độ rộng cột */
+    background: #f3f4f6; /* Màu xám mặc định (0đ) */
+    border-radius: 6px 6px 0 0;
+    transition: height 1s cubic-bezier(0.34, 1.56, 0.64, 1); /* Hiệu ứng mọc lên đàn hồi */
+    position: relative;
+    min-height: 4px; /* Luôn hiện một chút chân đế cho đẹp */
+}
+
+/* Màu Gradient khi có tiền */
+.bar-wrapper.has-data .bar-fill {
+    background: linear-gradient(180deg, #60a5fa 0%, #2563eb 100%);
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3); /* Đổ bóng phát sáng */
+}
+
+/* Hiệu ứng bóng láng (Shine) quét qua cột */
+.bar-wrapper.has-data:hover .bar-fill {
+    background: linear-gradient(180deg, #93c5fd 0%, #3b82f6 100%);
+}
+
+/* 6. Nhãn ngày tháng ở dưới cùng */
+.bar-label {
+    margin-top: 10px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #9ca3af;
+    transition: color 0.3s;
+}
+
+.bar-wrapper:hover .bar-label {
+    color: #2563eb;
+    font-weight: 700;
+}
