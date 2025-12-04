@@ -239,5 +239,84 @@ class ProductModel
         $stmt->bind_param("sdssiii", $name, $price, $image, $description, $quantity, $category_id, $product_id);
         return $stmt->execute();
     }
+
+            public function addToWishlist($user_id, $product_id)
+        {
+            $sql = "INSERT INTO wishlist (user_id, product_id)
+                    VALUES (?, ?)";
+            $stmt = $this->conn->prepare($sql);
+            return $stmt->execute([$user_id, $product_id]);
+        }
+
+        public function removeFromWishlist($user_id, $product_id)
+        {
+            $sql = "DELETE FROM wishlist
+                    WHERE user_id = ? AND product_id = ?";
+            $stmt = $this->conn->prepare($sql);
+            return $stmt->execute([$user_id, $product_id]);
+        }
+
+        public function isWishlisted($userId, $productId)
+        {
+            $sql = "SELECT * FROM wishlist WHERE user_id = ? AND product_id = ?";
+            $stmt = $this->conn->prepare($sql);
+
+            $stmt->bind_param("ii", $userId, $productId);
+            $stmt->execute();
+
+            $result = $stmt->get_result();
+            return $result->num_rows > 0;
+        }
+
+
+        public function getWishlist($user_id)
+        {
+            $sql = "SELECT p.* FROM wishlist w 
+                    JOIN products p ON w.product_id = p.id 
+                    WHERE w.user_id = ? 
+                    ORDER BY w.created_at DESC";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            $products = [];
+            while ($row = $result->fetch_object()) {
+                $products[] = new Product(
+                    $row->id, $row->name, $row->price, $row->image, $row->video_url,
+                    $row->description, $row->seller_id, $row->quantity, $row->sold,
+                    $row->rating, $row->category_id, $row->created_at
+                );
+            }
+            return $products;
+        }
+
+        // ProductModel.php – thêm hoặc sửa hàm này
+    public function toggleWishlist($user_id, $product_id)
+    {
+        // Kiểm tra đã thích chưa
+        $sql_check = "SELECT id FROM wishlist WHERE user_id = ? AND product_id = ?";
+        $stmt_check = $this->conn->prepare($sql_check);
+        $stmt_check->bind_param("ii", $user_id, $product_id);
+        $stmt_check->execute();
+        $result = $stmt_check->get_result();
+
+        if ($result->num_rows > 0) {
+            // Đã thích → xóa (unlike)
+            $sql = "DELETE FROM wishlist WHERE user_id = ? AND product_id = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("ii", $user_id, $product_id);
+            $stmt->execute();
+            return false; // đã unlike
+        } else {
+            // Chưa thích → thêm
+            $sql = "INSERT INTO wishlist (user_id, product_id, created_at) VALUES (?, ?, NOW())";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("ii", $user_id, $product_id);
+            $stmt->execute();
+            return true; // đã like
+        }
+    }
+
 }
 ?>

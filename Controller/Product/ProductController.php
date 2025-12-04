@@ -448,4 +448,68 @@ class ProductController
             echo "<script>alert('Có lỗi xảy ra, không thể xóa!'); window.history.back();</script>";
         }
     }
+
+    public function wishlist()
+    {
+        $action = $_GET['type'];
+        $product_id = $_GET['id'];
+        $user_id = $_SESSION['user_id'];
+
+        if ($action == 'add') {
+            $this->productModel->addToWishlist($user_id, $product_id);
+        }
+
+        if ($action == 'remove') {
+            $this->productModel->removeFromWishlist($user_id, $product_id);
+        }
+
+        header("Location: index.php?controller=product&action=detail&id=$product_id");
+    }
+
+    public function wishlistListAction()
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['user'])) {
+            echo "<script>alert('Vui lòng đăng nhập!'); window.location.href='index.php?controller=user&action=login';</script>";
+            exit;
+        }
+
+        $user_id = $_SESSION['user']['id'];
+        $wishlist = $this->productModel->getWishlist($user_id);
+
+       
+        include("View/Product/WishList.php"); 
+    }
+
+    public function toggleWishlistAction() 
+    {
+        // BẮT BUỘC PHẢI CÓ session_start() ở đầu mỗi action nếu chưa có
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['user'])) {
+            echo json_encode(["status" => "not_login"]);
+            exit;
+        }
+
+        $userId = $_SESSION['user']['id'];
+        $productId = $_POST['product_id'] ?? null;
+
+        if (!$productId) {
+            echo json_encode(["status" => "error"]);
+            exit;
+        }
+
+        $liked = $this->productModel->toggleWishlist($userId, $productId);
+
+        echo json_encode([
+            "status" => $liked ? "liked" : "unliked"
+        ]);
+    }
+
+
 }

@@ -1,0 +1,145 @@
+/* Wishlist Page Styles */
+.wishlist-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Wishlist Grid */
+.wishlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+}
+
+.wishlist-item {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: all .3s;
+}
+
+.wishlist-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+/* Product Image */
+.product-image {
+    width: 100%;
+    height: 240px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid #eee;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: .35s;
+}
+
+.product-image:hover img {
+    transform: scale(1.06);
+}
+
+.remove-wishlist {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #d33;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 17px;
+    transition: .3s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.remove-wishlist:hover {
+    background: #ffeded;
+    transform: scale(1.1);
+}
+
+/* Product Info */
+.product-info {
+    padding: 16px;
+}
+
+.product-name {
+    font-size: 17px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    height: 40px;
+    overflow: hidden;
+}
+
+.product-price {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ee4d2d;
+    margin-bottom: 6px;
+}
+
+.product-sold {
+    font-size: 14px;
+    color: #777;
+}
+
+/* Empty State */
+.empty-wishlist {
+    text-align: center;
+    padding: 60px 20px;
+    color: #777;
+}
+
+.empty-wishlist i {
+    font-size: 80px;
+    color: #ccc;
+    margin-bottom: 16px;
+}
+
+/* Button */
+.btn.primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #ee4d2d;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: .3s;
+}
+
+.btn.primary:hover {
+    background: #d83c1e;
+    transform: translateY(-3px);
+}
