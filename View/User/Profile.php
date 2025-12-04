@@ -35,17 +35,6 @@ function productImageSrc($img)
 <main class="profile-container">
   <aside class="profile-sidebar">
     <div class="user-card">
-      <div class="avatar">
-        <?php if (!empty($user['avatar'])): ?>
-          <?php if (@getimagesizefromstring($user['avatar'])): ?>
-            <img src="data:image/jpeg;base64,<?= base64_encode($user['avatar']) ?>" alt="avatar">
-          <?php else: ?>
-            <img src="<?= htmlspecialchars($user['avatar']) ?>" alt="avatar">
-          <?php endif; ?>
-        <?php else: ?>
-          <img src="/Shop_Website/Assets/Images/placeholder-avatar.png" alt="avatar">
-        <?php endif; ?>
-      </div>
       <div class="user-info">
         <h3 class="username"><?= htmlspecialchars($user['username'] ?? '—') ?></h3>
         <div class="email"><?= htmlspecialchars($user['email'] ?? '—') ?></div>

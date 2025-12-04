@@ -1,144 +1,366 @@
 :root {
-    --max-width: 1200px;
+    --max-width: 900px;
     --primary: #10b981;
-    --muted: #fafafa;
-    --text: #222;
+    --primary-hover: #059669;
+    --secondary: #3b82f6;
+    --danger: #ef4444;
+    --muted: #f8fafc;
+    --text: #1e293b;
+    --text-light: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --radius: 12px;
+    --radius-sm: 8px;
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
-    padding: 0
+    padding: 0;
 }
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: var(--muted);
-    color: var(--text)
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+    min-height: 100vh;
+    color: var(--text);
+    padding: 40px 0;
 }
 
 .container {
     max-width: var(--max-width);
-    margin: 26px auto;
-    padding: 0 20px
+    margin: 0 auto;
+    padding: 0 24px;
 }
 
 .edit-product-page h2 {
-    margin-bottom: 16px;
-    font-size: 20px
+    margin-bottom: 24px;
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.edit-product-page h2::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: var(--primary);
+    margin: 12px auto 0;
+    border-radius: 2px;
 }
 
 .error {
-    background: #ffe6e6;
-    color: #b00020;
-    padding: 10px;
-    border-radius: 6px;
-    margin-bottom: 12px
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: var(--danger);
+    padding: 16px 20px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 20px;
+    border-left: 4px solid var(--danger);
+    font-weight: 500;
+    box-shadow: var(--shadow);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .edit-product-form {
     background: #fff;
-    padding: 18px;
-    border-radius: 8px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04)
+    padding: 32px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .row {
-    margin-bottom: 12px
+    margin-bottom: 24px;
 }
 
 .row.inline {
-    display: flex;
-    gap: 12px
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
 }
 
 .col {
-    flex: 1
+    display: flex;
+    flex-direction: column;
 }
 
 label {
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     font-weight: 600;
-    font-size: 14px
+    font-size: 14px;
+    color: var(--text);
+    letter-spacing: 0.01em;
+}
+
+label::after {
+    content: ' *';
+    color: var(--danger);
+    font-weight: 400;
 }
 
 input[type="text"],
 input[type="number"],
 textarea,
-select,
+select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    color: var(--text);
+    background: #fff;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+input[type="text"]:hover,
+input[type="number"]:hover,
+textarea:hover,
+select:hover {
+    border-color: #cbd5e1;
+}
+
 input[type="file"] {
     width: 100%;
-    padding: 8px;
-    border: 1px solid #e6e6e6;
-    border-radius: 6px;
+    padding: 12px;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-sm);
     font-size: 14px;
+    cursor: pointer;
+    background: var(--muted);
+    transition: all 0.2s ease;
+}
+
+input[type="file"]:hover {
+    border-color: var(--primary);
+    background: #f0fdf4;
 }
 
 textarea {
-    min-height: 120px;
-    resize: vertical
+    min-height: 140px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 40px;
 }
 
 .hint {
     display: block;
-    margin-top: 6px;
-    color: #666;
-    font-size: 12px
+    margin-top: 8px;
+    color: var(--text-light);
+    font-size: 13px;
+    line-height: 1.5;
 }
 
 .current-image {
-    margin-bottom: 8px
+    margin-bottom: 16px;
+    position: relative;
+    width: fit-content;
+}
+
+.current-image::before {
+    content: 'Ảnh hiện tại';
+    position: absolute;
+    top: -8px;
+    left: 8px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 1;
 }
 
 .current-image img {
-    width: 160px;
-    height: 160px;
+    width: 200px;
+    height: 200px;
     object-fit: cover;
-    border-radius: 6px;
-    border: 1px solid #f0f0f0
+    border-radius: var(--radius-sm);
+    border: 3px solid var(--border);
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.current-image img:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
 }
 
 .actions {
     display: flex;
-    gap: 12px;
+    gap: 16px;
     align-items: center;
-    margin-top: 8px
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--border);
 }
 
 .btn {
-    display: inline-block;
-    padding: 10px 14px;
-    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 28px;
+    border-radius: var(--radius-sm);
     text-decoration: none;
-    color: #333;
-    background: #fff;
-    border: 1px solid #eee
+    font-size: 15px;
+    font-weight: 600;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.01em;
 }
 
 .btn.btn-primary {
-    background: var(--primary);
+    background: linear-gradient(135deg, var(--primary) 0%, #059669 100%);
     color: #fff;
-    border-color: transparent;
-    font-weight: 700;
-    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.btn.btn-primary:active {
+    transform: translateY(0);
 }
 
 .btn.btn-cancel {
     background: #fff;
-    color: #666
+    color: var(--text-light);
+    border-color: var(--border);
 }
 
-@media(max-width:700px) {
+.btn.btn-cancel:hover {
+    background: var(--muted);
+    border-color: #cbd5e1;
+    color: var(--text);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 20px 0;
+    }
+
+    .container {
+        padding: 0 16px;
+    }
+
+    .edit-product-page h2 {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .edit-product-form {
+        padding: 24px 20px;
+    }
+
     .row.inline {
-        flex-direction: column
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .row {
+        margin-bottom: 20px;
     }
 
     .current-image img {
-        width: 120px;
-        height: 120px
+        width: 160px;
+        height: 160px;
+    }
+
+    .actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 12px 24px;
     }
 }
 
+@media (max-width: 480px) {
+    .edit-product-page h2 {
+        font-size: 20px;
+    }
 
+    .edit-product-form {
+        padding: 20px 16px;
+    }
 
+    .current-image img {
+        width: 140px;
+        height: 140px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+}
+
+/* Loading State Animation */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.btn.btn-primary:disabled {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    cursor: not-allowed;
+}

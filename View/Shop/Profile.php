@@ -2,23 +2,32 @@
 require_once "./View/Layout/Header.php";
 
 // --- Helper Functions ---
+
+// Helper xử lý ảnh (tránh lỗi nếu ảnh rỗng)
 function getImgUrl($path)
 {
-    if (!empty($path) && file_exists($path)) return $path;
-    return 'https://via.placeholder.com/150';
+    if (!empty($path) && file_exists($path)) {
+        return $path;
+    }
+    return 'https://via.placeholder.com/150'; // Ảnh mặc định nếu lỗi
 }
 
+// Helper tính thời gian tham gia (VD: 3 năm trước)
 function timeAgo($datetime)
 {
     $time = strtotime($datetime);
     $diff = time() - $time;
     if ($diff < 60) return 'Vừa xong';
+    
     $years = floor($diff / (365 * 60 * 60 * 24));
     if ($years > 0) return $years . ' Năm trước';
+    
     $months = floor($diff / (30 * 60 * 60 * 24));
     if ($months > 0) return $months . ' Tháng trước';
+    
     $days = floor($diff / (60 * 60 * 24));
     if ($days > 0) return $days . ' Ngày trước';
+    
     return 'Mới tham gia';
 }
 ?>
@@ -28,7 +37,8 @@ function timeAgo($datetime)
 <div class="shop-page-wrapper">
     <div class="container-shop">
         <div class="shop-header">
-            <div class="shop-info-card" style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('<?= getImgUrl($shop->cover_image) ?>'); background-size: cover; background-position: center;">
+            <div class="shop-info-card"
+                style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('<?= getImgUrl($shop->cover_image) ?>'); background-size: cover; background-position: center;">
                 <div class="shop-avatar">
                     <img src="<?= getImgUrl($shop->avatar) ?>" alt="Avatar">
                 </div>
@@ -40,7 +50,7 @@ function timeAgo($datetime)
                     </span>
                     <div>
                         <button class="btn-shop-action">+ Theo Dõi</button>
-                        <button class="btn-shop-action"><i class="fas fa-comments"></i> Chat</button>
+                        <button class="btn-shop-action">+Thêm sản phẩm</button>
                     </div>
                 </div>
             </div>
@@ -99,7 +109,7 @@ function timeAgo($datetime)
         </div>
 
         <?php if (isset($isOwner) && $isOwner): ?>
-        <div id="section-stats" class="dashboard-wrapper">
+        <div id="section-stats" class="dashboard-wrapper" style="display: none;">
             <div class="stats-grid">
 
                 <div class="d-card blue">
@@ -175,7 +185,6 @@ function timeAgo($datetime)
             </div>
 
             <div class="chart-section">
-
                 <div class="content-box">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <h4 style="margin: 0; color: #333;">Biểu đồ giả lập</h4>
@@ -199,7 +208,6 @@ function timeAgo($datetime)
 
                 <div class="content-box">
                     <h4 style="margin: 0 0 20px 0; color: #333;">Đơn hàng mới nhất</h4>
-
                     <div class="activity-list">
                         <?php if (!empty($recentOrders)): ?>
                             <?php foreach ($recentOrders as $order): ?>
@@ -232,7 +240,6 @@ function timeAgo($datetime)
                         <?php endif; ?>
                     </div>
                 </div>
-
             </div>
         </div>
         <?php endif; ?>
@@ -251,14 +258,14 @@ function timeAgo($datetime)
         const productSection = document.getElementById('section-products');
         const statsSection = document.getElementById('section-stats');
 
-        if (tabName === 'stats') {
+        if (tabName === 'stats' && statsSection) {
             // --- BẬT CHẾ ĐỘ THỐNG KÊ ---
             productSection.style.setProperty('display', 'none', 'important');
             statsSection.style.display = 'block';
         } else {
             // --- BẬT CHẾ ĐỘ SẢN PHẨM ---
-            productSection.style.display = 'block';
-            statsSection.style.display = 'none';
+            if(productSection) productSection.style.display = 'block';
+            if(statsSection) statsSection.style.display = 'none';
         }
     }
 </script>

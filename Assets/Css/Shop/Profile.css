@@ -1,118 +1,299 @@
-/* Reset cơ bản để đảm bảo giao diện đẹp */
+/* Profile.css - Shop Profile Enhanced Version (Merged with Dashboard) */
+
+:root {
+    --primary: #ee4d2d;
+    --primary-dark: #d73211;
+    --primary-light: #ff6b4a;
+    --success: #00bfa5;
+    --text-main: #333;
+    --text-light: #666;
+    --text-lighter: #999;
+    --bg-gray: #f5f5f5;
+    --bg-white: #ffffff;
+    --border-color: #e8e8e8;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 .shop-page-wrapper {
-    background-color: #f5f5f5;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    color: #333;
-    padding-bottom: 50px;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: var(--text-main);
+    padding-bottom: 60px;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .container-shop {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 10px;
+    padding: 0 16px;
 }
 
-/* --- PHẦN 1: SHOP HEADER INFO --- */
+/* ===== SHOP HEADER SECTION ===== */
 .shop-header {
-    background-color: #fff;
-    padding: 20px;
-    margin-top: 20px;
-    border-radius: 4px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    background: var(--bg-white);
+    padding: 24px;
+    margin-top: 24px;
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
     display: flex;
-    gap: 30px;
+    gap: 32px;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
 }
 
-/* Card bên trái: Avatar & Ảnh bìa */
+.shop-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 50%, var(--primary) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0%, 100% { background-position: 0% 0%; }
+    50% { background-position: 100% 0%; }
+}
+
+.shop-header:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+/* Shop Info Card với Glassmorphism */
 .shop-info-card {
-    width: 380px;
-    height: 140px;
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://cf.shopee.vn/file/4d11da6479633e660123543d83333333_tn');
-    /* Ảnh nền giả lập */
+    width: 420px;
+    height: 180px;
+    background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.5)), 
+                url('https://cf.shopee.vn/file/4d11da6479633e660123543d83333333_tn');
     background-size: cover;
-    border-radius: 4px;
+    background-position: center;
+    border-radius: 12px;
     display: flex;
     align-items: center;
-    padding: 15px;
+    padding: 20px;
     color: #fff;
     position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(10px);
 }
 
+.shop-info-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(238, 77, 45, 0.2) 0%, rgba(0, 191, 165, 0.2) 100%);
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.shop-info-card:hover::before {
+    opacity: 1;
+}
+
+/* Avatar với Animation */
 .shop-avatar {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
-    border: 4px solid rgba(255, 255, 255, 0.4);
-    margin-right: 15px;
-    background-color: #333;
+    border: 4px solid rgba(255, 255, 255, 0.9);
+    margin-right: 20px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     overflow: hidden;
+    position: relative;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    transition: var(--transition);
+}
+
+.shop-avatar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s;
+}
+
+.shop-avatar:hover {
+    transform: scale(1.05) rotate(5deg);
+    border-color: var(--success);
+}
+
+.shop-avatar:hover::before {
+    left: 100%;
 }
 
 .shop-avatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: var(--transition);
+}
+
+.shop-avatar:hover img {
+    transform: scale(1.1);
+}
+
+/* Shop Actions */
+.shop-actions {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .shop-actions h3 {
-    margin: 0 0 5px 0;
-    font-size: 20px;
-    font-weight: 500;
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.5px;
 }
 
 .shop-status {
-    font-size: 12px;
-    color: #00bfa5;
-    margin-bottom: 10px;
-    display: block;
+    font-size: 13px;
+    color: var(--success);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.shop-status i {
+    animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+/* Shop Action Buttons */
+.shop-actions > div {
+    display: flex;
+    gap: 10px;
 }
 
 .btn-shop-action {
-    background: transparent;
-    border: 1px solid #fff;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.8);
     color: #fff;
-    padding: 5px 15px;
-    font-size: 12px;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 600;
     text-transform: uppercase;
     cursor: pointer;
-    margin-right: 5px;
+    border-radius: 8px;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 0.5px;
+}
+
+.btn-shop-action::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-shop-action:hover::before {
+    width: 300px;
+    height: 300px;
 }
 
 .btn-shop-action:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* Card bên phải: Thống kê */
+.btn-shop-action:active {
+    transform: translateY(0);
+}
+
+/* Shop Stats Grid */
 .shop-stats {
     flex: 1;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px 40px;
-    font-size: 14px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px 32px;
     align-content: center;
+    padding: 12px;
 }
 
 .stat-item {
     display: flex;
     align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: linear-gradient(135deg, rgba(238, 77, 45, 0.05) 0%, rgba(238, 77, 45, 0.02) 100%);
+    border-radius: 8px;
+    transition: var(--transition);
+    border: 1px solid transparent;
+}
+
+.stat-item:hover {
+    background: linear-gradient(135deg, rgba(238, 77, 45, 0.1) 0%, rgba(238, 77, 45, 0.05) 100%);
+    border-color: var(--primary);
+    transform: translateX(4px);
 }
 
 .stat-icon {
-    margin-right: 8px;
-    color: #666;
+    font-size: 20px;
+    color: var(--primary);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(238, 77, 45, 0.1);
+    border-radius: 8px;
 }
 
 .stat-value {
-    color: #d0011b;
-    font-weight: 500;
-    margin-left: 5px;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 16px;
+    margin-left: auto;
 }
 
-/* --- PHẦN 2: NAVIGATION TABS --- */
+/* ===== NAVIGATION TABS ===== */
 .shop-nav {
-    background: #fff;
-    margin-top: 15px;
-    border-bottom: 1px solid #e8e8e8;
+    background: var(--bg-white);
+    margin-top: 20px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
 }
 
 .shop-nav ul {
@@ -125,102 +306,225 @@
 }
 
 .shop-nav li {
-    padding: 15px 30px;
+    padding: 18px 32px;
     cursor: pointer;
     font-size: 16px;
-    color: #555;
+    font-weight: 500;
+    color: var(--text-light);
     position: relative;
+    transition: var(--transition);
+    border-bottom: 3px solid transparent;
+}
+
+.shop-nav li::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+    transform: translateX(-50%);
+    transition: var(--transition);
+}
+
+.shop-nav li:hover::before,
+.shop-nav li.active::before {
+    width: 100%;
 }
 
 .shop-nav li.active {
-    color: #ee4d2d;
-    border-bottom: 3px solid #ee4d2d;
+    color: var(--primary);
+    background: linear-gradient(180deg, rgba(238, 77, 45, 0.05) 0%, transparent 100%);
 }
 
 .shop-nav li:hover {
-    color: #ee4d2d;
+    color: var(--primary);
+    background: rgba(238, 77, 45, 0.03);
 }
 
-/* --- PHẦN 3: VOUCHERS --- */
+/* ===== VOUCHER SECTION ===== */
 .voucher-section {
-    margin-top: 20px;
+    margin-top: 24px;
     display: flex;
-    gap: 15px;
+    gap: 16px;
     overflow-x: auto;
+    padding-bottom: 12px;
+    scroll-behavior: smooth;
+}
+
+.voucher-section::-webkit-scrollbar {
+    height: 8px;
+}
+
+.voucher-section::-webkit-scrollbar-track {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+.voucher-section::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
 }
 
 .voucher-card {
-    background: #fff;
-    border-left: 4px dotted #e8e8e8;
-    /* Giả hiệu ứng răng cưa voucher */
-    background: linear-gradient(90deg, #fff 0%, #fff 70%, #fffbf8 100%);
-    padding: 15px;
-    min-width: 300px;
-    border-radius: 2px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    background: var(--bg-white);
+    min-width: 320px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border: 1px solid #e8e8e8;
-    border-left: 4px solid #ee4d2d;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+    border: 2px solid transparent;
+}
+
+.voucher-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
+}
+
+.voucher-card::after {
+    content: '';
+    position: absolute;
+    left: 60%;
+    top: -10px;
+    bottom: -10px;
+    width: 2px;
+    background: repeating-linear-gradient(
+        to bottom,
+        var(--border-color) 0px,
+        var(--border-color) 8px,
+        transparent 8px,
+        transparent 16px
+    );
+}
+
+.voucher-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary);
 }
 
 .voucher-info h4 {
-    color: #ee4d2d;
-    margin: 0;
-    font-size: 16px;
+    color: var(--primary);
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 700;
 }
 
 .voucher-info p {
-    margin: 5px 0 0;
-    font-size: 12px;
-    color: #757575;
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-light);
 }
 
 .btn-save-voucher {
-    background-color: #ee4d2d;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     color: #fff;
     border: none;
-    padding: 8px 15px;
-    border-radius: 2px;
+    padding: 10px 24px;
+    border-radius: 8px;
     cursor: pointer;
-}
-
-/* --- PHẦN 4: PRODUCT LIST --- */
-.section-title {
-    margin-top: 30px;
-    margin-bottom: 15px;
-    font-size: 16px;
-    color: #555;
+    font-weight: 600;
     text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    transition: var(--transition);
+    box-shadow: 0 4px 12px rgba(238, 77, 45, 0.3);
 }
 
+.btn-save-voucher:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(238, 77, 45, 0.4);
+}
+
+.btn-save-voucher:active {
+    transform: scale(0.98);
+}
+
+/* ===== PRODUCT SECTION ===== */
+.section-title {
+    margin-top: 40px;
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-main);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    padding-left: 16px;
+}
+
+.section-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 24px;
+    background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
+    border-radius: 2px;
+}
+
+/* Product Grid */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    /* 5 Cột giống Shopee */
-    gap: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
 }
 
 .product-card {
-    background: #fff;
-    border: 1px solid #e8e8e8;
-    transition: transform 0.1s;
+    background: var(--bg-white);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: var(--transition);
     cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    border: 2px solid transparent;
+}
+
+.product-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(238, 77, 45, 0) 0%, rgba(238, 77, 45, 0.1) 100%);
+    opacity: 0;
+    transition: var(--transition);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .product-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    border-color: #ee4d2d;
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary);
 }
 
+.product-card:hover::before {
+    opacity: 1;
+}
+
+/* Product Image */
 .product-img {
     width: 100%;
     padding-top: 100%;
-    /* Tạo khung vuông tỉ lệ 1:1 */
     position: relative;
-    background-color: #f2f2f2;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    overflow: hidden;
 }
 
 .product-img img {
@@ -230,61 +534,98 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.product-card:hover .product-img img {
+    transform: scale(1.1) rotate(2deg);
+}
+
+/* Product Details */
 .product-details {
-    padding: 10px;
+    padding: 16px;
+    position: relative;
+    z-index: 2;
 }
 
 .product-name {
-    font-size: 12px;
-    line-height: 14px;
-    height: 28px;
+    font-size: 14px;
+    line-height: 1.4;
+    height: 40px;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    margin-bottom: 5px;
+    margin-bottom: 12px;
+    color: var(--text-main);
+    transition: var(--transition);
+}
+
+.product-card:hover .product-name {
+    color: var(--primary);
 }
 
 .product-price {
-    color: #ee4d2d;
-    font-size: 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.product-price > span:first-child {
+    color: var(--primary);
+    font-size: 18px;
+    font-weight: 700;
 }
 
 .product-sold {
-    font-size: 10px;
-    color: #757575;
+    font-size: 12px;
+    color: var(--text-lighter);
+    background: rgba(238, 77, 45, 0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
 }
 
-.nav-stats {
-    color: #2563eb !important;
-    font-weight: 500;
+/* Empty State */
+.empty-state {
+    padding: 80px 20px;
+    text-align: center;
+    color: var(--text-lighter);
 }
 
-.nav-stats.active {
-    border-bottom-color: #2563eb !important;
+.empty-state i {
+    font-size: 64px;
+    color: var(--border-color);
+    margin-bottom: 16px;
 }
 
-.nav-stats i {
-    margin-right: 5px;
+/* Loading Animation */
+@keyframes skeleton-loading {
+    0% { background-position: -200px 0; }
+    100% { background-position: calc(200px + 100%) 0; }
 }
+
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 0px, #e0e0e0 40px, #f0f0f0 80px);
+    background-size: 200px 100%;
+    animation: skeleton-loading 1.5s infinite;
+}
+
+/* ============================================================
+   PHẦN CSS DASHBOARD (ĐƯỢC GIỮ LẠI TỪ BẢN CŨ ĐỂ KHÔNG BỊ LỖI)
+   ============================================================ */
 
 .dashboard-wrapper {
     display: none;
-    /* Mặc định ẩn */
     padding: 20px 0;
     animation: fadeIn 0.5s;
 }
 
 .active-section {
-    display: block ;
+    display: block !important;
 }
 
-/* Grid Layout cho 4 Cards trên cùng */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -302,22 +643,10 @@
     border-top: 3px solid transparent;
 }
 
-/* Màu sắc border top cho từng card */
-.d-card.blue {
-    border-top-color: #3b82f6;
-}
-
-.d-card.red {
-    border-top-color: #ef4444;
-}
-
-.d-card.yellow {
-    border-top-color: #f59e0b;
-}
-
-.d-card.green {
-    border-top-color: #10b981;
-}
+.d-card.blue { border-top-color: #3b82f6; }
+.d-card.red { border-top-color: #ef4444; }
+.d-card.yellow { border-top-color: #f59e0b; }
+.d-card.green { border-top-color: #10b981; }
 
 .d-card h4 {
     color: #8898aa;
@@ -343,7 +672,6 @@
     color: white;
 }
 
-/* Layout Biểu đồ và List bên phải */
 .chart-section {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -357,7 +685,6 @@
     padding: 25px;
 }
 
-/* CSS Biểu đồ cột đơn giản */
 .simple-bar-chart {
     display: flex;
     justify-content: space-around;
@@ -403,7 +730,6 @@
     color: #8898aa;
 }
 
-/* Recent Activity List */
 .activity-item {
     display: flex;
     align-items: center;
@@ -425,196 +751,52 @@
     font-weight: bold;
 }
 
-/* Tabs Navigation Style */
-.shop-nav ul li {
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.shop-nav ul li.active {
-    border-bottom: 3px solid #ee4d2d;
-    color: #ee4d2d;
-    font-weight: bold;
-}
-
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-    /* CSS CHO DASHBOARD */
-    .dashboard-wrapper {
-        display: none;
-        padding: 20px 0;
-        animation: fadeIn 0.5s;
-    }
+/* ================== MEDIA QUERIES ================== */
 
-    .active-section {
-        display: block !important;
-    }
-
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-
-    .d-card {
-        background: #fff;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-        position: relative;
-        overflow: hidden;
-        border-top: 3px solid transparent;
-    }
-
-    .d-card.blue {
-        border-top-color: #3b82f6;
-    }
-
-    .d-card.red {
-        border-top-color: #ef4444;
-    }
-
-    .d-card.yellow {
-        border-top-color: #f59e0b;
-    }
-
-    .d-card.green {
-        border-top-color: #10b981;
-    }
-
-    .d-card h4 {
-        color: #8898aa;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        margin-bottom: 10px;
-        letter-spacing: 0.5px;
-    }
-
-    .d-card .value {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #32325d;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .d-card .badge {
-        font-size: 0.8rem;
-        padding: 5px 10px;
-        border-radius: 20px;
-        color: white;
-    }
-
-    .chart-section {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 20px;
-    }
-
-    .content-box {
-        background: #fff;
-        border-radius: 10px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-        padding: 25px;
-    }
-
-    .simple-bar-chart {
-        display: flex;
-        justify-content: space-around;
-        align-items: flex-end;
-        height: 250px;
-        margin-top: 30px;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 10px;
-    }
-
-    .bar-group {
-        display: flex;
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .shop-header {
         flex-direction: column;
-        align-items: center;
-        width: 100%;
+        gap: 24px;
     }
+    .shop-info-card { width: 100%; }
+    .shop-stats { grid-template-columns: repeat(3, 1fr); }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); } /* Cho Dashboard */
+}
 
-    .bar {
-        width: 12px;
-        background: #3b82f6;
-        border-radius: 20px 20px 0 0;
-        transition: height 1s ease;
-        position: relative;
+@media (max-width: 768px) {
+    .product-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .shop-stats { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .shop-nav li { padding: 14px 20px; font-size: 14px; }
+    .voucher-card { min-width: 280px; }
+    .chart-section { grid-template-columns: 1fr; } /* Cho Dashboard */
+}
+
+@media (max-width: 480px) {
+    .shop-info-card {
+        height: auto;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 16px;
     }
-
-    .bar:hover::after {
-        content: attr(data-value);
-        position: absolute;
-        top: -25px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #333;
-        color: #fff;
-        padding: 3px 6px;
-        border-radius: 4px;
-        font-size: 10px;
-        white-space: nowrap;
+    .shop-avatar {
+        width: 80px;
+        height: 80px;
+        margin-right: 0;
+        margin-bottom: 12px;
     }
+    .btn-shop-action { padding: 8px 16px; font-size: 11px; }
+    .stat-item { font-size: 12px; }
+    .stats-grid { grid-template-columns: 1fr; } /* Cho Dashboard */
+}
 
-    .bar-label {
-        margin-top: 10px;
-        font-size: 12px;
-        color: #8898aa;
-    }
+/* Smooth Scroll */
+html { scroll-behavior: smooth; }
 
-    .activity-item {
-        display: flex;
-        align-items: center;
-        margin-bottom: 20px;
-        padding-bottom: 15px;
-        border-bottom: 1px dashed #f0f0f0;
-    }
-
-    .activity-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: #e0e7ff;
-        color: #4338ca;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 15px;
-        font-weight: bold;
-    }
-
-    .shop-nav ul li {
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-    .shop-nav ul li.active {
-        border-bottom: 3px solid #ee4d2d;
-        color: #ee4d2d;
-        font-weight: bold;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
+/* Focus Styles */
+*:focus { outline: 2px solid var(--primary); outline-offset: 2px; }
