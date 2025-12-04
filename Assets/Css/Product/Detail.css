@@ -317,7 +317,7 @@ body {
 .product-actions {
     display: flex;
     gap: 12px;
-    align-items: flex-end;
+    align-items: flex-end !important;
     margin-bottom: 12px;
 }
 
@@ -771,4 +771,56 @@ body {
     cursor: pointer;
     /* Hiển thị bàn tay khi di chuột */
     z-index: 20;
+}
+.qty-control input::-webkit-outer-spin-button,
+.qty-control input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.qty-control input {
+    -moz-appearance: textfield; /* Cho Firefox */
+}
+
+/* 2. Căn chỉnh lại khu vực nút bấm */
+.product-actions {
+    /* Đổi từ flex-end sang center để nút và ô nhập luôn thẳng hàng */
+    align-items: flex-end !important;
+}
+
+/* 3. Style lại ô nhập số lượng cho xịn hơn */
+.qty-control {
+    border: 1px solid #ccc; /* Viền xám nhẹ */
+    border-radius: 4px;
+    height: 36px; /* Chiều cao cố định */
+}
+
+.qty-btn {
+    width: 32px;
+    height: 100%; /* Full chiều cao */
+    background: #fff;
+    border: none;
+    border-right: 1px solid #eee; /* Đường ngăn cách */
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.qty-btn.plus {
+    border-right: none;
+    border-left: 1px solid #eee;
+}
+
+.qty-btn:hover {
+    background: #f8f8f8;
+    color: var(--danger);
+}
+
+.qty-control input {
+    height: 100%;
+    width: 50px;
+    border: none;
+    font-weight: 600;
+    color: #333;
 }
