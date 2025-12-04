@@ -122,15 +122,22 @@ function productImageSrc($img)
                     </div>
 
                     <div class="product-actions">
+
                         <div class="quantity-box">
-                            <label>Số Lượng</label>
-                            <div class="qty-control">
-                                <button class="qty-btn minus" type="button"><i class="fas fa-minus"></i></button>
+                            <label style="margin-bottom: 8px; font-weight: 600; display: block;">Số Lượng</label>
 
-                                <input type="number" id="qty" name="quantity" value="1" min="1"
-                                    max="<?= intval($product->quantity ?? 100) ?>">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div class="qty-control">
+                                    <button class="qty-btn minus" type="button"><i class="fas fa-minus"></i></button>
+                                    <input type="number" id="qty" name="quantity" value="1" min="1"
+                                        max="<?= intval($product->quantity ?? 100) ?>"
+                                        inputmode="numeric" pattern="[0-9]*">
+                                    <button class="qty-btn plus" type="button"><i class="fas fa-plus"></i></button>
+                                </div>
 
-                                <button class="qty-btn plus" type="button"><i class="fas fa-plus"></i></button>
+                                <span class="available-text" style="color: #757575; font-size: 13px;">
+                                    <?= intval($product->quantity ?? 0) ?> sản phẩm có sẵn
+                                </span>
                             </div>
                         </div>
 

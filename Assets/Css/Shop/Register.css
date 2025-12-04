@@ -1,62 +1,122 @@
+.register-shop-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
 
-    .register-shop-container {
-        max-width: 800px;
-        margin: 40px auto;
-        background: #fff;
-        padding: 40px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        font-family: Arial, sans-serif;
-    }
+.register-header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+}
 
-    .register-header {
-        text-align: center;
-        margin-bottom: 30px;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 20px;
-    }
-    .register-header h2 { color: #333; margin-bottom: 10px; }
-    .register-header p { color: #666; font-size: 14px; }
+.register-header h2 {
+    color: #333;
+    margin-bottom: 10px;
+}
 
-    .form-group { margin-bottom: 20px; }
-    .form-label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
-    .form-control {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
-        transition: border 0.3s;
-    }
-    .form-control:focus { border-color: #00bfa5; outline: none; }
-    
-    .row-input { display: flex; gap: 20px; }
-    .col-half { flex: 1; }
+.register-header p {
+    color: #666;
+    font-size: 14px;
+}
 
-    /* Style cho phần upload ảnh */
-    .upload-box {
-        border: 2px dashed #ddd;
-        padding: 20px;
-        text-align: center;
-        border-radius: 4px;
-        cursor: pointer;
-        position: relative;
-        background: #fafafa;
-    }
-    .upload-box:hover { border-color: #00bfa5; background: #f0fdfa; }
-    
-    .btn-submit-shop {
-        width: 100%;
-        padding: 12px;
-        background-color: #ee4d2d; 
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        margin-top: 10px;
-    }
-    .btn-submit-shop:hover { background-color: #d73211; }
+.form-group {
+    margin-bottom: 20px;
+}
 
-    .note { font-size: 12px; color: #888; margin-top: 5px; font-style: italic; }
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #444;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border 0.3s;
+}
+
+.form-control:focus {
+    border-color: #00bfa5;
+    outline: none;
+}
+
+.row-input {
+    display: flex;
+    gap: 20px;
+}
+
+.col-half {
+    flex: 1;
+}
+
+/* Style cho phần upload ảnh */
+.upload-box {
+    border: 2px dashed #ddd;
+    padding: 20px;
+    text-align: center;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    background: #fafafa;
+}
+
+.upload-box:hover {
+    border-color: #00bfa5;
+    background: #f0fdfa;
+}
+
+.btn-submit-shop {
+    width: 100%;
+    padding: 12px;
+    background-color: #ee4d2d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-submit-shop:hover {
+    background-color: #d73211;
+}
+
+.note {
+    font-size: 12px;
+    color: #888;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+.address-group {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.address-group select {
+    flex: 1;
+    /* Chia đều 3 cột */
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Responsive cho mobile: Xuống dòng nếu màn hình nhỏ */
+@media (max-width: 600px) {
+    .address-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
