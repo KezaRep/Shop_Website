@@ -18,16 +18,16 @@ function timeAgo($datetime)
     $time = strtotime($datetime);
     $diff = time() - $time;
     if ($diff < 60) return 'Vừa xong';
-    
+
     $years = floor($diff / (365 * 60 * 60 * 24));
     if ($years > 0) return $years . ' Năm trước';
-    
+
     $months = floor($diff / (30 * 60 * 60 * 24));
     if ($months > 0) return $months . ' Tháng trước';
-    
+
     $days = floor($diff / (60 * 60 * 24));
     if ($days > 0) return $days . ' Ngày trước';
-    
+
     return 'Mới tham gia';
 }
 ?>
@@ -109,139 +109,182 @@ function timeAgo($datetime)
         </div>
 
         <?php if (isset($isOwner) && $isOwner): ?>
-        <div id="section-stats" class="dashboard-wrapper" style="display: none;">
-            <div class="stats-grid">
+            <div id="section-stats" class="dashboard-wrapper" style="display: none;">
+                <div class="stats-grid">
 
-                <div class="d-card blue">
-                    <div style="display: flex; justify-content: space-between;">
-                        <div>
-                            <h4>Doanh Thu</h4>
-                            <div class="value">
-                                <?= number_format($revenue ?? 0, 0, ',', '.') ?>đ
-                            </div>
-                            <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">
-                                <span style="color: #10b981;"><i class="fas fa-arrow-up"></i></span> Tổng doanh thu shop
-                            </div>
-                        </div>
-                        <div style="font-size: 2rem; color: #3b82f6; opacity: 0.2;">
-                            <i class="fas fa-wallet"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-card green">
-                    <div style="display: flex; justify-content: space-between;">
-                        <div>
-                            <h4>Đơn Hàng</h4>
-                            <div class="value">
-                                <?= $newOrdersCount ?? 0 ?>
-                            </div>
-                            <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">
-                                Đơn hàng đang có
-                            </div>
-                        </div>
-                        <div style="font-size: 2rem; color: #10b981; opacity: 0.2;">
-                            <i class="fas fa-shopping-cart"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-card yellow">
-                    <div style="display: flex; justify-content: space-between;">
-                        <div>
-                            <h4>Đã Bán</h4>
-                            <div class="value">
-                                <?= number_format($totalSold ?? 0) ?>
-                            </div>
-                            <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">
-                                Sản phẩm đã bán ra
-                            </div>
-                        </div>
-                        <div style="font-size: 2rem; color: #f59e0b; opacity: 0.2;">
-                            <i class="fas fa-box-open"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-card red">
-                    <div style="display: flex; justify-content: space-between;">
-                        <div>
-                            <h4 style="color: #dc2626;">Sắp Hết Hàng</h4>
-                            <div class="value">
-                                <?= $lowStockCount ?? 0 ?>
-                                <?php if (isset($lowStockCount) && $lowStockCount > 0): ?>
-                                    <span class="badge" style="background: #fee2e2; color: #dc2626; font-size: 0.7rem;">Cần nhập</span>
-                                <?php endif; ?>
-                            </div>
-                            <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">
-                                Tồn kho dưới 10
-                            </div>
-                        </div>
-                        <div style="font-size: 2rem; color: #dc2626; opacity: 0.2;">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="chart-section">
-                <div class="content-box">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h4 style="margin: 0; color: #333;">Biểu đồ giả lập</h4>
-                        <button style="border: none; background: #3b82f6; color: white; padding: 5px 10px; border-radius: 5px; font-size: 12px;">Xuất Báo Cáo</button>
-                    </div>
-
-                    <div class="simple-bar-chart">
-                        <?php
-                        // Dữ liệu mẫu cho đẹp giao diện
-                        $dataChart = [40, 65, 30, 80, 55, 90, 45, 60, 75, 50, 85, 95];
-                        $labels = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
-                        foreach ($dataChart as $index => $val):
-                        ?>
-                            <div class="bar-group">
-                                <div class="bar" style="height: <?= $val ?>%; background: <?= $index % 2 == 0 ? '#3b82f6' : '#60a5fa' ?>;" data-value="<?= $val ?>"></div>
-                                <div class="bar-label"><?= $labels[$index] ?></div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-
-                <div class="content-box">
-                    <h4 style="margin: 0 0 20px 0; color: #333;">Đơn hàng mới nhất</h4>
-                    <div class="activity-list">
-                        <?php if (!empty($recentOrders)): ?>
-                            <?php foreach ($recentOrders as $order): ?>
-                                <div class="activity-item">
-                                    <div class="activity-icon" style="background: #e0e7ff; color: #4338ca;">
-                                        <?= strtoupper(substr($order->recipient_name ?? 'K', 0, 1)) ?>
-                                    </div>
-
-                                    <div style="flex: 1;">
-                                        <div style="display:flex; justify-content:space-between;">
-                                            <span style="font-weight: 600; font-size: 0.9rem;">
-                                                <?= htmlspecialchars($order->recipient_name ?? 'Khách lẻ') ?>
-                                            </span>
-                                            <span style="font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: <?= $order->status == 'completed' ? '#d1fae5' : '#fee2e2' ?>; color: <?= $order->status == 'completed' ? '#059669' : '#dc2626' ?>;">
-                                                <?= $order->status == 'completed' ? 'Hoàn thành' : 'Chờ xử lý' ?>
-                                            </span>
-                                        </div>
-
-                                        <div style="font-size: 0.8rem; color: #888; margin-top: 2px;">
-                                            #<?= $order->id ?> - <?= number_format($order->total_money, 0, ',', '.') ?>₫
-                                            <span style="float: right; font-size: 0.75rem;">
-                                                <?= date('d/m H:i', strtotime($order->created_at)) ?>
-                                            </span>
-                                        </div>
-                                    </div>
+                    <div class="d-card blue">
+                        <div style="display: flex; justify-content: space-between;">
+                            <div>
+                                <h4>Doanh Thu</h4>
+                                <div class="value">
+                                    <?= number_format($revenue ?? 0, 0, ',', '.') ?>đ
                                 </div>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <p style="text-align:center; color:#999; padding: 20px;">Chưa có đơn hàng nào.</p>
-                        <?php endif; ?>
+                                <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">
+                                    <span style="color: #10b981;"><i class="fas fa-arrow-up"></i></span> Tổng doanh thu shop
+                                </div>
+                            </div>
+                            <div style="font-size: 2rem; color: #3b82f6; opacity: 0.2;">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-card green">
+                        <div style="display: flex; justify-content: space-between;">
+                            <div>
+                                <h4>Đơn Hàng</h4>
+                                <div class="value">
+                                    <?= $newOrdersCount ?? 0 ?>
+                                </div>
+                                <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">
+                                    Đơn hàng đang có
+                                </div>
+                            </div>
+                            <div style="font-size: 2rem; color: #10b981; opacity: 0.2;">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-card yellow">
+                        <div style="display: flex; justify-content: space-between;">
+                            <div>
+                                <h4>Đã Bán</h4>
+                                <div class="value">
+                                    <?= number_format($totalSold ?? 0) ?>
+                                </div>
+                                <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">
+                                    Sản phẩm đã bán ra
+                                </div>
+                            </div>
+                            <div style="font-size: 2rem; color: #f59e0b; opacity: 0.2;">
+                                <i class="fas fa-box-open"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-card red">
+                        <div style="display: flex; justify-content: space-between;">
+                            <div>
+                                <h4 style="color: #dc2626;">Sắp Hết Hàng</h4>
+                                <div class="value">
+                                    <?= $lowStockCount ?? 0 ?>
+                                    <?php if (isset($lowStockCount) && $lowStockCount > 0): ?>
+                                        <span class="badge" style="background: #fee2e2; color: #dc2626; font-size: 0.7rem;">Cần nhập</span>
+                                    <?php endif; ?>
+                                </div>
+                                <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">
+                                    Tồn kho dưới 10
+                                </div>
+                            </div>
+                            <div style="font-size: 2rem; color: #dc2626; opacity: 0.2;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-section">
+                    <div class="content-box">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h4 style="margin: 0; color: #333;">Biểu đồ tăng trưởng</h4>
+                            <button style="border: none; background: #3b82f6; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600;">
+                                <i class="fas fa-download"></i> Xuất Báo Cáo
+                            </button>
+                        </div>
+
+                        <div class="chart-container">
+                            <div class="chart-grid-lines">
+                                <div class="grid-line"></div>
+                                <div class="grid-line"></div>
+                                <div class="grid-line"></div>
+                                <div class="grid-line"></div>
+                            </div>
+
+                            <?php
+                            // 1. TÍNH TOÁN DỮ LIỆU
+                            $maxVal = 0;
+                            if (!empty($chartData)) {
+                                foreach ($chartData as $day) {
+                                    if ($day['value'] > $maxVal) $maxVal = $day['value'];
+                                }
+                            }
+                            // Tránh lỗi chia cho 0
+                            if ($maxVal == 0) $maxVal = 1;
+
+                            // 2. VẼ CỘT
+                            if (!empty($chartData)):
+                                foreach ($chartData as $day):
+                                    // Tính % chiều cao (Tối đa 80% khung hình để chừa chỗ cho số tiền)
+                                    $percent = ($day['value'] / $maxVal) * 85;
+
+                                    // Format tiền (1.5M, 500k)
+                                    $displayMoney = $day['value'];
+                                    if ($day['value'] >= 1000000) {
+                                        $displayMoney = round($day['value'] / 1000000, 1) . 'M';
+                                    } elseif ($day['value'] >= 1000) {
+                                        $displayMoney = round($day['value'] / 1000, 0) . 'k';
+                                    } else {
+                                        $displayMoney = $day['value'];
+                                    }
+
+                                    // Kiểm tra có dữ liệu không để đổi màu
+                                    $hasDataClass = ($day['value'] > 0) ? 'has-data' : '';
+                            ?>
+                                    <div class="bar-wrapper <?= $hasDataClass ?>">
+
+                                        <div class="bar-tooltip"><?= $displayMoney ?></div>
+
+                                        <div class="bar-fill" style="height: <?= $percent ?>%;"></div>
+
+                                        <div class="bar-label"><?= $day['label'] ?></div>
+                                    </div>
+
+                                <?php endforeach;
+                            else: ?>
+                                <div style="width: 100%; text-align: center; color: #999; z-index: 2;">
+                                    Chưa có dữ liệu
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="content-box">
+                        <h4 style="margin: 0 0 20px 0; color: #333;">Đơn hàng mới nhất</h4>
+                        <div class="activity-list">
+                            <?php if (!empty($recentOrders)): ?>
+                                <?php foreach ($recentOrders as $order): ?>
+                                    <div class="activity-item">
+                                        <div class="activity-icon" style="background: #e0e7ff; color: #4338ca;">
+                                            <?= strtoupper(substr($order->recipient_name ?? 'K', 0, 1)) ?>
+                                        </div>
+
+                                        <div style="flex: 1;">
+                                            <div style="display:flex; justify-content:space-between;">
+                                                <span style="font-weight: 600; font-size: 0.9rem;">
+                                                    <?= htmlspecialchars($order->recipient_name ?? 'Khách lẻ') ?>
+                                                </span>
+                                                <span style="font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: <?= $order->status == 'completed' ? '#d1fae5' : '#fee2e2' ?>; color: <?= $order->status == 'completed' ? '#059669' : '#dc2626' ?>;">
+                                                    <?= $order->status == 'completed' ? 'Hoàn thành' : 'Chờ xử lý' ?>
+                                                </span>
+                                            </div>
+
+                                            <div style="font-size: 0.8rem; color: #888; margin-top: 2px;">
+                                                #<?= $order->id ?> - <?= number_format($order->total_money, 0, ',', '.') ?>₫
+                                                <span style="float: right; font-size: 0.75rem;">
+                                                    <?= date('d/m H:i', strtotime($order->created_at)) ?>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <p style="text-align:center; color:#999; padding: 20px;">Chưa có đơn hàng nào.</p>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         <?php endif; ?>
 
     </div>
@@ -264,8 +307,8 @@ function timeAgo($datetime)
             statsSection.style.display = 'block';
         } else {
             // --- BẬT CHẾ ĐỘ SẢN PHẨM ---
-            if(productSection) productSection.style.display = 'block';
-            if(statsSection) statsSection.style.display = 'none';
+            if (productSection) productSection.style.display = 'block';
+            if (statsSection) statsSection.style.display = 'none';
         }
     }
 </script>

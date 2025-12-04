@@ -32,7 +32,7 @@ class ShopModel
         $sql = "SELECT SUM(total_money) as total 
                 FROM orders 
                 WHERE seller_id = ? 
-                AND (status LIKE 'completed%' OR status = 'completed')"; 
+                AND (status LIKE 'completed%' OR status = 'completed')";
 
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("i", $sellerId);
@@ -46,7 +46,7 @@ class ShopModel
     {
         // Đếm đơn hàng
         $sql = "SELECT COUNT(*) as count FROM orders WHERE seller_id = ?";
-        
+
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("i", $sellerId);
         $stmt->execute();
@@ -88,7 +88,7 @@ class ShopModel
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("i", $sellerId);
         $stmt->execute();
-        
+
         $result = $stmt->get_result();
         $orders = [];
         while ($row = $result->fetch_object()) {
@@ -113,5 +113,34 @@ class ShopModel
         }
         return $products;
     }
+    public function getRevenueLast7Days($sellerId)
+    {
+        $data = [];
+
+        $anchorDate = date('Y-m-d');
+
+        for ($i = 6; $i >= 0; $i--) {
+            $targetDate = date('Y-m-d', strtotime("$anchorDate -$i days"));
+            $label      = date('d/m', strtotime("$anchorDate -$i days"));
+
+            $sql = "SELECT SUM(total_money) as total 
+                    FROM orders 
+                    WHERE seller_id = ? 
+                    AND DATE(created_at) = ? 
+                    AND (status = 'completed' OR TRIM(status) LIKE 'completed%')";
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("is", $sellerId, $targetDate);
+            $stmt->execute();
+            $result = $stmt->get_result()->fetch_assoc();
+
+            $total = $result['total'] ?? 0;
+
+            $data[] = [
+                'label' => $label,
+                'value' => (int)$total
+            ];
+        }
+        return $data;
+    }
 }
-?>

@@ -122,6 +122,11 @@ class ShopController
                 $lowStockCount  = $shopModel->getLowStockCount($owner_id, 10);
                 $recentOrders   = $shopModel->getRecentOrders($owner_id);
             }
+            $lowStockCount  = $shopModel->getLowStockCount($owner_id, 10);
+            $recentOrders   = $shopModel->getRecentOrders($owner_id);
+
+            // --- THÊM DÒNG NÀY ---
+            $chartData = $shopModel->getRevenueLast7Days($owner_id);
 
             // 3. Gọi View
             require_once "View/Shop/Profile.php";
