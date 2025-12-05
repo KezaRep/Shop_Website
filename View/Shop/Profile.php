@@ -202,23 +202,18 @@ function timeAgo($datetime)
                             </div>
 
                             <?php
-                            // 1. TÍNH TOÁN DỮ LIỆU
                             $maxVal = 0;
                             if (!empty($chartData)) {
                                 foreach ($chartData as $day) {
                                     if ($day['value'] > $maxVal) $maxVal = $day['value'];
                                 }
                             }
-                            // Tránh lỗi chia cho 0
                             if ($maxVal == 0) $maxVal = 1;
 
-                            // 2. VẼ CỘT
                             if (!empty($chartData)):
                                 foreach ($chartData as $day):
-                                    // Tính % chiều cao (Tối đa 80% khung hình để chừa chỗ cho số tiền)
                                     $percent = ($day['value'] / $maxVal) * 85;
 
-                                    // Format tiền (1.5M, 500k)
                                     $displayMoney = $day['value'];
                                     if ($day['value'] >= 1000000) {
                                         $displayMoney = round($day['value'] / 1000000, 1) . 'M';
@@ -228,7 +223,6 @@ function timeAgo($datetime)
                                         $displayMoney = $day['value'];
                                     }
 
-                                    // Kiểm tra có dữ liệu không để đổi màu
                                     $hasDataClass = ($day['value'] > 0) ? 'has-data' : '';
                             ?>
                                     <div class="bar-wrapper <?= $hasDataClass ?>">
@@ -282,6 +276,87 @@ function timeAgo($datetime)
                                 <p style="text-align:center; color:#999; padding: 20px;">Chưa có đơn hàng nào.</p>
                             <?php endif; ?>
                         </div>
+                    </div>
+                </div>
+                <div class="content-box" style="margin-top: 20px;">
+
+                    <div class="top-products-header">
+                        <h4>Top sản phẩm bán chạy</h4>
+                        <a href="#" class="view-all-link">Xem tất cả <i class="fas fa-angle-right"></i></a>
+                    </div>
+
+                    <div class="top-products-list">
+                        <?php if (!empty($topProducts)): ?>
+                            <table class="top-products-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 45%;">Sản phẩm</th>
+                                        <th style="width: 15%;">Giá bán</th>
+                                        <th style="width: 25%;">Tiến độ bán</th>
+                                        <th style="width: 15%; text-align: right; padding-right: 10px;">Doanh thu</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($topProducts as $idx => $prod):
+                                        $percent = ($prod->sold / 50) * 100;
+                                        if ($percent > 100) $percent = 100;
+
+                                        $rankClass = 'rank-other';
+                                        if ($idx == 0) $rankClass = 'rank-1';
+                                        elseif ($idx == 1) $rankClass = 'rank-2';
+                                        elseif ($idx == 2) $rankClass = 'rank-3';
+                                    ?>
+                                        <tr>
+                                            <td>
+                                                <div class="product-cell-wrapper">
+                                                    <div class="rank-badge <?= $rankClass ?>">
+                                                        <?= $idx + 1 ?>
+                                                    </div>
+
+                                                    <img src="<?= !empty($prod->image) ? $prod->image : 'Assets/Images/placeholder-product.jpg' ?>"
+                                                        class="product-thumb-img"
+                                                        alt="<?= htmlspecialchars($prod->name) ?>">
+
+                                                    <div class="product-info-text">
+                                                        <div class="product-title" title="<?= htmlspecialchars($prod->name) ?>">
+                                                            <?= htmlspecialchars($prod->name) ?>
+                                                        </div>
+                                                        <div class="stock-status">
+                                                            <span class="stock-dot" style="background: <?= $prod->quantity < 10 ? '#ef4444' : '#22c55e' ?>"></span>
+                                                            Kho: <?= $prod->quantity ?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <td class="price-text">
+                                                <?= number_format($prod->price, 0, ',', '.') ?>đ
+                                            </td>
+
+                                            <td>
+                                                <div class="sold-wrapper">
+                                                    <span class="sold-number"><?= $prod->sold ?></span>
+                                                    <div class="progress-bg">
+                                                        <div class="progress-bar" style="width: <?= $percent ?>%;"></div>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <td style="text-align: right; padding-right: 10px;">
+                                                <span class="revenue-text">
+                                                    <?= number_format($prod->price * $prod->sold, 0, ',', '.') ?>đ
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php else: ?>
+                            <div class="empty-state">
+                                <i class="fas fa-box-open" style="font-size: 40px; color: #eee; margin-bottom: 10px;"></i>
+                                <p>Chưa có sản phẩm nào được bán ra.</p>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

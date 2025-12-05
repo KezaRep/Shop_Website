@@ -103,18 +103,13 @@ class ShopController
         $shop = $shopModel->getShopByUserId($owner_id);
 
         if ($shop) {
-            // --- KIỂM TRA QUYỀN CHỦ SỞ HỮU ---
-            // Lấy ID người đang đăng nhập (từ Session)
             $current_user_id = isset($_SESSION['user']['id']) ? $_SESSION['user']['id'] : 0;
 
-            // So sánh: Người đang xem có phải là chủ shop không?
-            $isOwner = ($current_user_id == $owner_id);
+            $isOwner = ($current_user_id == $owner_id); 
 
-            // --- A. LẤY SẢN PHẨM (Ai cũng thấy) ---
             $products = $productModel->getProductsBySeller($owner_id);
             $totalProducts = count($products);
 
-            // --- B. LẤY THỐNG KÊ (Chỉ chủ shop mới được lấy) ---
             if ($isOwner) {
                 $revenue        = $shopModel->getRevenue($owner_id);
                 $newOrdersCount = $shopModel->getNewOrdersCount($owner_id);
@@ -125,8 +120,9 @@ class ShopController
             $lowStockCount  = $shopModel->getLowStockCount($owner_id, 10);
             $recentOrders   = $shopModel->getRecentOrders($owner_id);
 
-            // --- THÊM DÒNG NÀY ---
             $chartData = $shopModel->getRevenueLast7Days($owner_id);
+
+            $topProducts = $shopModel->getTopSellingProducts($owner_id);
 
             // 3. Gọi View
             require_once "View/Shop/Profile.php";
