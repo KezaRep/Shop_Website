@@ -8,6 +8,7 @@ include_once("Controller/Checkout/CheckoutController.php");
 include_once("Controller/Cart/CartController.php");
 include_once("Controller/Map/MapController.php");
 include_once("Controller/Shop/ShopController.php");
+include_once("Controller/Exchange/ExchangeController.php");
 
 $controllerName = isset($_GET['controller']) ? $_GET['controller'] : 'Product';
 $actionName = isset($_GET['action']) ? $_GET['action'] : 'List';
