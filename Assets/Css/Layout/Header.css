@@ -432,3 +432,30 @@ body {
         min-width: auto;
     }
 }
+    
+
+        .listening-animation {
+            color: #ff0000 !important; /* Màu đỏ khi đang nghe */
+            animation: pulse-animation 1.5s infinite;
+        }
+
+        @keyframes pulse-animation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Chỉnh lại style cho nút mic để nó giống nút search */
+        #micBtn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #555;
+            margin-right: 5px; /* Cách nút search ra một chút */
+            padding: 5px 10px;
+        }
+        
+        #micBtn:hover {
+            color: #ee4d2d;
+        }

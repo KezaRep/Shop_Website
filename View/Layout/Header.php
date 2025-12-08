@@ -12,7 +12,6 @@ if (!empty($_SESSION['user'])) {
         $cartCount = mysqli_num_rows($cartResult);
     }
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -22,19 +21,17 @@ if (!empty($_SESSION['user'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/Shop_Website/Assets/Css/Layout/Header.css">
+
 </head>
 
 <body>
-    <!-- Header -->
     <header class="site-header">
         <div class="site-header__inner">
-            <!-- Logo -->
             <div class="site-logo">
                 <i class="fas fa-leaf"></i>
                 <span>Gitraell</span>
             </div>
 
-            <!-- Menu -->
             <nav class="site-nav">
                 <a href="index.php?controller=product&action=list" class="nav-link">Sản phẩm</a>
                 <a href="index.php?controller=map&action=index" class="nav-link">Khám phá cửa hàng</a>
@@ -49,15 +46,18 @@ if (!empty($_SESSION['user'])) {
                 <?php endif; ?>
             </nav>
 
-            <!-- Right: Search, User, Cart -->
             <div class="header-right">
-                <form action="index.php" method="GET" class="search-box">
+                <form action="index.php" method="GET" class="search-box" id="searchForm">
                     <input type="hidden" name="controller" value="product">
                     <input type="hidden" name="action" value="list">
 
-                    <input type="text" name="keyword"
+                    <input type="text" name="keyword" id="searchInput"
                         value="<?= isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword']) : '' ?>"
                         placeholder="Tìm kiếm sản phẩm..." class="search-input">
+
+                    <button type="button" id="micBtn" onclick="startVoiceSearch()" title="Tìm bằng giọng nói">
+                        <i class="fas fa-microphone"></i>
+                    </button>
 
                     <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
                 </form>
@@ -79,7 +79,6 @@ if (!empty($_SESSION['user'])) {
                 <i class="fas fa-shopping-cart"></i>
                 <span class="cart-badge" id="cartCount"><?php echo $cartCount ?></span>
             </a>
-            <!-- Mini Cart Label -->
             <div class="mini-cart" id="miniCart">
                 <div id="miniCartContent">
                     <em>Chưa có sản phẩm nào trong giỏ!</em>
@@ -88,8 +87,48 @@ if (!empty($_SESSION['user'])) {
         </div>
         </div>
     </header>
+
+    <script>
+        function startVoiceSearch() {
+            var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            if (!SpeechRecognition) {
+                alert("Trình duyệt không hỗ trợ tìm kiếm giọng nói (Hãy thử Chrome/Edge)");
+                return;
+            }
+
+            var recognition = new SpeechRecognition();
+            var micBtn = document.getElementById('micBtn');
+            var searchInput = document.getElementById('searchInput');
+            var searchForm = document.getElementById('searchForm');
+
+            recognition.lang = 'vi-VN'; 
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.start(); 
+
+            micBtn.classList.add('listening-animation');
+
+            recognition.onresult = function(event) {
+                var transcript = event.results[0][0].transcript;
+                
+                transcript = transcript.replace(/[.,;!?]$/, '');
+                
+                searchInput.value = transcript;
+                
+                searchForm.submit();
+            };
+
+            recognition.onend = function() {
+                micBtn.classList.remove('listening-animation');
+            };
+
+            recognition.onerror = function(event) {
+                console.error("Voice Error:", event.error);
+                micBtn.classList.remove('listening-animation');
+            };
+        }
+    </script>
 </body>
-
-
-
 </html>

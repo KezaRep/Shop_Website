@@ -25,7 +25,6 @@ class ShopModel
         return null;
     }
 
-    // --- SỬA QUAN TRỌNG: Dùng LIKE và % để chấp nhận mọi kiểu viết chữ 'completed' ---
     public function getRevenue($sellerId)
     {
         // TRIM(status) để loại bỏ dấu cách thừa, LIKE 'completed%' để bắt chữ completed
@@ -142,5 +141,24 @@ class ShopModel
             ];
         }
         return $data;
+    }
+    public function getTopSellingProducts($sellerId)
+    {
+        $sql = "SELECT id, name, price, image, sold, quantity 
+                FROM products 
+                WHERE seller_id = ? 
+                ORDER BY sold DESC 
+                LIMIT 5";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $sellerId);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $products = [];
+        while ($row = $result->fetch_object()) {
+            $products[] = $row;
+        }
+        return $products;
     }
 }
