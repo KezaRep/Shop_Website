@@ -12,6 +12,7 @@ include_once("Controller/Checkout/CheckoutController.php");
 include_once("Controller/Cart/CartController.php");
 include_once("Controller/Map/MapController.php");
 include_once("Controller/Shop/ShopController.php");
+include_once("Controller/Exchange/ExchangeController.php");
 
 
 if (isset($_GET['lang'])) {

@@ -1,12 +1,13 @@
 <?php
 // Model/Exchange/ExchangeModel.php
-
+include_once('Core/Database.php');
 class ExchangeModel {
-    private $conn;
+    
+    public $conn;
 
     public function __construct() {
-        include_once("Config/connect.php");
-        $this->conn = $conn;
+        $db = new Database();
+        $this->conn = $db->getConnection();
     }
 
     // Tạo yêu cầu trao đổi mới
