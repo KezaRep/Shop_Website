@@ -90,8 +90,8 @@ $grandTotal = $totalPrice + $shippingFee;
                                     <?php $imgSrc = checkProductImg($item['image'] ?? ''); ?>
                                     <div class="item-row">
 
-                                    <input type="hidden" name="selected_items[]" value="<?= $item['cart_id'] ?>">
-                                    
+                                        <input type="hidden" name="selected_items[]" value="<?= $item['cart_id'] ?>">
+
                                         <div class="item-img">
                                             <img src="<?= $imgSrc ?>" alt="Product">
                                         </div>
@@ -123,10 +123,18 @@ $grandTotal = $totalPrice + $shippingFee;
                             <h3>Phương thức thanh toán</h3>
                         </div>
                         <div class="payment-options">
-                            <label class="payment-method active">
-                                <input type="radio" name="payment_method" value="cod" checked>
+                            <label class="payment-method active" onclick="selectPayment('cod')">
+                                <input type="radio" name="payment_method" value="cod" checked id="payment_cod">
                                 <div class="method-icon"><i class="fa fa-money-bill-wave"></i></div>
                                 <span class="method-name">Thanh toán khi nhận hàng (COD)</span>
+                            </label>
+
+                            <label class="payment-method" onclick="selectPayment('vnpay')">
+                                <input type="radio" name="payment_method" value="vnpay" id="payment_vnpay">
+                                <div class="method-icon">
+                                    <img src="https://vnpay.vn/assets/images/logo-icon/logo-primary.svg" alt="VNPAY" style="height: 20px;">
+                                </div>
+                                <span class="method-name" style="font-weight: bold; color: #005baa;">Thanh toán Online VNPAY</span>
                             </label>
                         </div>
                     </div>
@@ -151,7 +159,32 @@ $grandTotal = $totalPrice + $shippingFee;
                     </div>
                 </div>
             </div>
+            <input type="hidden" name="total_amount" value="<?= $grandTotal ?>">
         </form>
     </div>
 </main>
+<script>
+    function selectPayment(method) {
+        var form = document.getElementById('checkoutForm');
 
+        // Xóa class active cũ
+        var labels = document.querySelectorAll('.payment-method');
+        labels.forEach(l => l.classList.remove('active'));
+
+        if (method === 'vnpay') {
+            document.getElementById('payment_vnpay').parentElement.classList.add('active');
+            document.getElementById('payment_vnpay').checked = true;
+
+            // --- SỬA DÒNG NÀY ---
+            // Vẫn gửi về CheckoutController, nhưng PHP sẽ tự biết là VNPAY nhờ cái radio button value="vnpay"
+            form.action = "index.php?controller=checkout&action=order";
+
+        } else {
+            document.getElementById('payment_cod').parentElement.classList.add('active');
+            document.getElementById('payment_cod').checked = true;
+
+            // Trả về mặc định
+            form.action = "index.php?controller=checkout&action=order";
+        }
+    }
+</script>

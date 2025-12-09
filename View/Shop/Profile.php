@@ -1,34 +1,39 @@
 <?php
 require_once "./View/Layout/Header.php";
 
+// Đảm bảo biến $lang tồn tại
+if (!isset($lang)) {
+    $current_lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'vi';
+    $lang = include "Assets/Lang/$current_lang.php";
+}
+
 // --- Helper Functions ---
 
-// Helper xử lý ảnh (tránh lỗi nếu ảnh rỗng)
 function getImgUrl($path)
 {
     if (!empty($path) && file_exists($path)) {
         return $path;
     }
-    return 'https://via.placeholder.com/150'; // Ảnh mặc định nếu lỗi
+    return 'https://via.placeholder.com/150';
 }
 
-// Helper tính thời gian tham gia (VD: 3 năm trước)
-function timeAgo($datetime)
+// Helper tính thời gian tham gia (Đã sửa để dùng đa ngôn ngữ)
+function timeAgo($datetime, $lang)
 {
     $time = strtotime($datetime);
     $diff = time() - $time;
-    if ($diff < 60) return 'Vừa xong';
+    if ($diff < 60) return $lang['time_just_now'];
 
     $years = floor($diff / (365 * 60 * 60 * 24));
-    if ($years > 0) return $years . ' Năm trước';
+    if ($years > 0) return $years . ' ' . $lang['time_year_ago'];
 
     $months = floor($diff / (30 * 60 * 60 * 24));
-    if ($months > 0) return $months . ' Tháng trước';
+    if ($months > 0) return $months . ' ' . $lang['time_month_ago'];
 
     $days = floor($diff / (60 * 60 * 24));
-    if ($days > 0) return $days . ' Ngày trước';
+    if ($days > 0) return $days . ' ' . $lang['time_day_ago'];
 
-    return 'Mới tham gia';
+    return $lang['time_new'];
 }
 ?>
 
@@ -46,20 +51,20 @@ function timeAgo($datetime)
                     <h3><?= htmlspecialchars($shop->shop_name) ?></h3>
                     <span class="shop-status">
                         <i class="fas fa-circle" style="font-size: 8px; color: #00bfa5;"></i>
-                        <?= ($shop->is_online ?? 1) ? 'Online' : 'Offline' ?>
+                        <?= ($shop->is_online ?? 1) ? $lang['profile_status_online'] : $lang['profile_status_offline'] ?>
                     </span>
                     <div>
-                        <button class="btn-shop-action">+ Theo Dõi</button>
-                        <button class="btn-shop-action">+Thêm sản phẩm</button>
+                        <button class="btn-shop-action"><?= $lang['profile_follow'] ?></button>
+                        <button class="btn-shop-action"><?= $lang['profile_add_product'] ?></button>
                     </div>
                 </div>
             </div>
 
             <div class="shop-stats">
-                <div class="stat-item"><i class="fas fa-box stat-icon"></i> Sản Phẩm: <span class="stat-value"><?= isset($totalProducts) ? $totalProducts : 0 ?></span></div>
-                <div class="stat-item"><i class="fas fa-users stat-icon"></i> Người Theo Dõi: <span class="stat-value"><?= $shop->follower_count ?? 0 ?></span></div>
-                <div class="stat-item"><i class="fas fa-star stat-icon"></i> Đánh Giá: <span class="stat-value"><?= $shop->rating ?? '5.0' ?></span></div>
-                <div class="stat-item"><i class="fas fa-clock stat-icon"></i> Tham Gia: <span class="stat-value"><?= timeAgo($shop->created_at) ?></span></div>
+                <div class="stat-item"><i class="fas fa-box stat-icon"></i> <?= $lang['profile_products'] ?>: <span class="stat-value"><?= isset($totalProducts) ? $totalProducts : 0 ?></span></div>
+                <div class="stat-item"><i class="fas fa-users stat-icon"></i> <?= $lang['profile_followers'] ?>: <span class="stat-value"><?= $shop->follower_count ?? 0 ?></span></div>
+                <div class="stat-item"><i class="fas fa-star stat-icon"></i> <?= $lang['profile_rating'] ?>: <span class="stat-value"><?= $shop->rating ?? '5.0' ?></span></div>
+                <div class="stat-item"><i class="fas fa-clock stat-icon"></i> <?= $lang['profile_joined'] ?>: <span class="stat-value"><?= timeAgo($shop->created_at, $lang) ?></span></div>
             </div>
         </div>
     </div>
@@ -67,13 +72,13 @@ function timeAgo($datetime)
     <div class="shop-nav">
         <div class="container-shop">
             <ul>
-                <li onclick="switchTab('products', this)" class="active">Dạo</li>
-                <li onclick="switchTab('products', this)">Sản phẩm</li>
-                <li onclick="switchTab('products', this)">Danh mục</li>
+                <li onclick="switchTab('products', this)" class="active"><?= $lang['profile_tab_feed'] ?></li>
+                <li onclick="switchTab('products', this)"><?= $lang['profile_tab_products'] ?></li>
+                <li onclick="switchTab('products', this)"><?= $lang['profile_tab_categories'] ?></li>
 
                 <?php if (isset($isOwner) && $isOwner): ?>
                     <li onclick="switchTab('stats', this)" style="margin-left: auto; color: #333;">
-                        <i class="fas fa-chart-line"></i> Thống kê doanh số
+                        <i class="fas fa-chart-line"></i> <?= $lang['profile_tab_stats'] ?>
                     </li>
                 <?php endif; ?>
             </ul>
@@ -83,7 +88,7 @@ function timeAgo($datetime)
     <div class="container-shop">
 
         <div id="section-products" class="active-section">
-            <h3 class="section-title">GỢI Ý CHO BẠN</h3>
+            <h3 class="section-title"><?= $lang['profile_suggest'] ?></h3>
             <?php if (!empty($products)): ?>
                 <div class="product-grid">
                     <?php foreach ($products as $p): ?>
@@ -95,7 +100,7 @@ function timeAgo($datetime)
                                 <div class="product-name"><?= htmlspecialchars($p->name) ?></div>
                                 <div class="product-price">
                                     <span>₫<?= number_format($p->price, 0, ',', '.') ?></span>
-                                    <span class="product-sold">Đã bán <?= $p->sold ?? 0 ?></span>
+                                    <span class="product-sold"><?= $lang['dash_sold'] ?> <?= $p->sold ?? 0 ?></span>
                                 </div>
                             </div>
                         </a>
@@ -103,7 +108,7 @@ function timeAgo($datetime)
                 </div>
             <?php else: ?>
                 <div style="padding: 50px; text-align: center; color: #777;">
-                    Shop này chưa đăng bán sản phẩm nào.
+                    <?= $lang['profile_empty_products'] ?>
                 </div>
             <?php endif; ?>
         </div>
@@ -115,12 +120,12 @@ function timeAgo($datetime)
                     <div class="d-card blue">
                         <div style="display: flex; justify-content: space-between;">
                             <div>
-                                <h4>Doanh Thu</h4>
+                                <h4><?= $lang['dash_revenue'] ?></h4>
                                 <div class="value">
                                     <?= number_format($revenue ?? 0, 0, ',', '.') ?>đ
                                 </div>
                                 <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">
-                                    <span style="color: #10b981;"><i class="fas fa-arrow-up"></i></span> Tổng doanh thu shop
+                                    <span style="color: #10b981;"><i class="fas fa-arrow-up"></i></span> <?= $lang['dash_total_revenue'] ?>
                                 </div>
                             </div>
                             <div style="font-size: 2rem; color: #3b82f6; opacity: 0.2;">
@@ -132,12 +137,12 @@ function timeAgo($datetime)
                     <div class="d-card green">
                         <div style="display: flex; justify-content: space-between;">
                             <div>
-                                <h4>Đơn Hàng</h4>
+                                <h4><?= $lang['dash_orders'] ?></h4>
                                 <div class="value">
                                     <?= $newOrdersCount ?? 0 ?>
                                 </div>
                                 <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">
-                                    Đơn hàng đang có
+                                    <?= $lang['dash_current_orders'] ?>
                                 </div>
                             </div>
                             <div style="font-size: 2rem; color: #10b981; opacity: 0.2;">
@@ -149,12 +154,12 @@ function timeAgo($datetime)
                     <div class="d-card yellow">
                         <div style="display: flex; justify-content: space-between;">
                             <div>
-                                <h4>Đã Bán</h4>
+                                <h4><?= $lang['dash_sold'] ?></h4>
                                 <div class="value">
                                     <?= number_format($totalSold ?? 0) ?>
                                 </div>
                                 <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">
-                                    Sản phẩm đã bán ra
+                                    <?= $lang['dash_sold_products'] ?>
                                 </div>
                             </div>
                             <div style="font-size: 2rem; color: #f59e0b; opacity: 0.2;">
@@ -166,15 +171,15 @@ function timeAgo($datetime)
                     <div class="d-card red">
                         <div style="display: flex; justify-content: space-between;">
                             <div>
-                                <h4 style="color: #dc2626;">Sắp Hết Hàng</h4>
+                                <h4 style="color: #dc2626;"><?= $lang['dash_low_stock'] ?></h4>
                                 <div class="value">
                                     <?= $lowStockCount ?? 0 ?>
                                     <?php if (isset($lowStockCount) && $lowStockCount > 0): ?>
-                                        <span class="badge" style="background: #fee2e2; color: #dc2626; font-size: 0.7rem;">Cần nhập</span>
+                                        <span class="badge" style="background: #fee2e2; color: #dc2626; font-size: 0.7rem;"><?= $lang['dash_need_import'] ?></span>
                                     <?php endif; ?>
                                 </div>
                                 <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">
-                                    Tồn kho dưới 10
+                                    <?= $lang['dash_low_stock_desc'] ?>
                                 </div>
                             </div>
                             <div style="font-size: 2rem; color: #dc2626; opacity: 0.2;">
@@ -187,9 +192,9 @@ function timeAgo($datetime)
                 <div class="chart-section">
                     <div class="content-box">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <h4 style="margin: 0; color: #333;">Biểu đồ tăng trưởng</h4>
+                            <h4 style="margin: 0; color: #333;"><?= $lang['dash_chart_title'] ?></h4>
                             <button style="border: none; background: #3b82f6; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600;">
-                                <i class="fas fa-download"></i> Xuất Báo Cáo
+                                <i class="fas fa-download"></i> <?= $lang['dash_export_report'] ?>
                             </button>
                         </div>
 
@@ -237,14 +242,14 @@ function timeAgo($datetime)
                                 <?php endforeach;
                             else: ?>
                                 <div style="width: 100%; text-align: center; color: #999; z-index: 2;">
-                                    Chưa có dữ liệu
+                                    <?= $lang['dash_no_data'] ?>
                                 </div>
                             <?php endif; ?>
                         </div>
                     </div>
 
                     <div class="content-box">
-                        <h4 style="margin: 0 0 20px 0; color: #333;">Đơn hàng mới nhất</h4>
+                        <h4 style="margin: 0 0 20px 0; color: #333;"><?= $lang['dash_recent_orders'] ?></h4>
                         <div class="activity-list">
                             <?php if (!empty($recentOrders)): ?>
                                 <?php foreach ($recentOrders as $order): ?>
@@ -256,10 +261,10 @@ function timeAgo($datetime)
                                         <div style="flex: 1;">
                                             <div style="display:flex; justify-content:space-between;">
                                                 <span style="font-weight: 600; font-size: 0.9rem;">
-                                                    <?= htmlspecialchars($order->recipient_name ?? 'Khách lẻ') ?>
+                                                    <?= htmlspecialchars($order->recipient_name ?? $lang['dash_customer_guest']) ?>
                                                 </span>
                                                 <span style="font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: <?= $order->status == 'completed' ? '#d1fae5' : '#fee2e2' ?>; color: <?= $order->status == 'completed' ? '#059669' : '#dc2626' ?>;">
-                                                    <?= $order->status == 'completed' ? 'Hoàn thành' : 'Chờ xử lý' ?>
+                                                    <?= $order->status == 'completed' ? $lang['dash_status_completed'] : $lang['dash_status_pending'] ?>
                                                 </span>
                                             </div>
 
@@ -273,7 +278,7 @@ function timeAgo($datetime)
                                     </div>
                                 <?php endforeach; ?>
                             <?php else: ?>
-                                <p style="text-align:center; color:#999; padding: 20px;">Chưa có đơn hàng nào.</p>
+                                <p style="text-align:center; color:#999; padding: 20px;"><?= $lang['dash_no_orders'] ?></p>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -281,8 +286,8 @@ function timeAgo($datetime)
                 <div class="content-box" style="margin-top: 20px;">
 
                     <div class="top-products-header">
-                        <h4>Top sản phẩm bán chạy</h4>
-                        <a href="#" class="view-all-link">Xem tất cả <i class="fas fa-angle-right"></i></a>
+                        <h4><?= $lang['dash_top_products'] ?></h4>
+                        <a href="#" class="view-all-link"><?= $lang['dash_view_all'] ?> <i class="fas fa-angle-right"></i></a>
                     </div>
 
                     <div class="top-products-list">
@@ -290,10 +295,10 @@ function timeAgo($datetime)
                             <table class="top-products-table">
                                 <thead>
                                     <tr>
-                                        <th style="width: 45%;">Sản phẩm</th>
-                                        <th style="width: 15%;">Giá bán</th>
-                                        <th style="width: 25%;">Tiến độ bán</th>
-                                        <th style="width: 15%; text-align: right; padding-right: 10px;">Doanh thu</th>
+                                        <th style="width: 45%;"><?= $lang['dash_col_product'] ?></th>
+                                        <th style="width: 15%;"><?= $lang['dash_col_price'] ?></th>
+                                        <th style="width: 25%;"><?= $lang['dash_col_progress'] ?></th>
+                                        <th style="width: 15%; text-align: right; padding-right: 10px;"><?= $lang['dash_col_revenue'] ?></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -323,7 +328,7 @@ function timeAgo($datetime)
                                                         </div>
                                                         <div class="stock-status">
                                                             <span class="stock-dot" style="background: <?= $prod->quantity < 10 ? '#ef4444' : '#22c55e' ?>"></span>
-                                                            Kho: <?= $prod->quantity ?>
+                                                            <?= $lang['dash_stock'] ?>: <?= $prod->quantity ?>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -354,7 +359,7 @@ function timeAgo($datetime)
                         <?php else: ?>
                             <div class="empty-state">
                                 <i class="fas fa-box-open" style="font-size: 40px; color: #eee; margin-bottom: 10px;"></i>
-                                <p>Chưa có sản phẩm nào được bán ra.</p>
+                                <p><?= $lang['dash_no_data'] ?></p>
                             </div>
                         <?php endif; ?>
                     </div>

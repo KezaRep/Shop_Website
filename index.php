@@ -1,6 +1,10 @@
 <?php
+session_start(); 
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+
+
 include_once("Controller/Product/ProductController.php");
 include_once("Controller/User/UserController.php");
 include_once("Controller/Comment/CommentController.php");
@@ -9,15 +13,31 @@ include_once("Controller/Cart/CartController.php");
 include_once("Controller/Map/MapController.php");
 include_once("Controller/Shop/ShopController.php");
 
+
+if (isset($_GET['lang'])) {
+    $lang_code = $_GET['lang']; 
+    $_SESSION['lang'] = $lang_code;
+}
+
+
+if (isset($_SESSION['lang'])) {
+    $current_lang = $_SESSION['lang'];
+} else {
+    $current_lang = 'vi'; 
+}
+
+$lang = include "Assets/Lang/$current_lang.php";
+
+
 $controllerName = isset($_GET['controller']) ? $_GET['controller'] : 'Product';
 $actionName = isset($_GET['action']) ? $_GET['action'] : 'List';
+
 $controllerClass = ucfirst($controllerName) . "Controller";
 $actionMethod = $actionName . "Action";
 
 if (class_exists($controllerClass)) {
     $controller = new $controllerClass();
 
-    // Kiểm tra hàm (method) tồn tại trong controller
     if (method_exists($controller, $actionMethod)) {
         $controller->$actionMethod();
     } else {

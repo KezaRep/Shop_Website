@@ -369,3 +369,27 @@ body {
 .btn-checkout:hover {
   opacity: 0.9;
 }
+    .payment-method {
+        display: flex;
+        align-items: center;
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    /* Khi được chọn thì viền màu cam/xanh */
+    .payment-method.active {
+        border-color: #ee4d2d; 
+        background-color: #fffbfb;
+    }
+    .method-icon {
+        width: 40px;
+        text-align: center;
+        margin-right: 10px;
+    }
+    /* Ẩn nút radio đi cho đẹp, hoặc để lại tùy bạn */
+    .payment-method input[type="radio"] {
+        margin-right: 10px;
+    }
