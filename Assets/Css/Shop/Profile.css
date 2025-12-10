@@ -84,7 +84,7 @@
 
 /* Shop Info Card với Glassmorphism */
 .shop-info-card {
-    width: 420px;
+    width: 480px;
     height: 180px;
     background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)),
         url('https://cf.shopee.vn/file/4d11da6479633e660123543d83333333_tn');
@@ -287,8 +287,6 @@
 .stat-icon {
     font-size: 20px;
     color: var(--primary);
-    width: 32px;
-    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;

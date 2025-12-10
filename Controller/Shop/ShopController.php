@@ -92,14 +92,10 @@ class ShopController
     {
         // 1. Lấy ID chủ shop từ URL
         $owner_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-
         require_once "Model/Shop/ShopModel.php";
         require_once "Model/Product/ProductModel.php";
-
         $shopModel = new ShopModel();
         $productModel = new ProductModel();
-
-        // 2. Lấy thông tin Shop
         $shop = $shopModel->getShopByUserId($owner_id);
 
         if ($shop) {

@@ -46,22 +46,16 @@ function productImageSrc($img)
       <a class="btn" href="index.php?controller=user&action=edit">Cập nhật thông tin</a>
 
       <a class="btn" href="index.php?controller=user&action=purchaseHistory">
-        <i class="fas fa-file-invoice-dollar" style="width:20px; text-align:center; margin-right:8px"></i> 
+        <i class="fas fa-file-invoice-dollar" style="width:20px; text-align:center; margin-right:8px"></i>
         Đơn mua
       </a>
 
       <?php if ($isSeller): ?>
 
-        <a class="btn" href="index.php?controller=product&action=list&seller=<?= intval($user['id']) ?>">Chỉnh sửa sản phẩm</a>
-        <a class="btn"href="index.php?controller=product&action=wishlistList">Đã thích</a>
-        <a class="btn primary" href="index.php?controller=product&action=add">Thêm sản phẩm</a>
-        <a class="btn shop-task" href="index.php?controller=shop&action=orderManager">
-            <i class="fas fa-clipboard-check" style="color: #ee4d2d;"></i> 
-            Duyệt đơn hàng
-            <span class="badge-count">New</span> 
-        </a>
+        <a class="btn" href="index.php?controller=product&action=wishlistList">Đã thích</a>
+
       <?php endif; ?>
-      
+
       <a class="btn logout" href="index.php?controller=user&action=logout"
         onclick="return confirm('Bạn có chắc muốn đăng xuất?')">Đăng xuất</a>
     </nav>
@@ -70,9 +64,6 @@ function productImageSrc($img)
   <section class="profile-main">
     <div class="main-header">
       <h2>Sản phẩm của bạn</h2>
-      <div class="tools">
-        <a class="btn small" href="index.php?controller=product&action=add">+ Thêm sản phẩm</a>
-      </div>
     </div>
 
     <?php if (!empty($products)): ?>

@@ -22,16 +22,20 @@ function timeAgo($datetime, $lang)
 {
     $time = strtotime($datetime);
     $diff = time() - $time;
-    if ($diff < 60) return $lang['time_just_now'];
+    if ($diff < 60)
+        return $lang['time_just_now'];
 
     $years = floor($diff / (365 * 60 * 60 * 24));
-    if ($years > 0) return $years . ' ' . $lang['time_year_ago'];
+    if ($years > 0)
+        return $years . ' ' . $lang['time_year_ago'];
 
     $months = floor($diff / (30 * 60 * 60 * 24));
-    if ($months > 0) return $months . ' ' . $lang['time_month_ago'];
+    if ($months > 0)
+        return $months . ' ' . $lang['time_month_ago'];
 
     $days = floor($diff / (60 * 60 * 24));
-    if ($days > 0) return $days . ' ' . $lang['time_day_ago'];
+    if ($days > 0)
+        return $days . ' ' . $lang['time_day_ago'];
 
     return $lang['time_new'];
 }
@@ -54,17 +58,25 @@ function timeAgo($datetime, $lang)
                         <?= ($shop->is_online ?? 1) ? $lang['profile_status_online'] : $lang['profile_status_offline'] ?>
                     </span>
                     <div>
-                        <button class="btn-shop-action"><?= $lang['profile_follow'] ?></button>
-                        <button class="btn-shop-action"><?= $lang['profile_add_product'] ?></button>
+                        <? if (isset($isOwner) && $isOwner) { ?>
+                            <a href="index.php?controller=product&action=add"><button
+                                    class="btn-shop-action"><?= $lang['profile_add_product'] ?></button></a>
+                            <a href="index.php?controller=shop&action=orderManager"><button
+                                    class="btn-shop-action"><?= $lang['seller_nav_approve'] ?></button></a> <? php;
+                        } ?>
                     </div>
                 </div>
             </div>
 
             <div class="shop-stats">
-                <div class="stat-item"><i class="fas fa-box stat-icon"></i> <?= $lang['profile_products'] ?>: <span class="stat-value"><?= isset($totalProducts) ? $totalProducts : 0 ?></span></div>
-                <div class="stat-item"><i class="fas fa-users stat-icon"></i> <?= $lang['profile_followers'] ?>: <span class="stat-value"><?= $shop->follower_count ?? 0 ?></span></div>
-                <div class="stat-item"><i class="fas fa-star stat-icon"></i> <?= $lang['profile_rating'] ?>: <span class="stat-value"><?= $shop->rating ?? '5.0' ?></span></div>
-                <div class="stat-item"><i class="fas fa-clock stat-icon"></i> <?= $lang['profile_joined'] ?>: <span class="stat-value"><?= timeAgo($shop->created_at, $lang) ?></span></div>
+                <div class="stat-item"><i class="fas fa-box stat-icon"></i> <?= $lang['profile_products'] ?>: <span
+                        class="stat-value"><?= isset($totalProducts) ? $totalProducts : 0 ?></span></div>
+                <div class="stat-item"><i class="fas fa-users stat-icon"></i> <?= $lang['profile_followers'] ?>: <span
+                        class="stat-value"><?= $shop->follower_count ?? 0 ?></span></div>
+                <div class="stat-item"><i class="fas fa-star stat-icon"></i> <?= $lang['profile_rating'] ?>: <span
+                        class="stat-value"><?= $shop->rating ?? '5.0' ?></span></div>
+                <div class="stat-item"><i class="fas fa-clock stat-icon"></i> <?= $lang['profile_joined'] ?>: <span
+                        class="stat-value"><?= timeAgo($shop->created_at, $lang) ?></span></div>
             </div>
         </div>
     </div>
@@ -92,15 +104,17 @@ function timeAgo($datetime, $lang)
             <?php if (!empty($products)): ?>
                 <div class="product-grid">
                     <?php foreach ($products as $p): ?>
-                        <a href="index.php?controller=product&action=detail&id=<?= $p->id ?>" class="product-card" style="text-decoration: none; color: inherit;">
+                        <a href="index.php?controller=product&action=detail&id=<?= $p->id ?>" class="product-card"
+                            style="text-decoration: none; color: inherit;">
                             <div class="product-img">
-                                <img src="<?= !empty($p->image) ? $p->image : 'Assets/Images/placeholder-product-1.jpg' ?>" alt="<?= htmlspecialchars($p->name) ?>">
+                                <img src="<?= !empty($p->image) ? $p->image : 'Assets/Images/placeholder-product-1.jpg' ?>"
+                                    alt="<?= htmlspecialchars($p->name) ?>">
                             </div>
                             <div class="product-details">
                                 <div class="product-name"><?= htmlspecialchars($p->name) ?></div>
                                 <div class="product-price">
                                     <span>₫<?= number_format($p->price, 0, ',', '.') ?></span>
-                                    <span class="product-sold"><?= $lang['dash_sold'] ?> <?= $p->sold ?? 0 ?></span>
+                                    <span class="product-sold"><?= $lang['dash_sold'] ?>         <?= $p->sold ?? 0 ?></span>
                                 </div>
                             </div>
                         </a>
@@ -125,7 +139,8 @@ function timeAgo($datetime, $lang)
                                     <?= number_format($revenue ?? 0, 0, ',', '.') ?>đ
                                 </div>
                                 <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">
-                                    <span style="color: #10b981;"><i class="fas fa-arrow-up"></i></span> <?= $lang['dash_total_revenue'] ?>
+                                    <span style="color: #10b981;"><i class="fas fa-arrow-up"></i></span>
+                                    <?= $lang['dash_total_revenue'] ?>
                                 </div>
                             </div>
                             <div style="font-size: 2rem; color: #3b82f6; opacity: 0.2;">
@@ -175,7 +190,8 @@ function timeAgo($datetime, $lang)
                                 <div class="value">
                                     <?= $lowStockCount ?? 0 ?>
                                     <?php if (isset($lowStockCount) && $lowStockCount > 0): ?>
-                                        <span class="badge" style="background: #fee2e2; color: #dc2626; font-size: 0.7rem;"><?= $lang['dash_need_import'] ?></span>
+                                        <span class="badge"
+                                            style="background: #fee2e2; color: #dc2626; font-size: 0.7rem;"><?= $lang['dash_need_import'] ?></span>
                                     <?php endif; ?>
                                 </div>
                                 <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">
@@ -191,9 +207,11 @@ function timeAgo($datetime, $lang)
 
                 <div class="chart-section">
                     <div class="content-box">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                             <h4 style="margin: 0; color: #333;"><?= $lang['dash_chart_title'] ?></h4>
-                            <button style="border: none; background: #3b82f6; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600;">
+                            <button
+                                style="border: none; background: #3b82f6; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600;">
                                 <i class="fas fa-download"></i> <?= $lang['dash_export_report'] ?>
                             </button>
                         </div>
@@ -210,10 +228,12 @@ function timeAgo($datetime, $lang)
                             $maxVal = 0;
                             if (!empty($chartData)) {
                                 foreach ($chartData as $day) {
-                                    if ($day['value'] > $maxVal) $maxVal = $day['value'];
+                                    if ($day['value'] > $maxVal)
+                                        $maxVal = $day['value'];
                                 }
                             }
-                            if ($maxVal == 0) $maxVal = 1;
+                            if ($maxVal == 0)
+                                $maxVal = 1;
 
                             if (!empty($chartData)):
                                 foreach ($chartData as $day):
@@ -229,7 +249,7 @@ function timeAgo($datetime, $lang)
                                     }
 
                                     $hasDataClass = ($day['value'] > 0) ? 'has-data' : '';
-                            ?>
+                                    ?>
                                     <div class="bar-wrapper <?= $hasDataClass ?>">
 
                                         <div class="bar-tooltip"><?= $displayMoney ?></div>
@@ -263,7 +283,8 @@ function timeAgo($datetime, $lang)
                                                 <span style="font-weight: 600; font-size: 0.9rem;">
                                                     <?= htmlspecialchars($order->recipient_name ?? $lang['dash_customer_guest']) ?>
                                                 </span>
-                                                <span style="font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: <?= $order->status == 'completed' ? '#d1fae5' : '#fee2e2' ?>; color: <?= $order->status == 'completed' ? '#059669' : '#dc2626' ?>;">
+                                                <span
+                                                    style="font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: <?= $order->status == 'completed' ? '#d1fae5' : '#fee2e2' ?>; color: <?= $order->status == 'completed' ? '#059669' : '#dc2626' ?>;">
                                                     <?= $order->status == 'completed' ? $lang['dash_status_completed'] : $lang['dash_status_pending'] ?>
                                                 </span>
                                             </div>
@@ -287,7 +308,8 @@ function timeAgo($datetime, $lang)
 
                     <div class="top-products-header">
                         <h4><?= $lang['dash_top_products'] ?></h4>
-                        <a href="#" class="view-all-link"><?= $lang['dash_view_all'] ?> <i class="fas fa-angle-right"></i></a>
+                        <a href="#" class="view-all-link"><?= $lang['dash_view_all'] ?> <i
+                                class="fas fa-angle-right"></i></a>
                     </div>
 
                     <div class="top-products-list">
@@ -298,19 +320,25 @@ function timeAgo($datetime, $lang)
                                         <th style="width: 45%;"><?= $lang['dash_col_product'] ?></th>
                                         <th style="width: 15%;"><?= $lang['dash_col_price'] ?></th>
                                         <th style="width: 25%;"><?= $lang['dash_col_progress'] ?></th>
-                                        <th style="width: 15%; text-align: right; padding-right: 10px;"><?= $lang['dash_col_revenue'] ?></th>
+                                        <th style="width: 15%; text-align: right; padding-right: 10px;">
+                                            <?= $lang['dash_col_revenue'] ?>
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php foreach ($topProducts as $idx => $prod):
                                         $percent = ($prod->sold / 50) * 100;
-                                        if ($percent > 100) $percent = 100;
+                                        if ($percent > 100)
+                                            $percent = 100;
 
                                         $rankClass = 'rank-other';
-                                        if ($idx == 0) $rankClass = 'rank-1';
-                                        elseif ($idx == 1) $rankClass = 'rank-2';
-                                        elseif ($idx == 2) $rankClass = 'rank-3';
-                                    ?>
+                                        if ($idx == 0)
+                                            $rankClass = 'rank-1';
+                                        elseif ($idx == 1)
+                                            $rankClass = 'rank-2';
+                                        elseif ($idx == 2)
+                                            $rankClass = 'rank-3';
+                                        ?>
                                         <tr>
                                             <td>
                                                 <div class="product-cell-wrapper">
@@ -319,15 +347,15 @@ function timeAgo($datetime, $lang)
                                                     </div>
 
                                                     <img src="<?= !empty($prod->image) ? $prod->image : 'Assets/Images/placeholder-product.jpg' ?>"
-                                                        class="product-thumb-img"
-                                                        alt="<?= htmlspecialchars($prod->name) ?>">
+                                                        class="product-thumb-img" alt="<?= htmlspecialchars($prod->name) ?>">
 
                                                     <div class="product-info-text">
                                                         <div class="product-title" title="<?= htmlspecialchars($prod->name) ?>">
                                                             <?= htmlspecialchars($prod->name) ?>
                                                         </div>
                                                         <div class="stock-status">
-                                                            <span class="stock-dot" style="background: <?= $prod->quantity < 10 ? '#ef4444' : '#22c55e' ?>"></span>
+                                                            <span class="stock-dot"
+                                                                style="background: <?= $prod->quantity < 10 ? '#ef4444' : '#22c55e' ?>"></span>
                                                             <?= $lang['dash_stock'] ?>: <?= $prod->quantity ?>
                                                         </div>
                                                     </div>

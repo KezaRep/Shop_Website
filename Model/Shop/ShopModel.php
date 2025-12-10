@@ -56,7 +56,6 @@ class ShopModel
 
     public function getTotalSold($sellerId)
     {
-        // Lấy tổng đã bán từ bảng products (chuẩn hơn lấy từ orders)
         $sql = "SELECT SUM(sold) as total_sold FROM products WHERE seller_id = ?";
 
         $stmt = $this->conn->prepare($sql);
