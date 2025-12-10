@@ -2,6 +2,12 @@
 require_once "./View/Layout/Header.php";
 if (session_status() === PHP_SESSION_NONE) session_start();
 $user = $_SESSION['user'];
+
+// Load ngôn ngữ
+if (!isset($lang)) {
+    $current_lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'vi';
+    $lang = include "Assets/Lang/$current_lang.php";
+}
 ?>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -11,41 +17,41 @@ $user = $_SESSION['user'];
 <main class="profile-container">
     <aside class="profile-sidebar">
         <div class="user-card">
-           
+
             <div class="user-info">
                 <h3 class="username"><?= htmlspecialchars($user['username']) ?></h3>
-                <div class="balance">Số dư: 0 ₫</div>
+                <div class="balance"><?= $lang['user_balance'] ?>: 0 ₫</div>
             </div>
         </div>
 
         <nav class="profile-actions">
-            <a class="btn" href="index.php?controller=user&action=edit">Cập nhật thông tin</a>
+            <a class="btn" href="index.php?controller=user&action=edit"><?= $lang['user_update_info'] ?></a>
             <a class="btn active" href="index.php?controller=user&action=purchaseHistory" style="background-color: #ee4d2d; color: white;">
-                <i class="fas fa-file-invoice-dollar" style="margin-right:8px"></i> Đơn mua
+                <i class="fas fa-file-invoice-dollar" style="margin-right:8px"></i> <?= $lang['user_purchase_history'] ?>
             </a>
 
             <?php if (isset($user['role']) && $user['role'] == 1): ?>
                 <div style="margin:10px 0; border-top:1px solid #eee"></div>
-                <a class="btn" href="index.php?controller=shop&action=orderManager">Kênh người bán</a>
+                <a class="btn" href="index.php?controller=shop&action=orderManager"><?= $lang['user_seller_channel'] ?></a>
             <?php endif; ?>
 
-            <a class="btn logout" href="index.php?controller=user&action=logout">Đăng xuất</a>
+            <a class="btn logout" href="index.php?controller=user&action=logout"><?= $lang['user_logout'] ?></a>
         </nav>
     </aside>
 
     <section class="profile-main" style="background: transparent; border: none; box-shadow: none; padding: 0;">
 
         <div class="purchase-tabs">
-            <a href="#" class="purchase-tab active">Tất cả</a>
-            <a href="#" class="purchase-tab">Chờ xác nhận</a>
-            <a href="#" class="purchase-tab">Đang giao</a>
-            <a href="#" class="purchase-tab">Hoàn thành</a>
-            <a href="#" class="purchase-tab">Đã hủy</a>
+            <a href="#" class="purchase-tab active"><?= $lang['purchase_tab_all'] ?></a>
+            <a href="#" class="purchase-tab"><?= $lang['purchase_tab_pending'] ?></a>
+            <a href="#" class="purchase-tab"><?= $lang['purchase_tab_shipping'] ?></a>
+            <a href="#" class="purchase-tab"><?= $lang['purchase_tab_completed'] ?></a>
+            <a href="#" class="purchase-tab"><?= $lang['purchase_tab_cancelled'] ?></a>
         </div>
 
         <div class="purchase-search">
             <i class="fas fa-search" style="color:#888; padding: 8px;"></i>
-            <input type="text" placeholder="Tìm kiếm theo Tên Shop, ID đơn hàng hoặc Tên sản phẩm...">
+            <input type="text" placeholder="<?= $lang['purchase_search_placeholder'] ?>">
         </div>
 
         <div class="purchase-list">
@@ -56,12 +62,11 @@ $user = $_SESSION['user'];
                         <div class="pc-header">
                             <div style="display:flex; align-items:center;">
                                 <?php
-                                $sAvatar = 'Assets/Images/placeholder-avatar.png'; 
+                                $sAvatar = 'Assets/Images/placeholder-avatar.png';
                                 if (!empty($order->shop_avatar)) {
                                     if (strpos($order->shop_avatar, 'http') === 0) {
                                         $sAvatar = $order->shop_avatar;
-                                    }
-                                    else {
+                                    } else {
                                         $sAvatar = (strpos($order->shop_avatar, 'Assets') === 0) ? $order->shop_avatar : 'Assets/Uploads/' . $order->shop_avatar;
                                     }
                                 }
@@ -69,19 +74,20 @@ $user = $_SESSION['user'];
                                 <img src="<?= $sAvatar ?>" style="width:20px; height:20px; border-radius:50%; margin-right:5px; object-fit:cover; border:1px solid #eee;" onerror="this.src='Assets/Images/placeholder-avatar.png'">
 
                                 <span class="shop-name" style="font-weight:bold;">
-                                    <?= htmlspecialchars($order->shop_name ?? 'Cửa hàng') ?>
+                                    <?= htmlspecialchars($order->shop_name ?? 'Shop') ?>
                                 </span>
 
-                                <a href="#" class="shop-btn"><i class="fas fa-store"></i> Xem Shop</a>
-                                <a href="#" class="shop-btn" style="background:#26aa99"><i class="fas fa-comment"></i> Chat</a>
+                                <a href="#" class="shop-btn"><i class="fas fa-store"></i> <?= $lang['purchase_view_shop'] ?></a>
+                                <a href="#" class="shop-btn" style="background:#26aa99"><i class="fas fa-comment"></i> <?= $lang['purchase_chat'] ?></a>
                             </div>
 
                             <?php
                             $st = strtolower($order->status);
-                            $stText = 'Chờ xác nhận';
-                            if ($st == 'shipping') $stText = 'Đang vận chuyển';
-                            if ($st == 'completed') $stText = 'HOÀN THÀNH';
-                            if ($st == 'cancelled') $stText = 'ĐÃ HỦY';
+                            // Xử lý trạng thái đa ngôn ngữ
+                            $stText = $lang['purchase_status_pending']; // Mặc định
+                            if ($st == 'shipping') $stText = $lang['purchase_status_shipping'];
+                            if ($st == 'completed') $stText = $lang['purchase_status_completed'];
+                            if ($st == 'cancelled') $stText = $lang['purchase_status_cancelled'];
                             ?>
                             <div class="order-status-text">
                                 <?= $stText ?> <i class="fas fa-question-circle" style="color:#bbb; margin-left:5px"></i>
@@ -103,7 +109,7 @@ $user = $_SESSION['user'];
 
                                             <div class="pc-info">
                                                 <div class="pc-title"><?= htmlspecialchars($item->name ?? 'Sản phẩm') ?></div>
-                                                <div class="pc-variant">Phân loại hàng: Mặc định</div>
+                                                <div class="pc-variant"><?= $lang['purchase_variant_default'] ?></div>
                                                 <div class="pc-qty">x<?= $item->quantity ?></div>
                                             </div>
 
@@ -119,18 +125,18 @@ $user = $_SESSION['user'];
 
                         <div class="pc-footer">
                             <div style="display:flex; justify-content:flex-end; align-items:center; margin-bottom: 10px;">
-                                <span class="total-label">Thành tiền:</span>
+                                <span class="total-label"><?= $lang['purchase_total_label'] ?></span>
                                 <span class="total-amount">₫<?= number_format($order->total_money, 0, ',', '.') ?></span>
                             </div>
 
                             <div class="pc-actions">
                                 <?php if ($st == 'completed' || $st == 'cancelled'): ?>
-                                    <a href="#" class="btn-reorder">Mua Lại</a>
+                                    <a href="#" class="btn-reorder"><?= $lang['purchase_btn_buy_again'] ?></a>
                                 <?php else: ?>
-                                    <a href="#" class="btn-contact">Liên Hệ Người Bán</a>
+                                    <a href="#" class="btn-contact"><?= $lang['purchase_btn_contact_seller'] ?></a>
                                 <?php endif; ?>
 
-                                <a href="#" class="btn-contact">Xem chi tiết đơn</a>
+                                <a href="#" class="btn-contact"><?= $lang['purchase_btn_view_details'] ?></a>
                             </div>
                         </div>
                     </div>
@@ -139,8 +145,8 @@ $user = $_SESSION['user'];
             <?php else: ?>
                 <div style="text-align:center; padding: 50px; background:#fff">
                     <img src="https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/5fafbb923393b712b96488590b8f781f.png" style="width:100px">
-                    <p style="margin-top:10px; color:#888">Chưa có đơn hàng nào</p>
-                    <a href="index.php" class="btn-reorder" style="margin-top:20px; display:inline-block">Mua sắm ngay</a>
+                    <p style="margin-top:10px; color:#888"><?= $lang['purchase_empty'] ?></p>
+                    <a href="index.php" class="btn-reorder" style="margin-top:20px; display:inline-block"><?= $lang['purchase_btn_shop_now'] ?></a>
                 </div>
             <?php endif; ?>
         </div>

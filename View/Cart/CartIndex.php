@@ -1,10 +1,17 @@
 <?php
+// Load ngôn ngữ
+if (!isset($lang)) {
+    $current_lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'vi';
+    $lang = include "Assets/Lang/$current_lang.php";
+}
+
 // 1. Hàm helper
 function productImageSrc($img)
 {
     if (empty($img)) {
         return 'Assets/Images/placeholder-product-1.jpg';
     }
+    // Kiểm tra nhanh xem chuỗi có phải là ảnh binary không
     if (@getimagesizefromstring($img)) {
         return 'data:image/jpeg;base64,' . base64_encode($img);
     }
@@ -18,7 +25,7 @@ if (!empty($cart)) {
 
         if (!isset($cartByShop[$shopId])) {
             $cartByShop[$shopId] = [
-                'shop_name' => $item['shop_name'] ?? 'Cửa hàng khác',
+                'shop_name' => $item['shop_name'] ?? $lang['cart_shop_other'], // Dùng biến lang
                 'shop_avatar' => $item['shop_avatar'] ?? '',
                 'items' => []
             ];
@@ -29,12 +36,12 @@ if (!empty($cart)) {
 ?>
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="<?= $current_lang ?>">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giỏ hàng</title>
+    <title><?= $lang['cart_title'] ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="Assets/Css/Cart/Cart.css">
 </head>
@@ -42,13 +49,13 @@ if (!empty($cart)) {
 <body>
     <main class="cart-page">
         <div class="container">
-            <h1 class="cart-title"><i class="fas fa-shopping-cart"></i> Giỏ hàng</h1>
+            <h1 class="cart-title"><i class="fas fa-shopping-cart"></i> <?= $lang['cart_title'] ?></h1>
 
             <?php if (empty($cart)): ?>
                 <div class="empty-cart">
                     <img src="Assets/Images/empty-cart.png" alt="" style="width: 100px; margin-bottom: 15px;">
-                    <p>Giỏ hàng của bạn đang trống.</p>
-                    <a href="index.php" style="color: var(--primary-color);">Quay lại mua sắm</a>
+                    <p><?= $lang['cart_empty_message'] ?></p>
+                    <a href="index.php" style="color: var(--primary-color);"><?= $lang['cart_continue_shopping'] ?></a>
                 </div>
             <?php else: ?>
 
@@ -60,10 +67,10 @@ if (!empty($cart)) {
                                 <div class="col-checkbox">
                                     <input type="checkbox" id="checkAll" title="Chọn tất cả">
                                 </div>
-                                <div class="col-product">Sản phẩm (<?= count($cart) ?>)</div>
-                                <div class="col-price">Đơn giá</div>
-                                <div class="col-qty">Số lượng</div>
-                                <div class="col-total">Thành tiền</div>
+                                <div class="col-product"><?= $lang['cart_col_product'] ?> (<?= count($cart) ?>)</div>
+                                <div class="col-price"><?= $lang['cart_col_price'] ?></div>
+                                <div class="col-qty"><?= $lang['cart_col_qty'] ?></div>
+                                <div class="col-total"><?= $lang['cart_col_total'] ?></div>
                                 <div class="col-action"><i class="fas fa-trash-alt"></i></div>
                             </div>
 
@@ -108,7 +115,7 @@ if (!empty($cart)) {
                                                     <a href="index.php?controller=product&action=detail&id=<?= $productId ?>" class="product-name">
                                                         <?= htmlspecialchars($name) ?>
                                                     </a>
-                                                    <div class="return-policy">Đổi ý miễn phí 15 ngày</div>
+                                                    <div class="return-policy"><?= $lang['cart_return_policy'] ?></div>
                                                 </div>
                                             </div>
 
@@ -125,7 +132,7 @@ if (!empty($cart)) {
                                             <div class="col-total" id="total-text-<?= $cartId ?>">₫<?= number_format($total, 0, ',', '.') ?></div>
 
                                             <div class="col-action">
-                                                <a href="index.php?controller=cart&action=delete&id=<?= $cartId ?>" class="delete-btn" onclick="return confirm('Xóa?');">
+                                                <a href="index.php?controller=cart&action=delete&id=<?= $cartId ?>" class="delete-btn" onclick="return confirm('<?= $lang['cart_confirm_delete'] ?>');">
                                                     <i class="fas fa-trash-alt"></i>
                                                 </a>
                                             </div>
@@ -138,33 +145,33 @@ if (!empty($cart)) {
 
                         <div class="cart-right">
                             <div class="order-summary">
-                                <span class="summary-title">Thông tin đơn hàng</span>
+                                <span class="summary-title"><?= $lang['cart_summary_title'] ?></span>
 
                                 <div class="summary-row">
-                                    <span>Tạm tính (<span id="displayCount">0</span> sản phẩm)</span>
+                                    <span><?= $lang['cart_summary_subtotal'] ?> (<span id="displayCount">0</span> <?= $lang['cart_text_items'] ?>)</span>
                                     <span id="displaySubTotal">0 ₫</span>
                                 </div>
 
                                 <div class="summary-row">
-                                    <span>Phí vận chuyển</span>
+                                    <span><?= $lang['cart_summary_shipping'] ?></span>
                                     <span>0 ₫</span>
                                 </div>
 
                                 <div class="voucher-box">
-                                    <input type="text" placeholder="Nhập mã voucher" class="voucher-input">
-                                    <button class="voucher-btn">ÁP DỤNG</button>
+                                    <input type="text" placeholder="<?= $lang['cart_voucher_placeholder'] ?>" class="voucher-input">
+                                    <button class="voucher-btn"><?= $lang['cart_voucher_btn'] ?></button>
                                 </div>
 
                                 <div class="summary-total">
-                                    <span>Tổng cộng</span>
+                                    <span><?= $lang['cart_summary_total'] ?></span>
                                     <span class="total-price">
                                         <span id="displayGrandTotal">0 ₫</span>
-                                        <div style="font-size: 12px; color: #666; font-weight: normal; text-align: right; margin-top: 5px;">Đã bao gồm VAT (nếu có)</div>
+                                        <div style="font-size: 12px; color: #666; font-weight: normal; text-align: right; margin-top: 5px;"><?= $lang['cart_vat_note'] ?></div>
                                     </span>
                                 </div>
 
                                 <button type="submit" class="checkout-btn" name="btn_checkout">
-                                    THANH TOÁN (<span id="btnCount">0</span>)
+                                    <?= $lang['cart_btn_checkout'] ?> (<span id="btnCount">0</span>)
                                 </button>
                             </div>
                         </div>
@@ -178,7 +185,6 @@ if (!empty($cart)) {
         document.addEventListener('DOMContentLoaded', function() {
             // --- PHẦN 1: CÁC BIẾN TÍNH TỔNG TIỀN ---
             const checkAll = document.getElementById('checkAll');
-            // const shopCheck = document.getElementById('shopCheck'); // Xóa dòng này vì mình dùng class shop-check-all
             const itemChecks = document.querySelectorAll('.item-check');
             const displayCount = document.getElementById('displayCount');
             const displaySubTotal = document.getElementById('displaySubTotal');

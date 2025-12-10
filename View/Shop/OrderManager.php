@@ -6,6 +6,12 @@ if (empty($_SESSION['user'])) {
     exit;
 }
 $user = $_SESSION['user'];
+
+// Load ngôn ngữ (Logic không đổi)
+if (!isset($lang)) {
+    $current_lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'vi';
+    $lang = include "Assets/Lang/$current_lang.php";
+}
 ?>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -17,38 +23,38 @@ $user = $_SESSION['user'];
         <div class="user-card">
             <div class="user-info">
                 <h3 class="username"><?= htmlspecialchars($user['username']) ?></h3>
-                <div class="balance">Số dư: <strong>0 ₫</strong></div>
+                <div class="balance"><?= $lang['seller_balance'] ?>: <strong>0 ₫</strong></div>
             </div>
         </div>
 
         <nav class="profile-actions">
-            <a class="btn" href="index.php?controller=user&action=edit">Cập nhật thông tin</a>
-            <a class="btn" href="index.php?controller=product&action=list&seller=<?= $user['id'] ?>">Chỉnh sửa sản phẩm</a>
-            <a class="btn" href="index.php?controller=product&action=add">Thêm sản phẩm</a>
+            <a class="btn" href="index.php?controller=user&action=edit"><?= $lang['seller_nav_update_info'] ?></a>
+            <a class="btn" href="index.php?controller=product&action=list&seller=<?= $user['id'] ?>"><?= $lang['seller_nav_edit_prod'] ?></a>
+            <a class="btn" href="index.php?controller=product&action=add"><?= $lang['seller_nav_add_prod'] ?></a>
 
             <a class="btn active" href="index.php?controller=shop&action=orderManager">
-                <i class="fas fa-clipboard-check"></i> Duyệt đơn hàng New
+                <i class="fas fa-clipboard-check"></i> <?= $lang['seller_nav_approve'] ?>
             </a>
 
-            <a class="btn logout" href="index.php?controller=user&action=logout">Đăng xuất</a>
+            <a class="btn logout" href="index.php?controller=user&action=logout"><?= $lang['seller_nav_logout'] ?></a>
         </nav>
     </aside>
     <section class="profile-main">
 
         <div class="main-header" style="border:none; padding-bottom:0;">
-            <h2>Quản lý đơn hàng</h2>
+            <h2><?= $lang['seller_order_mgmt'] ?></h2>
         </div>
 
         <div class="order-tabs">
-            <a href="#" class="tab-item active">Tất cả</a>
-            <a href="#" class="tab-item">Chờ xác nhận <span style="color:red"></span></a>
-            <a href="#" class="tab-item">Đang giao</a>
-            <a href="#" class="tab-item">Đã giao</a>
-            <a href="#" class="tab-item">Đã hủy</a>
+            <a href="#" class="tab-item active"><?= $lang['seller_tab_all'] ?></a>
+            <a href="#" class="tab-item"><?= $lang['seller_tab_pending'] ?> <span style="color:red"></span></a>
+            <a href="#" class="tab-item"><?= $lang['seller_tab_shipping'] ?></a>
+            <a href="#" class="tab-item"><?= $lang['seller_tab_delivered'] ?></a>
+            <a href="#" class="tab-item"><?= $lang['seller_tab_cancelled'] ?></a>
         </div>
 
         <div class="order-search-bar">
-            <input type="text" class="search-input" placeholder="Tìm kiếm theo Mã đơn hàng hoặc Tên khách hàng...">
+            <input type="text" class="search-input" placeholder="<?= $lang['seller_search_ph'] ?>">
             <button class="btn-search-order"><i class="fas fa-search"></i></button>
         </div>
 
@@ -62,24 +68,26 @@ $user = $_SESSION['user'];
                             <div class="buyer-info">
                                 <img src="Assets/Images/placeholder-avatar.png" class="buyer-avatar">
                                 <?= htmlspecialchars($order->buyer_name ?? $order->recipient_name) ?>
-                                <span style="font-weight:normal; color:#888; margin-left:5px"> (Mã: #<?= $order->id ?>)</span>
+                                <span style="font-weight:normal; color:#888; margin-left:5px"> (<?= $lang['seller_code'] ?>: #<?= $order->id ?>)</span>
                             </div>
 
                             <?php
+                            // LOGIC GIỮ NGUYÊN - CHỈ THAY TEXT BẰNG BIẾN LANG
                             $st = $order->status;
                             $st_color = 'status-pending';
-                            $st_text = 'Chờ xác nhận';
+                            $st_text = $lang['seller_st_pending']; // Default text
+
                             if ($st == 'shipping') {
                                 $st_color = 'status-shipping';
-                                $st_text = 'Đang vận chuyển';
+                                $st_text = $lang['seller_st_shipping'];
                             }
                             if ($st == 'completed') {
                                 $st_color = 'status-completed';
-                                $st_text = 'Giao thành công';
+                                $st_text = $lang['seller_st_completed'];
                             }
                             if ($st == 'cancelled') {
                                 $st_color = 'status-cancelled';
-                                $st_text = 'Đã hủy';
+                                $st_text = $lang['seller_st_cancelled'];
                             }
                             ?>
                             <div class="order-status <?= $st_color ?>">
@@ -92,13 +100,13 @@ $user = $_SESSION['user'];
                                 <?php foreach ($order->items as $item): ?>
                                     <div class="order-item-row">
                                         <?php
+                                        // LOGIC XỬ LÝ ẢNH GIỮ NGUYÊN
                                         $imgSrc = 'Assets/Images/placeholder-product-1.jpg';
 
                                         if (!empty($item->image)) {
                                             if (strpos($item->image, 'http') === 0) {
                                                 $imgSrc = $item->image;
-                                            }
-                                            else {
+                                            } else {
                                                 $imgSrc = (strpos($item->image, 'Assets') === 0) ? $item->image : 'Assets/Uploads/Products/' . $item->image;
                                             }
                                         }
@@ -108,7 +116,7 @@ $user = $_SESSION['user'];
 
                                         <div class="item-details">
                                             <div class="item-name" style="font-weight: bold;"><?= htmlspecialchars($item->product_name) ?></div>
-                                            <div class="item-meta">Số lượng: x<?= $item->quantity ?></div>
+                                            <div class="item-meta"><?= $lang['add_prod_qty'] ?? 'Số lượng' ?>: x<?= $item->quantity ?></div>
                                         </div>
 
                                         <div class="item-price">₫<?= number_format($item->price, 0, ',', '.') ?></div>
@@ -121,7 +129,7 @@ $user = $_SESSION['user'];
 
                         <div class="order-footer">
                             <div class="total-price">
-                                Tổng tiền: <strong>₫<?= number_format($order->total_money, 0, ',', '.') ?></strong>
+                                <?= $lang['seller_total'] ?>: <strong>₫<?= number_format($order->total_money, 0, ',', '.') ?></strong>
                             </div>
 
                             <form action="index.php?controller=shop&action=updateStatus" method="POST" style="display:flex; gap:10px; align-items: center;">
@@ -129,30 +137,29 @@ $user = $_SESSION['user'];
 
                                 <?php
                                 $st = trim(strtolower($order->status));
-
                                 if ($st == '0') $st = 'pending';
                                 ?>
 
                                 <?php if ($st == 'pending'): ?>
                                     <button type="submit" name="status" value="cancelled" class="btn-action btn-secondary-action" onclick="return confirm('Chắc chắn hủy?')">
-                                        Hủy đơn
+                                        <?= $lang['seller_btn_cancel'] ?>
                                     </button>
                                     <button type="submit" name="status" value="preparing" class="btn-action btn-primary-action">
-                                        Duyệt đơn ngay
+                                        <?= $lang['seller_btn_approve'] ?>
                                     </button>
 
                                 <?php elseif ($st == 'preparing'): ?>
                                     <button type="submit" name="status" value="shipping" class="btn-action btn-primary-action" style="background:#0984e3;">
-                                        Giao cho Shipper
+                                        <?= $lang['seller_btn_ship'] ?>
                                     </button>
 
                                 <?php elseif ($st == 'shipping'): ?>
                                     <button type="submit" name="status" value="completed" class="btn-action btn-primary-action" style="background:#00b894;">
-                                        Đã giao xong
+                                        <?= $lang['seller_btn_complete'] ?>
                                     </button>
 
                                 <?php else: ?>
-                                    <button type="button" class="btn-action btn-secondary-action">Xem chi tiết</button>
+                                    <button type="button" class="btn-action btn-secondary-action"><?= $lang['seller_btn_detail'] ?></button>
                                 <?php endif; ?>
                             </form>
                         </div>
@@ -161,7 +168,7 @@ $user = $_SESSION['user'];
             <?php else: ?>
                 <div style="text-align: center; padding: 50px; background: #fff;">
                     <img src="Assets/Images/empty-order.png" style="width: 100px; opacity: 0.5;">
-                    <p style="color: #888; margin-top: 10px;">Chưa có đơn hàng nào</p>
+                    <p style="color: #888; margin-top: 10px;"><?= $lang['seller_empty'] ?></p>
                 </div>
             <?php endif; ?>
 
