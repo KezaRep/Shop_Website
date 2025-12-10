@@ -7,7 +7,7 @@ class ExchangeController {
         $this->exchangeModel = new ExchangeModel();
     }
 
-    public function showExchangeDetail($exchangeId) {
+    public function DetailAction    ($exchangeId) {
         $exchange = $this->exchangeModel->getExchangeById($exchangeId);
         if ($exchange) {
             include 'View/Exchange/Detail.php';
