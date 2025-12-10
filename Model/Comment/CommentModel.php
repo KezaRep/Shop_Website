@@ -108,5 +108,26 @@ class CommentModel
         $stmt->bind_param("sii", $content, $rating, $commentId);
         return $stmt->execute();
     }
+    // Auto update average rating for product
+    public function updateProductAverageRating($productId)
+    {
+        // Lấy trung bình rating từ bảng comments
+        $sql = "SELECT AVG(rating) AS avg_rating FROM comments WHERE product_id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $productId);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+
+        $avgRating = $result['avg_rating'] ?? 5; // Nếu null thì gán mặc định 5
+
+        // Cập nhật vào bảng products
+        $sql2 = "UPDATE products SET rating = ? WHERE id = ?";
+        $stmt2 = $this->conn->prepare($sql2);
+        $stmt2->bind_param("di", $avgRating, $productId);
+
+        return $stmt2->execute();
+    }
+
 }
+
 ?>

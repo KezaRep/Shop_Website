@@ -19,23 +19,28 @@ class CommentController
 
     public function addAction()
     {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
             $userId = $_SESSION['user']['id'] ?? 0;
             $productId = isset($_POST['product_id']) ? (int) $_POST['product_id'] : 0;
             $content = isset($_POST['content']) ? trim($_POST['content']) : '';
             $rating = isset($_POST['rating']) ? (int) $_POST['rating'] : 5;
 
             if (empty($userId) || empty($productId) || empty($content)) {
-                $error = "Vui lòng điền đầy đủ thông tin!";
                 header("Location: index.php?controller=product&action=detail&id=$productId");
                 exit;
             }
 
-            // Thêm comment
+            // Thêm comment vào DB
             $commentId = $this->commentModel->addComment($userId, $productId, $content, $rating);
 
             if ($commentId) {
-                // Upload images (nếu có)
+
+                // Upload ảnh nếu có
                 if (!empty($_FILES['images']['tmp_name'])) {
                     foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
                         if (is_uploaded_file($tmp_name)) {
@@ -45,17 +50,20 @@ class CommentController
                     }
                 }
 
+                // ⭐ AUTO UPDATE AVERAGE RATING
+                $this->commentModel->updateProductAverageRating($productId);
+
                 header("Location: index.php?controller=product&action=detail&id=$productId#comments");
                 exit;
-            } else {
-                $error = "Không thể thêm bình luận!";
             }
+
+            $error = "Không thể thêm bình luận!";
         }
 
-        // Nếu GET, redirect về product detail
         header("Location: index.php?controller=product&action=detail");
         exit;
     }
+
 
     // Xóa comment
     public function deleteAction()
