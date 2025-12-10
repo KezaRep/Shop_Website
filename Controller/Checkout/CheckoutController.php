@@ -46,10 +46,10 @@ class CheckoutController
                 $result = $this->saveOrderToDatabase($info, 'pending');
 
                 if ($result) {
-                     echo "<script>
-                        alert('Đặt hàng thành công! (COD)');
-                        window.location.href = 'index.php?controller=user&action=purchaseHistory';
-                    </script>";
+                    $_SESSION['flash_success'] = "Đặt hàng thành công! (COD)";
+                    header('Location: index.php?controller=user&action=purchaseHistory');
+                    exit();
+
                 } else {
                     echo "<script>alert('Lỗi: Không có sản phẩm nào được chọn hoặc lỗi hệ thống.'); history.back();</script>";
                 }

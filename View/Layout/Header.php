@@ -28,6 +28,7 @@ if (!empty($_SESSION['user'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/Shop_Website/Assets/Css/Layout/Header.css">
+    <link rel="stylesheet" href="/Shop_Website/Assets/Css/Notify/Toast.css">
 </head>
 
 <body>
@@ -167,6 +168,44 @@ if (!empty($_SESSION['user'])) {
             }
         }
     </script>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+        <script>
+        // Hàm hiển thị toast đẹp
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            toast.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                <div class="message">${message}</div>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => toast.classList.add('show'), 100);
+            
+            // Tự động xóa sau 4 giây
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 600);
+            }, 4000);
+        }
+
+        // Hiển thị toast nếu có flash từ PHP
+        <?php 
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (isset($_SESSION['flash_success'])): ?>
+            showToast("<?= htmlspecialchars($_SESSION['flash_success']) ?>", "success");
+            <?php unset($_SESSION['flash_success']); ?>
+        <?php elseif (isset($_SESSION['flash_error'])): ?>
+            showToast("<?= htmlspecialchars($_SESSION['flash_error']) ?>", "error");
+            <?php unset($_SESSION['flash_error']); ?>
+        <?php endif; ?>
+        </script>
 </body>
 
 </html>

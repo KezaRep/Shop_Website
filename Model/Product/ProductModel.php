@@ -291,7 +291,7 @@ class ProductModel
             return $products;
         }
 
-        // ProductModel.php – thêm hoặc sửa hàm này
+        
     public function toggleWishlist($user_id, $product_id)
     {
         // Kiểm tra đã thích chưa
