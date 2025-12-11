@@ -193,10 +193,10 @@ class ShopController
                 }
             }
 
-            echo "<script>
-                    alert('Cập nhật trạng thái và kho hàng thành công!'); 
-                    window.location.href='index.php?controller=shop&action=orderManager';
-                  </script>";
+            $_SESSION['flash_success'] = "Cập nhật trạng thái và kho hàng thành công!";
+            header('Location: index.php?controller=shop&action=orderManager');
+            exit();
+            
         }
     }
 
