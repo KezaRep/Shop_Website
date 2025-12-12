@@ -1,6 +1,7 @@
 <?php
 require_once "./View/Layout/Header.php";
-
+include_once('Model/Shop/ShopModel.php');
+$shopModel = new ShopModel();
 // Đảm bảo biến $lang tồn tại
 if (!isset($lang)) {
     $current_lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'vi';
@@ -58,11 +59,14 @@ function timeAgo($datetime, $lang)
                         <?= ($shop->is_online ?? 1) ? $lang['profile_status_online'] : $lang['profile_status_offline'] ?>
                     </span>
                     <div>
-                        <? if (isset($isOwner) && $isOwner) { ?>
+                        <?php if ($shopModel->isOwner($_GET['id'], $_SESSION['user']['id'])) { ?>
                             <a href="index.php?controller=product&action=add"><button
                                     class="btn-shop-action"><?= $lang['profile_add_product'] ?></button></a>
                             <a href="index.php?controller=shop&action=orderManager"><button
-                                    class="btn-shop-action"><?= $lang['seller_nav_approve'] ?></button></a> <? php;
+                                    class="btn-shop-action"><?= $lang['seller_nav_approve'] ?></button></a> <?php ;
+                        } else { ?>
+                            <button class="btn-shop-action btn-follow-shop"><?= $lang['profile_follow'] ?></button>
+                            <?php ;
                         } ?>
                     </div>
                 </div>

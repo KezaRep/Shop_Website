@@ -119,7 +119,7 @@ class ShopModel
 
         for ($i = 6; $i >= 0; $i--) {
             $targetDate = date('Y-m-d', strtotime("$anchorDate -$i days"));
-            $label      = date('d/m', strtotime("$anchorDate -$i days"));
+            $label = date('d/m', strtotime("$anchorDate -$i days"));
 
             $sql = "SELECT SUM(total_money) as total 
                     FROM orders 
@@ -136,7 +136,7 @@ class ShopModel
 
             $data[] = [
                 'label' => $label,
-                'value' => (int)$total
+                'value' => (int) $total
             ];
         }
         return $data;
@@ -159,5 +159,15 @@ class ShopModel
             $products[] = $row;
         }
         return $products;
+    }
+    public function isOwner($shopId, $userId)
+    {
+        $sql = "SELECT COUNT(*) as count FROM shops WHERE id = ? AND user_id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ii", $shopId, $userId);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+
+        return $result['count'] > 0; // Trả về true/false trực tiếp
     }
 }
