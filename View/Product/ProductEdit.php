@@ -3,7 +3,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Redirect nếu chưa đăng nhập
 if (empty($_SESSION['user'])) {
     header('Location: index.php?controller=user&action=login');
     exit;
