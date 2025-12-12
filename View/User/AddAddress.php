@@ -94,7 +94,7 @@ if (!isset($lang)) {
         }
 
         cities.onchange = function() {
-            districts.length = 1; // Giữ lại option đầu tiên (đã được dịch ở HTML)
+            districts.length = 1; 
             const dataCity = data.filter((n) => n.name === this.value);
 
             if (this.value != "") {

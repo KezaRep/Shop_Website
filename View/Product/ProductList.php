@@ -3,7 +3,6 @@
 $current_lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'vi';
 $lang = include "Assets/Lang/$current_lang.php";
 
-// Sau khi có biến $lang rồi thì mới dùng
 $headerTitle = $lang['search_results'];
 
 $db = new Database();
@@ -14,21 +13,17 @@ if (!$conn) {
 }
 mysqli_set_charset($conn, "utf8mb4");
 
-// 1. LẤY DANH MỤC
 $sql_cate = "SELECT * FROM categories";
 $result_cate = mysqli_query($conn, $sql_cate);
 
-// 2. CẤU HÌNH PHÂN TRANG
 $limit = 40;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 if ($page < 1) $page = 1;
 $offset = ($page - 1) * $limit;
 
-// 3. XỬ LÝ LỌC & TÌM KIẾM
 $whereConditions = [];
 $param = '';
 
-// A. Tìm kiếm từ khóa
 $keyword = '';
 if (!empty($_GET['keyword'])) {
     $keyword = trim($_GET['keyword']);
@@ -37,7 +32,6 @@ if (!empty($_GET['keyword'])) {
     $param .= "&keyword=" . urlencode($keyword);
 }
 
-// B. Lọc theo Danh mục
 if (!empty($_GET['cat'])) {
     $cat_ids = array_map('intval', $_GET['cat']);
     if (!empty($cat_ids)) {
@@ -47,7 +41,6 @@ if (!empty($_GET['cat'])) {
     }
 }
 
-// C. Lọc theo Nơi bán
 if (!empty($_GET['place'])) {
     $place_sql_parts = [];
     foreach ($_GET['place'] as $p) {
@@ -60,13 +53,11 @@ if (!empty($_GET['place'])) {
     }
 }
 
-// D. Ghép câu lệnh WHERE
 $whereSQL = "";
 if (!empty($whereConditions)) {
     $whereSQL = " WHERE " . implode(' AND ', $whereConditions);
 }
 
-// E. Xử lý Sắp xếp
 $sort = $_GET['sort'] ?? '';
 $order_sql = "ORDER BY products.id ASC";
 
@@ -76,7 +67,6 @@ elseif ($sort == 'price_desc') $order_sql = "ORDER BY products.price DESC";
 
 if ($sort) $param .= "&sort=$sort";
 
-// 4. THỰC THI QUERY
 $joinQuery = " FROM products 
                JOIN shops ON products.seller_id = shops.user_id 
                $whereSQL";
