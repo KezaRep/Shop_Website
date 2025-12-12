@@ -218,6 +218,7 @@ function build_full_url($extras = [])
                                 <div class="product-media">
                                     <?php $imgSrc = !empty($product->image) ? $product->image : 'Assets/Images/no-image.jpg'; ?>
                                     <img src="<?= htmlspecialchars($imgSrc) ?>" alt="<?= htmlspecialchars($product->name) ?>">
+                                   <!--  -->
                                     <div class="badge-mall"><?= $lang['mall'] ?></div>
                                     <div class="discount-tag">-10%</div>
                                 </div>
