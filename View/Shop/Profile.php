@@ -92,11 +92,12 @@ function timeAgo($datetime, $lang)
                 <li onclick="switchTab('products', this)"><?= $lang['profile_tab_products'] ?></li>
                 <li onclick="switchTab('products', this)"><?= $lang['profile_tab_categories'] ?></li>
 
-                <?php if (isset($isOwner) && $isOwner): ?>
+                <?php if ($shopModel->isOwner($_GET['id'], $_SESSION['user']['id'])) { ?>
                     <li onclick="switchTab('stats', this)" style="margin-left: auto; color: #333;">
                         <i class="fas fa-chart-line"></i> <?= $lang['profile_tab_stats'] ?>
                     </li>
-                <?php endif; ?>
+                    <?php ;
+                } ?>
             </ul>
         </div>
     </div>
