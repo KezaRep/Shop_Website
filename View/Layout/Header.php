@@ -2,7 +2,6 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-// Nếu chưa có file ngôn ngữ thì mặc định là vi
 $current_lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'vi';
 $lang = include "Assets/Lang/$current_lang.php";
 

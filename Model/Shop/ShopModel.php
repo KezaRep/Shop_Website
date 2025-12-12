@@ -27,7 +27,6 @@ class ShopModel
 
     public function getRevenue($sellerId)
     {
-        // TRIM(status) để loại bỏ dấu cách thừa, LIKE 'completed%' để bắt chữ completed
         $sql = "SELECT SUM(total_money) as total 
                 FROM orders 
                 WHERE seller_id = ? 

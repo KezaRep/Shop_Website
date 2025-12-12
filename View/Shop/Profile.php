@@ -243,7 +243,6 @@ function timeAgo($datetime, $lang)
                             if (!empty($chartData)):
                                 foreach ($chartData as $day):
                                     $percent = ($day['value'] / $maxVal) * 85;
-
                                     $displayMoney = $day['value'];
                                     if ($day['value'] >= 1000000) {
                                         $displayMoney = round($day['value'] / 1000000, 1) . 'M';
