@@ -14,7 +14,6 @@ class ProfileController {
         $user_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
         // 2. Tìm Shop của người này
-        // (Lấy thông tin từ bảng shops dựa vào user_id)
         $sqlShop = "SELECT * FROM shops WHERE user_id = $user_id LIMIT 1";
         $resultShop = mysqli_query($conn, $sqlShop);
         

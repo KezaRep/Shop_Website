@@ -27,10 +27,9 @@ class ProductController
         // Lấy danh sách sản phẩm gần đúng theo từ khóa
         $productList = $this->productModel->searchProducts($keyword);
 
-        $Shop = $this->userModel->searchOneUser($keyword); // dùng hàm mới
+        $Shop = $this->userModel->searchOneUser($keyword); 
 
-        // Chuyển biến Shop xuống view
-        $shop = $Shop; // đặt lại biến để view dùng thống nhất
+        $shop = $Shop; 
 
         include("View/Layout/Header.php");
         include("View/Product/ProductList.php");
@@ -61,7 +60,6 @@ class ProductController
     public function addAction()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Lấy dữ liệu từ form
             $name = isset($_POST['name']) ? trim($_POST['name']) : '';
             $price = isset($_POST['price']) ? (float) $_POST['price'] : 0;
             $description = isset($_POST['description']) ? trim($_POST['description']) : '';
@@ -91,10 +89,8 @@ class ProductController
                 }
             }
 
-            // Thêm product
             $ok = $this->productModel->addProduct($name, $price, $imagePath, $videoPath, $description, $seller_id, $quantity, $category_id);
 
-            // Redirect về danh sách hoặc hiển thị thông báo
             if ($ok) {
                 header("Location: index.php?controller=product&action=list");
                 exit;
@@ -105,7 +101,6 @@ class ProductController
                 include("View/Layout/Footer.php");
             }
         } else {
-            // GET: hiển thị form
 
             require_once "Model/Category/CategoryModel.php";
             $cateModel = new CategoryModel();
@@ -127,19 +122,16 @@ class ProductController
             exit;
         }
 
-        // load comment model và lấy comment cho product này
         include_once("Model/Comment/CommentModel.php");
         $commentModel = new CommentModel();
         $comments = $commentModel->getCommentsByProductId($id);
 
-        // load seller (nếu có)
         include_once("Model/User/UserModel.php");
         $userModel = new UserModel();
         $seller = $userModel->getUserById(intval($product->seller_id ?? 0));
         
         $shop_data = null;
         if (!empty($product->seller_id)) {
-            // 1. Gọi file Database để kết nối (giống hàm submitOrderAction ông đã làm)
             require_once __DIR__ . '/../../Core/Database.php';
             $db = new Database();
             $conn = $db->getConnection();
@@ -151,14 +143,11 @@ class ProductController
             $result_shop = $stmt_shop->get_result();
             $shop_data = $result_shop->fetch_object();
             
-            // (Nếu muốn kỹ tính thì đóng stmt lại, không thì PHP tự lo)
             $stmt_shop->close();
         }
 
-        // related products
         $related = $this->productModel->getProductsBySeller($product->seller_id);
 
-        // truyền $product, $related, $comments, $seller vào view
         include("View/Layout/Header.php");
         include("View/Product/ProductDetail.php");
         include("View/Layout/Footer.php");
@@ -173,7 +162,6 @@ class ProductController
             exit;
         }
 
-        // quyền: chỉ owner hoặc admin
         $currentUserId = $_SESSION['user']['id'] ?? 0;
         $isAdmin = ($_SESSION['user']['role'] ?? '') === 'admin';
         if ($currentUserId !== intval($product->seller_id) && !$isAdmin) {
@@ -190,14 +178,11 @@ class ProductController
             $quantity = isset($_POST['quantity']) ? (int) $_POST['quantity'] : 0;
             $category_id = isset($_POST['category_id']) ? (int) $_POST['category_id'] : 0;
 
-            // Nếu có file mới thì đọc, ngược lại để null (model sẽ bỏ qua update ảnh)
             $imageData = null;
             if (!empty($_FILES['image']['tmp_name']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
-                // kiểm tra type/size nếu cần
                 $maxBytes = 2 * 1024 * 1024; // 2MB
                 if ($_FILES['image']['size'] > $maxBytes) {
                     $error = "Ảnh quá lớn (tối đa 2MB).";
-                    // reload product để view có dữ liệu
                     include("View/Layout/Header.php");
                     include("View/Product/ProductEdit.php");
                     include("View/Layout/Footer.php");
@@ -206,7 +191,6 @@ class ProductController
                 $imageData = file_get_contents($_FILES['image']['tmp_name']);
             }
 
-            // Gọi model: nếu imageData === null thì model KHÔNG cập nhật cột ảnh
             $ok = $this->productModel->updateProductDetails($id, $name, $price, $imageData, $description, $quantity, $category_id);
 
             if ($ok) {
@@ -214,7 +198,6 @@ class ProductController
                 exit;
             } else {
                 $error = "Không thể lưu thông tin sản phẩm. Vui lòng thử lại.";
-                // reload product (lấy lại dữ liệu mới nhất)
                 $product = $this->productModel->getProductById($id);
                 include("View/Layout/Header.php");
                 include("View/Product/ProductEdit.php");
@@ -233,22 +216,19 @@ class ProductController
     }
     public function checkoutAction()
     {
-        // Khởi động session nếu chưa có
         if (session_status() === PHP_SESSION_NONE)
             session_start();
 
         $cart = [];
 
-        // TRƯỜNG HỢP 1: Bấm nút "MUA NGAY" (POST từ trang chi tiết)
+        // TRƯỜNG HỢP 1: Bấm nút "MUA NGAY" 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id'])) {
             $productId = (int) $_POST['product_id'];
             $qty = (int) ($_POST['quantity'] ?? 1);
 
-            // Gọi Model lấy thông tin sản phẩm
             $product = $this->productModel->getProductById($productId);
 
             if ($product) {
-                // Tạo mảng sản phẩm
                 $item = [
                     'product_id' => $product->id,
                     'name' => $product->name,
@@ -257,15 +237,11 @@ class ProductController
                     'image' => $product->image
                 ];
 
-                // --- FIX QUAN TRỌNG ---
-                // Lưu ngay sản phẩm này vào Session Cart
-                // Để tí nữa bấm "Đặt hàng" thì hàm submitOrderAction nó mới thấy dữ liệu
                 $_SESSION['cart'] = [$item];
 
                 $cart = $_SESSION['cart'];
             }
         }
-        // TRƯỜNG HỢP 2: Vào Checkout từ Giỏ hàng (nếu sau này bạn làm)
         else {
             $cart = $_SESSION['cart'] ?? [];
         }
@@ -276,8 +252,6 @@ class ProductController
             return;
         }
 
-        // --- ĐOẠN DƯỚI GIỮ NGUYÊN ---
-        // Lấy thông tin người dùng để điền sẵn vào form
         $profileName = "";
         $profilePhone = "";
         $profileAddress = "";
@@ -292,7 +266,6 @@ class ProductController
                 $profilePhone = $currentUser->phone ?? "";
                 $profileAddress = $currentUser->address ?? "";
             }
-            // Lấy danh sách địa chỉ đã lưu (nếu có)
             if (method_exists($this->userModel, 'getUserAddresses')) {
                 $savedAddresses = $this->userModel->getUserAddresses($userId);
             }
@@ -346,7 +319,6 @@ class ProductController
 
             $subtotal = 0;
             foreach ($cart as $item) {
-                // Đảm bảo kiểu số để tính toán
                 $price = floatval($item['price']);
                 $qty = intval($item['quantity']);
                 $subtotal += $price * $qty;
@@ -363,9 +335,8 @@ class ProductController
                 $stmt->bind_param("idssss", $userId, $totalMoney, $note, $recName, $recPhone, $recAddress);
 
                 if ($stmt->execute()) {
-                    $orderId = $conn->insert_id; // Lấy ID đơn hàng vừa tạo
+                    $orderId = $conn->insert_id;
 
-                    // -- BƯỚC 2: INSERT BẢNG ORDER_DETAILS --
                     $sqlDetail = "INSERT INTO order_details (order_id, product_id, price, quantity) VALUES (?, ?, ?, ?)";
                     $stmtDetail = $conn->prepare($sqlDetail);
 
@@ -374,14 +345,12 @@ class ProductController
                         $pPrice = floatval($item['price']);
                         $pQty = intval($item['quantity']);
 
-                        // Lưu từng dòng sản phẩm
                         $stmtDetail->bind_param("idii", $orderId, $pId, $pPrice, $pQty);
                         $stmtDetail->execute();
                     }
                     $stmtDetail->close();
 
-                    // -- BƯỚC 3: HOÀN TẤT --
-                    unset($_SESSION['cart']); // Xóa giỏ hàng sau khi mua xong
+                    unset($_SESSION['cart']);
 
                     echo "<script>alert('Đặt hàng thành công! Mã đơn: #$orderId'); window.location.href='index.php';</script>";
                 } else {
@@ -397,16 +366,13 @@ class ProductController
     }
     public function deleteAction()
     {
-        // 1. Kiểm tra đăng nhập
         if (!isset($_SESSION['user'])) {
             header("Location: index.php?controller=user&action=login");
             exit;
         }
 
-        // 2. Lấy ID sản phẩm cần xóa
         $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
-        // 3. Lấy thông tin sản phẩm
         $product = $this->productModel->getProductById($id);
 
         if (!$product) {
@@ -414,7 +380,6 @@ class ProductController
             return;
         }
 
-        // 4. KIỂM TRA QUYỀN: Chỉ chủ shop (người đăng) hoặc Admin mới được xóa
         $currentUserId = (int) $_SESSION['user']['id'];
         $isOwner = $currentUserId === (int) $product->seller_id;
         $isAdmin = ($_SESSION['user']['role'] ?? '') === 'admin';
@@ -424,22 +389,19 @@ class ProductController
             return;
         }
 
-        // 5. Xóa ảnh cũ trên server (Dọn dẹp bộ nhớ)
+
         if (!empty($product->image) && file_exists($product->image)) {
             if (strpos($product->image, 'placeholder') === false) {
                 @unlink($product->image);
             }
-        }
-        // Xóa video cũ nếu có
+        }    
         if (!empty($product->video_url) && file_exists($product->video_url)) {
              @unlink($product->video_url);
         }
 
-        // 6. Gọi Model để xóa trong Database
         $isDeleted = $this->productModel->deleteProduct($id);
 
         if ($isDeleted) {
-            // --- SỬA Ở ĐÂY: Chuyển về controller=user&action=profile ---
             echo "<script>
                 alert('Xóa sản phẩm thành công!'); 
                 window.location.href='index.php?controller=user&action=profile';
@@ -486,7 +448,6 @@ class ProductController
 
     public function toggleWishlistAction() 
     {
-        // BẮT BUỘC PHẢI CÓ session_start() ở đầu mỗi action nếu chưa có
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }

@@ -3,7 +3,6 @@
 $current_lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'vi';
 $lang = include "Assets/Lang/$current_lang.php";
 
-// Sau khi có biến $lang rồi thì mới dùng
 $headerTitle = $lang['search_results'];
 
 $db = new Database();
@@ -32,6 +31,7 @@ if (!empty($_GET['keyword'])) {
     $whereConditions[] = "products.name LIKE '%$safe_keyword%'";
     $param .= "&keyword=" . urlencode($keyword);
 }
+
 if (!empty($_GET['cat'])) {
     $cat_ids = array_map('intval', $_GET['cat']);
     if (!empty($cat_ids)) {
