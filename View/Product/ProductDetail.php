@@ -38,18 +38,21 @@ function productImageSrc($img)
             <div class="product-top">
                 <div class="product-gallery">
 
-                    <div class="main-media-viewer" style="width: 100%; aspect-ratio: 1/1; border: 1px solid #eee; border-radius: 4px; overflow: hidden; position: relative; background: #fff;">
+                    <div class="main-media-viewer"
+                        style="width: 100%; aspect-ratio: 1/1; border: 1px solid #eee; border-radius: 4px; overflow: hidden; position: relative; background: #fff;">
                         <?php if (!empty($product->video_url)): ?>
-                            <video id="mainVideo" controls style="width: 100%; height: 100%; object-fit: contain; background: #000; display: block;">
+                            <video id="mainVideo" controls
+                                style="width: 100%; height: 100%; object-fit: contain; background: #000; display: block;">
                                 <source src="/Shop_Website/<?= htmlspecialchars($product->video_url) ?>" type="video/mp4">
                             </video>
-                            <img id="mainImage" src="" style="width: 100%; height: 100%; object-fit: contain; display: none;">
+                            <img id="mainImage" src=""
+                                style="width: 100%; height: 100%; object-fit: contain; display: none;">
 
                         <?php else: ?>
-                            <video id="mainVideo" controls style="width: 100%; height: 100%; object-fit: contain; background: #000; display: none;"></video>
+                            <video id="mainVideo" controls
+                                style="width: 100%; height: 100%; object-fit: contain; background: #000; display: none;"></video>
 
-                            <img id="mainImage"
-                                src="<?= productImageSrc($product->image ?? '') ?>"
+                            <img id="mainImage" src="<?= productImageSrc($product->image ?? '') ?>"
                                 style="width: 100%; height: 100%; object-fit: contain; display: block;">
                         <?php endif; ?>
                     </div>
@@ -69,16 +72,19 @@ function productImageSrc($img)
                             </div>
                         <?php endif; ?>
 
-                        <div class="thumb-item" onclick="showMainImage('<?= productImageSrc($product->image ?? '') ?>', this)"
+                        <div class="thumb-item"
+                            onclick="showMainImage('<?= productImageSrc($product->image ?? '') ?>', this)"
                             style="width: 60px; height: 60px; cursor: pointer; border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
-                            <img src="/Shop_Website/<?= htmlspecialchars($product->image ?? '') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                            <img src="/Shop_Website/<?= htmlspecialchars($product->image ?? '') ?>"
+                                style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
 
                         <?php if (!empty($product->extra_images) && is_array($product->extra_images)): ?>
                             <?php foreach ($product->extra_images as $ei): ?>
                                 <div class="thumb-item" onclick="showMainImage('<?= productImageSrc($ei) ?>', this)"
                                     style="width: 60px; height: 60px; cursor: pointer; border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
-                                    <img src="<?= productImageSrc($ei) ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                                    <img src="<?= productImageSrc($ei) ?>"
+                                        style="width: 100%; height: 100%; object-fit: cover;">
                                 </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -130,8 +136,8 @@ function productImageSrc($img)
                                 <div class="qty-control">
                                     <button class="qty-btn minus" type="button"><i class="fas fa-minus"></i></button>
                                     <input type="number" id="qty" name="quantity" value="1" min="1"
-                                        max="<?= intval($product->quantity ?? 100) ?>"
-                                        inputmode="numeric" pattern="[0-9]*">
+                                        max="<?= intval($product->quantity ?? 100) ?>" inputmode="numeric"
+                                        pattern="[0-9]*">
                                     <button class="qty-btn plus" type="button"><i class="fas fa-plus"></i></button>
                                 </div>
 
@@ -141,7 +147,9 @@ function productImageSrc($img)
                             </div>
                         </div>
 
-                        <form action="index.php?controller=cart&action=add&product_id=<?= htmlspecialchars($product->id) ?>" method="post" id="addCartForm">
+                        <form
+                            action="index.php?controller=cart&action=add&product_id=<?= htmlspecialchars($product->id) ?>"
+                            method="post" id="addCartForm">
                             <input type="hidden" name="product_id" value="<?= $product->id ?>">
                             <input type="hidden" name="quantity" id="qtyField" value="1" min="1"
                                 max="<?= intval($product->quantity ?? 100) ?>">
@@ -155,21 +163,21 @@ function productImageSrc($img)
                         <a href="#" class="social-btn"><i class="fab fa-facebook"></i></a>
                         <a href="#" class="social-btn"><i class="fab fa-twitter"></i></a>
                         <a href="#" class="social-btn"><i class="fab fa-pinterest"></i></a>
-                        
+
                         <?php
-                            if (session_status() === PHP_SESSION_NONE) {
-                                session_start();
-                            }
+                        if (session_status() === PHP_SESSION_NONE) {
+                            session_start();
+                        }
 
-                            // THÊM 2 DÒNG NÀY VÀO ĐẦU FILE
-                            require_once __DIR__ . '/../../Model/Product/ProductModel.php';
-                            $productModel = new ProductModel(); // <--- TẠO MỚI MODEL Ở ĐÂY
-
-                            $userId = $_SESSION['user']['id'] ?? null;
-                            $isLiked = false;
-                            if ($userId) {
-                                $isLiked = $productModel->isWishlisted($userId, $product->id);
-                            }
+                        // THÊM 2 DÒNG NÀY VÀO ĐẦU FILE
+                        require_once __DIR__ . '/../../Model/Product/ProductModel.php';
+                        $productModel = new ProductModel(); // <--- TẠO MỚI MODEL Ở ĐÂY
+                        
+                        $userId = $_SESSION['user']['id'] ?? null;
+                        $isLiked = false;
+                        if ($userId) {
+                            $isLiked = $productModel->isWishlisted($userId, $product->id);
+                        }
                         ?>
 
 
@@ -178,7 +186,7 @@ function productImageSrc($img)
                             Thích
                         </button>
 
-                            (<?= intval($product->likes ?? 0) ?>)</a>
+                        (<?= intval($product->likes ?? 0) ?>)</a>
                     </div>
                 </div>
             </div>
@@ -188,7 +196,7 @@ function productImageSrc($img)
                 <div class="seller-left">
                     <?php
                     $shopAvatar = '/Shop_Website/Assets/Images/placeholder-avatar.png'; // Mặc định
-
+                    
                     if (!empty($shop_data->avatar)) {
                         // Xử lý đường dẫn nếu trong DB đã có sẵn 'Assets/'
                         $shopAvatar = (strpos($shop_data->avatar, 'Assets/') === 0)
@@ -211,7 +219,8 @@ function productImageSrc($img)
                 <div class="seller-actions">
                     <button class="btn-msg"><i class="fas fa-comment"></i> Chat Ngay</button>
 
-                    <a href="index.php?controller=shop&action=profile&id=<?= $product->seller_id ?>" class="btn-view" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                    <a href="index.php?controller=shop&action=profile&id=<?= $product->seller_id ?>" class="btn-view"
+                        style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
                         <i class="fas fa-store" style="margin-right: 5px;"></i> Xem Shop
                     </a>
                 </div>
@@ -333,7 +342,7 @@ function productImageSrc($img)
     </main>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             // 1. Khoanh vùng container để tránh bắt nhầm nút ở Header hay Footer
             const qtyContainer = document.querySelector('.product-actions .qty-control');
 
@@ -354,7 +363,7 @@ function productImageSrc($img)
             }
 
             if (btnMinus) {
-                btnMinus.addEventListener('click', function() {
+                btnMinus.addEventListener('click', function () {
                     let currentValue = parseInt(qtyInput.value) || 1;
                     let min = parseInt(qtyInput.getAttribute('min')) || 1;
 
@@ -366,7 +375,7 @@ function productImageSrc($img)
             }
 
             if (btnPlus) {
-                btnPlus.addEventListener('click', function() {
+                btnPlus.addEventListener('click', function () {
                     let currentValue = parseInt(qtyInput.value) || 1;
                     let max = parseInt(qtyInput.getAttribute('max')) || 100;
 
@@ -378,7 +387,7 @@ function productImageSrc($img)
             }
 
             if (qtyInput) {
-                qtyInput.addEventListener('change', function() {
+                qtyInput.addEventListener('change', function () {
                     let val = parseInt(this.value) || 1;
                     let max = parseInt(this.getAttribute('max')) || 100;
                     let min = parseInt(this.getAttribute('min')) || 1;
@@ -442,46 +451,105 @@ function productImageSrc($img)
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-    $(document).ready(function() {
-        $('.wishlist-btn').on('click', function() {
-            var btn = $(this);
-            var productId = btn.data('id');
-            var heart = btn.find('.fa-heart');
+        $(document).ready(function () {
+            $('.wishlist-btn').on('click', function () {
+                var btn = $(this);
+                var productId = btn.data('id');
+                var heart = btn.find('.fa-heart');
 
-            // Nếu chưa đăng nhập → báo luôn
-            <?php if (!isset($_SESSION['user'])): ?>
-                alert('Vui lòng đăng nhập để thích sản phẩm!');
-                window.location.href = 'index.php?controller=user&action=login';
-                return;
-            <?php endif; ?>
+                // Nếu chưa đăng nhập → báo luôn
+                <?php if (!isset($_SESSION['user'])): ?>
+                    alert('Vui lòng đăng nhập để thích sản phẩm!');
+                    window.location.href = 'index.php?controller=user&action=login';
+                    return;
+                <?php endif; ?>
 
-            $.ajax({
-                url: 'index.php?controller=product&action=toggleWishlist',
-                type: 'POST',
-                data: { product_id: productId },
-                success: function(res) {
-                    console.log("Response:", res); // <<< MỞ DEVTOOL XEM DÒNG NÀY
+                $.ajax({
+                    url: 'index.php?controller=product&action=toggleWishlist',
+                    type: 'POST',
+                    data: { product_id: productId },
+                    success: function (res) {
+                        console.log("Response:", res); // <<< MỞ DEVTOOL XEM DÒNG NÀY
 
-                    try {
-                        var data = JSON.parse(res);
-                        if (data.status === 'liked') {
-                            heart.removeClass('far').addClass('fas');
-                            btn.addClass('liked');
-                        } else if (data.status === 'unliked') {
-                            heart.removeClass('fas').addClass('far');
-                            btn.removeClass('liked');
+                        try {
+                            var data = JSON.parse(res);
+                            if (data.status === 'liked') {
+                                heart.removeClass('far').addClass('fas');
+                                btn.addClass('liked');
+                            } else if (data.status === 'unliked') {
+                                heart.removeClass('fas').addClass('far');
+                                btn.removeClass('liked');
+                            }
+                        } catch (e) {
+                            alert('Lỗi hệ thống. Vui lòng thử lại!');
+                            console.error(res);
                         }
-                    } catch(e) {
-                        alert('Lỗi hệ thống. Vui lòng thử lại!');
-                        console.error(res);
+                    },
+                    error: function () {
+                        alert('Lỗi kết nối server!');
                     }
-                },
-                error: function() {
-                    alert('Lỗi kết nối server!');
-                }
+                });
             });
         });
-    });
+    </script>
+    <script>
+        // Script cho rating stars (chọn số sao)
+        document.addEventListener("DOMContentLoaded", function () {
+            const starsInput = document.getElementById('starsInput');
+            const ratingValue = document.getElementById('ratingValue');
+
+            if (starsInput && ratingValue) {
+                const stars = starsInput.querySelectorAll('.star');
+
+                // Click vào sao
+                stars.forEach(star => {
+                    star.addEventListener('click', function () {
+                        const value = parseInt(this.getAttribute('data-value'));
+                        ratingValue.value = value;
+
+                        // Highlight các sao được chọn
+                        stars.forEach((s, index) => {
+                            if (index < value) {
+                                s.classList.add('selected');
+                                s.style.color = '#ffc107'; // Màu vàng
+                            } else {
+                                s.classList.remove('selected');
+                                s.style.color = '#ddd'; // Màu xám
+                            }
+                        });
+                    });
+
+                    // Hover effect
+                    star.addEventListener('mouseenter', function () {
+                        const value = parseInt(this.getAttribute('data-value'));
+                        stars.forEach((s, index) => {
+                            if (index < value) {
+                                s.style.color = '#ffc107';
+                            }
+                        });
+                    });
+                });
+
+                // Reset khi rời chuột khỏi vùng sao
+                starsInput.addEventListener('mouseleave', function () {
+                    const currentValue = parseInt(ratingValue.value);
+                    stars.forEach((s, index) => {
+                        if (index < currentValue) {
+                            s.style.color = '#ffc107';
+                        } else {
+                            s.style.color = '#ddd';
+                        }
+                    });
+                });
+
+                // Set mặc định 5 sao khi load trang
+                ratingValue.value = 5;
+                stars.forEach(s => {
+                    s.style.color = '#ffc107';
+                    s.classList.add('selected');
+                });
+            }
+        });
     </script>
 
 </body>
