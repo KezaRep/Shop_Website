@@ -187,7 +187,6 @@ class ProductModel
 
 
 
-    // Các hàm add/update giữ nguyên vì không ảnh hưởng việc LẤY dữ liệu hiển thị
     public function addProduct($name, $price, $image, $video_url, $description, $seller_id, $quantity, $category_id)
     {
         $sql = "INSERT INTO products (name, price, image, video_url, description, seller_id, quantity, sold, rating, category_id, created_at) 

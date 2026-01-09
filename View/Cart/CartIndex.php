@@ -16,7 +16,46 @@ function productImageSrc($img)
         return 'data:image/jpeg;base64,' . base64_encode($img);
     }
     return $img;
-}
+}    public function vnpayReturnAction()
+    {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+
+        $check = $this->paymentModel->checkResponse($_GET);
+        
+        $data = []; 
+
+        if ($check['isValid']) {
+            if ($check['responseCode'] == '00') {
+                if (isset($_SESSION['pending_order'])) {
+                    $info = $_SESSION['pending_order'];
+
+                    $this->saveOrderToDatabase($info, 'pending');
+
+                    unset($_SESSION['pending_order']);
+
+                    $data['status'] = 'success';
+                    $data['amount'] = $check['amount'];
+                    $data['order_id'] = $check['orderId'];
+                    $data['info'] = [
+                        'customer_name' => $info['name'],
+                        'customer_phone' => $info['phone'],
+                        'customer_address' => $info['address']
+                    ];
+                } else {
+                    $data['status'] = 'failed';
+                    $data['msg'] = 'Lỗi: Phiên giao dịch đã hết hạn.';
+                }
+            } else {
+                $data['status'] = 'failed';
+                $data['msg'] = 'Giao dịch bị hủy hoặc thất bại.';
+            }
+        } else {
+            $data['status'] = 'error';
+            $data['msg'] = 'Chữ ký bảo mật không hợp lệ.';
+        }
+
+        require_once("View/Payment/result.php");
+    }
 
 $cartByShop = [];
 if (!empty($cart)) {
