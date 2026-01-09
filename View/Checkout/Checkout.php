@@ -1,5 +1,4 @@
 <?php
-// Load ngôn ngữ
 if (!isset($lang)) {
     $current_lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'vi';
     $lang = include "Assets/Lang/$current_lang.php";

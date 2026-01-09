@@ -59,15 +59,11 @@ function timeAgo($datetime, $lang)
                         <?= ($shop->is_online ?? 1) ? $lang['profile_status_online'] : $lang['profile_status_offline'] ?>
                     </span>
                     <div>
-                        <?php if ($shopModel->isOwner($_GET['id'], $_SESSION['user']['id'])) { ?>
+                        <?php  ?>
                             <a href="index.php?controller=product&action=add"><button
                                     class="btn-shop-action"><?= $lang['profile_add_product'] ?></button></a>
                             <a href="index.php?controller=shop&action=orderManager"><button
-                                    class="btn-shop-action"><?= $lang['seller_nav_approve'] ?></button></a> <?php ;
-                        } else { ?>
-                            <button class="btn-shop-action btn-follow-shop"><?= $lang['profile_follow'] ?></button>
-                            <?php ;
-                        } ?>
+                                    class="btn-shop-action"><?= $lang['seller_nav_approve'] ?></button></a>
                     </div>
                 </div>
             </div>
@@ -92,12 +88,11 @@ function timeAgo($datetime, $lang)
                 <li onclick="switchTab('products', this)"><?= $lang['profile_tab_products'] ?></li>
                 <li onclick="switchTab('products', this)"><?= $lang['profile_tab_categories'] ?></li>
 
-                <?php if ($shopModel->isOwner($_GET['id'], $_SESSION['user']['id'])) { ?>
+               
                     <li onclick="switchTab('stats', this)" style="margin-left: auto; color: #333;">
                         <i class="fas fa-chart-line"></i> <?= $lang['profile_tab_stats'] ?>
                     </li>
-                    <?php ;
-                } ?>
+                 
             </ul>
         </div>
     </div>
@@ -243,7 +238,6 @@ function timeAgo($datetime, $lang)
                             if (!empty($chartData)):
                                 foreach ($chartData as $day):
                                     $percent = ($day['value'] / $maxVal) * 85;
-
                                     $displayMoney = $day['value'];
                                     if ($day['value'] >= 1000000) {
                                         $displayMoney = round($day['value'] / 1000000, 1) . 'M';

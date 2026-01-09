@@ -169,9 +169,8 @@ function productImageSrc($img)
                             session_start();
                         }
 
-                        // THÊM 2 DÒNG NÀY VÀO ĐẦU FILE
                         require_once __DIR__ . '/../../Model/Product/ProductModel.php';
-                        $productModel = new ProductModel(); // <--- TẠO MỚI MODEL Ở ĐÂY
+                        $productModel = new ProductModel(); 
                         
                         $userId = $_SESSION['user']['id'] ?? null;
                         $isLiked = false;
@@ -196,7 +195,6 @@ function productImageSrc($img)
                 <div class="seller-left">
                     <?php
                     $shopAvatar = '/Shop_Website/Assets/Images/placeholder-avatar.png'; // Mặc định
-                    
                     if (!empty($shop_data->avatar)) {
                         // Xử lý đường dẫn nếu trong DB đã có sẵn 'Assets/'
                         $shopAvatar = (strpos($shop_data->avatar, 'Assets/') === 0)
@@ -343,16 +341,13 @@ function productImageSrc($img)
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // 1. Khoanh vùng container để tránh bắt nhầm nút ở Header hay Footer
             const qtyContainer = document.querySelector('.product-actions .qty-control');
 
-            // Nếu không tìm thấy container thì dừng lại để tránh lỗi
             if (!qtyContainer) return;
 
             const qtyInput = document.getElementById('qty');
             const qtyField = document.getElementById('qtyField');
 
-            // 2. Tìm nút Minus và Plus CHÍNH XÁC trong container này
             const btnMinus = qtyContainer.querySelector('.qty-btn.minus');
             const btnPlus = qtyContainer.querySelector('.qty-btn.plus');
 
@@ -401,21 +396,17 @@ function productImageSrc($img)
         });
     </script>
     <script>
-        // Hàm hiển thị Video trên khung lớn
         function showMainVideo() {
             const video = document.getElementById('mainVideo');
             const img = document.getElementById('mainImage');
 
-            // Ẩn ảnh, hiện video
             img.style.display = 'none';
             video.style.display = 'block';
-            video.play(); // Tự động phát khi bấm vào
+            video.play(); 
 
-            // Xử lý viền cam active cho thumbnail
-            updateActiveThumb(0); // Giả sử video luôn là thumb đầu tiên
+            updateActiveThumb(0); 
         }
 
-        // Hàm hiển thị Ảnh trên khung lớn
         function showMainImage(src, thumbElement) {
             const video = document.getElementById('mainVideo');
             const img = document.getElementById('mainImage');
@@ -457,7 +448,6 @@ function productImageSrc($img)
                 var productId = btn.data('id');
                 var heart = btn.find('.fa-heart');
 
-                // Nếu chưa đăng nhập → báo luôn
                 <?php if (!isset($_SESSION['user'])): ?>
                     alert('Vui lòng đăng nhập để thích sản phẩm!');
                     window.location.href = 'index.php?controller=user&action=login';
@@ -469,7 +459,7 @@ function productImageSrc($img)
                     type: 'POST',
                     data: { product_id: productId },
                     success: function (res) {
-                        console.log("Response:", res); // <<< MỞ DEVTOOL XEM DÒNG NÀY
+                        console.log("Response:", res); 
 
                         try {
                             var data = JSON.parse(res);
@@ -493,7 +483,6 @@ function productImageSrc($img)
         });
     </script>
     <script>
-        // Script cho rating stars (chọn số sao)
         document.addEventListener("DOMContentLoaded", function () {
             const starsInput = document.getElementById('starsInput');
             const ratingValue = document.getElementById('ratingValue');
@@ -507,14 +496,13 @@ function productImageSrc($img)
                         const value = parseInt(this.getAttribute('data-value'));
                         ratingValue.value = value;
 
-                        // Highlight các sao được chọn
                         stars.forEach((s, index) => {
                             if (index < value) {
                                 s.classList.add('selected');
-                                s.style.color = '#ffc107'; // Màu vàng
+                                s.style.color = '#ffc107'; 
                             } else {
                                 s.classList.remove('selected');
-                                s.style.color = '#ddd'; // Màu xám
+                                s.style.color = '#ddd'; 
                             }
                         });
                     });

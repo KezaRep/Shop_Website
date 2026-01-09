@@ -52,7 +52,7 @@ if (!isset($lang)) {
 <script>
     const stores = <?php echo isset($json_stores) ? $json_stores : '[]'; ?>;
 
-    // --- KỸ THUẬT QUAN TRỌNG: Truyền biến ngôn ngữ từ PHP sang JS ---
+    //  Truyền biến ngôn ngữ từ PHP sang JS ---
     const langData = {
         you_are_here: "<?= $lang['map_you_are_here'] ?>",
         near_you: "<?= $lang['map_near_you'] ?>",
